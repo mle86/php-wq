@@ -96,6 +96,7 @@ class WorkProcessor
 			$this->server->requeueEntry($qe, $delay);
 			$this->log(LogLevel::NOTICE, "failed, re-queued with {$delay}s delay ({$exception_class})", $qe);
 		} elseif ($this->options[self::WP_ENABLE_BURY]) {
+			$this->server->buryEntry($qe);
 			$this->log(LogLevel::WARNING, "failed, buried ({$exception_class})", $qe);
 		} else {
 			$this->server->deleteEntry($qe);
