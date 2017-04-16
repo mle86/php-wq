@@ -42,6 +42,14 @@ class WorkProcessor
 	}
 
 	/**
+	 * @return WorkServerAdapter
+	 *   Returns the WorkServerAdapter instance this WorkProcessor operates on.
+	 */
+	public function getWorkServerAdapter () : WorkServerAdapter {
+		return $this->server;
+	}
+
+	/**
 	 * Executes the next job in the Work Queue.
 	 *
 	 * If that results in a {@see \RuntimeException},
