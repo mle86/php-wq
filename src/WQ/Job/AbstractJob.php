@@ -87,7 +87,7 @@ abstract class AbstractJob
 	 * to be re-executed after {@see jobRetryDelay()} seconds;
 	 * if it returns false, the job will be buried for later inspection.
 	 */
-	public function jobCanRetry (): bool {
+	public function jobCanRetry () : bool {
 		return ($this->jobTryIndex() <= static::MAX_RETRY);
 	}
 
@@ -97,7 +97,7 @@ abstract class AbstractJob
 	 * If {@see jobCanRetry()} is true,
 	 * this must return a positive integer.
 	 */
-	public function jobRetryDelay (): ?int {
+	public function jobRetryDelay () : ?int {
 		return self::DEFAULT_RETRY_DELAY;
 	}
 
@@ -106,7 +106,7 @@ abstract class AbstractJob
 	 * on the first retry, this must return 2,
 	 * and so on.
 	 */
-	public function jobTryIndex (): int {
+	public function jobTryIndex () : int {
 		/* Before first serialization, _try_index is zero.
 		 * On every serialization, this value will be increased by 1.
 		 * Still, someone could call execute() on a never-serialized job
