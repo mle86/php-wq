@@ -61,10 +61,12 @@ class WorkProcessor
 	public function executeNextJob (string $workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
 		$qe = $this->server->getNextQueueEntry($workQueue, $timeout);
 		if (!$qe) {
+			$this->onNoJobAvailable($workQueue);
 			return null;
 		}
 
 		$this->log(LogLevel::INFO, "got job");
+		$this->onJobAvailable($qe);
 
 		$job = $qe->getJob();
 		$ret = null;
@@ -78,6 +80,7 @@ class WorkProcessor
 		}
 
 		// The job succeeded!
+		$this->onSuccessfulJob($qe, $ret);
 		$this->handleFinishedJob($qe);
 		return $ret;
 	}
@@ -93,12 +96,15 @@ class WorkProcessor
 		if ($do_retry) {
 			// re-queue:
 			$delay = $job->jobRetryDelay();
+			$this->onJobRequeue($qe, $e, $delay);
 			$this->server->requeueEntry($qe, $delay);
 			$this->log(LogLevel::NOTICE, "failed, re-queued with {$delay}s delay ({$exception_class})", $qe);
 		} elseif ($this->options[self::WP_ENABLE_BURY]) {
+			$this->onFailedJob($qe, $e);
 			$this->server->buryEntry($qe);
 			$this->log(LogLevel::WARNING, "failed, buried ({$exception_class})", $qe);
 		} else {
+			$this->onFailedJob($qe, $e);
 			$this->server->deleteEntry($qe);
 			$this->log(LogLevel::WARNING, "failed, deleted ({$exception_class})", $qe);
 		}
@@ -201,5 +207,73 @@ class WorkProcessor
 
 		$this->logger->log($logLevel, $prefix . $message);
 	}
+
+
+	/**
+	 * This method is called by {@see executeNextJob()}
+	 * if there is currently no job to be executed in the work queue.
+	 *
+	 * This is a hook method for sub-classes.
+	 *
+	 * @param string $workQueue  The work queue that was polled.
+	 * @return void
+	 */
+	protected function onNoJobAvailable (string $workQueue) { }
+
+	/**
+	 * This method is called if there is a job ready to be executed,
+	 * right before {@see executeNextJob()} actually executes it.
+	 *
+	 * This is a hook method for sub-classes.
+	 *
+	 * @param QueueEntry $qe  The unserialized job.
+	 * @return void
+	 */
+	protected function onJobAvailable (QueueEntry $qe) { }
+
+	/**
+	 * This method is called after a job has been successfully executed,
+	 * right before {@see executeNextJob()} deletes it from the work queue.
+	 *
+	 * This is a hook method for sub-classes.
+	 *
+	 * @param QueueEntry $qe  The executed job.
+	 * @param mixed $ret  The {@see Job::execute()} method's return value.
+	 * @return void
+	 */
+	protected function onSuccessfulJob (QueueEntry $qe, $ret) { }
+
+	/**
+	 * This method is called after a job that can be re-tried at least one more time
+	 * has failed (thrown an exception),
+	 * right before {@see executeNextJob()} re-queues it
+	 * and re-throws the exception.
+	 *
+	 * (If the failed job can _not_ be re-queued, {@see onFailedJob()} is called instead.)
+	 *
+	 * This is a hook method for sub-classes.
+	 *
+	 * @param QueueEntry $qe  The failed job.
+	 * @param \Throwable $t  The exception that was thrown by the job.
+	 * @param int $delay  The delay before the next retry, in seconds.
+	 * @return void
+	 */
+	protected function onJobRequeue (QueueEntry $qe, \Throwable $t, int $delay) { }
+
+	/**
+	 * This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
+	 * right before {@see executeNextJob()} buries/deletes it
+	 * and re-throws the exception.
+	 *
+	 * (If the failed job can be re-tried at least one more time,
+	 *  {@see onJobRequeue()} will be called instead.)
+	 *
+	 * This is a hook method for sub-classes.
+	 *
+	 * @param QueueEntry $qe  The job that could not be {@see Job::execute()}d correctly.
+	 * @param \Throwable $e  The exception that was thrown by the job.
+	 * @return void
+	 */
+	protected function onFailedJob (QueueEntry $qe, \Throwable $e) { }
 
 }

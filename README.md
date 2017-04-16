@@ -406,6 +406,34 @@ Option keys:
      as all jobs in the queue will be executed over and over.
      Probably not what you want.)
 
+Hook methods:
+
+Usually, tasks like logging or stats collection should be done in the custom worker script.
+If multiple worker scripts share the same logging/stats code,
+it can be put into these hook functions instead
+by extending the `WorkProcessor` class.  
+All of these hook methods are called by the `executeNextJob()`.
+In the provided base class, they are empty.
+Their return value is ignored.
+
+* `protected function` **`onNoJobAvailable`** `(string $workQueue)`  
+    This method is called if there is currently no job to be executed in the work queue.
+* `protected function` **`onJobAvailable`** `(QueueEntry $qe)`  
+    This method is called if there is a job ready to be executed,
+    right before it is actually executed.
+* `protected function` **`onSuccessfulJob`** `(QueueEntry $qe, $returnValue)`  
+    This method is called after a job has been successfully executed,
+    right before it is deleted from the work queue.
+* `protected function` **`onJobRequeue`** `(QueueEntry $qe, \Throwable $e, int $delay)`  
+    This method is called after a job that can be re-tried at least one more time
+    has failed (thrown an exception),
+    right before `executeNextJob()` re-queues it
+    and re-throws the exception.
+* `protected function` **`onFailedJob`** `(QueueEntry $qe, \Throwable $e)`  
+    This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
+    right before `executeNextJob()` buries/deletes it
+    and re-throws the exception.
+
 
 ## `WorkServerAdapter` interface
 
