@@ -6,9 +6,20 @@ into a work queue
 such as Beanstalkd or Redis
 to execute them at a later time.
 
-Related packages are
-[mle86/wq-beanstalkd](https://packagist.org/packages/mle86/wq-beanstalkd) (Beanstalkd server adapter) and
-[mle86/wq-redis](https://packagist.org/packages/mle86/wq-redis) (Redis server adapter).
+# Installation
+
+```
+$ composer require mle86/wq
+```
+
+You'll also want to install at least one other package
+which contains a `WorkServerAdapter` implementation,
+such as:
+
+* [mle86/wq-beanstalkd](https://github.com/mle86/php-wq-beanstalkd)
+    (Beanstalkd server adapter),
+* [mle86/wq-redis](https://github.com/mle86/php-wq-redis)
+    (Redis server adapter).
 
 
 # Basic Concepts
@@ -167,7 +178,7 @@ So what happens if `Job::execute()` throws an Exception?
    It will throw an `UnserializationException`.)
 
 
-## Minimal example:
+# Minimal example
 
 This is our Job implementation.
 It represents an e-mail that can be sent.
@@ -386,6 +397,7 @@ but will also try to re-queue it if it fails.
 * `public function` **`setOptions`** `(array $options)`  
     Sets one or more of the configuration options.
 
+
 Option keys:
 
 * `const` **`WP_ENABLE_RETRY`**  
@@ -408,6 +420,7 @@ Option keys:
      resulting in an infinite loop
      as all jobs in the queue will be executed over and over.
      Probably not what you want.)
+
 
 Hook methods:
 
@@ -514,5 +527,4 @@ in case of Redis, Work Queues are Lists.
     - invalid serialization
     - non-object
     - object, but not a Job implementation
-
 
