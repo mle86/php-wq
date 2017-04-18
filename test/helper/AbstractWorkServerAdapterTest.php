@@ -127,6 +127,18 @@ abstract class AbstractWorkServerAdapterTest
 	 * @param int $job_marker
 	 * @param WorkServerAdapter $ws
 	 */
+	public function testQueuesEmpty (string $queue_name, int $job_marker, WorkServerAdapter $ws) {
+		$this->checkWQEmpty($ws, $queue_name);
+	}
+
+	/**
+	 * @dataProvider jobData
+	 * @depends      testGetServerInstance
+	 * @depends      testQueuesEmpty
+	 * @param string $queue_name
+	 * @param int $job_marker
+	 * @param WorkServerAdapter $ws
+	 */
 	public function testQueueJobs (string $queue_name, int $job_marker, WorkServerAdapter $ws) {
 		$j = new SimpleJob ($job_marker);
 
