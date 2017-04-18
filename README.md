@@ -1,10 +1,14 @@
-# php-wq
+# WQ  (`mle86/wq`)
 
 This package provides an easy way
 to put PHP tasks of any kind
 into a work queue
 such as Beanstalkd or Redis
 to execute them at a later time.
+
+Related packages are
+[mle86/wq-beanstalkd](https://packagist.org/packages/mle86/wq-beanstalkd) (Beanstalkd server adapter) and
+[mle86/wq-redis](https://packagist.org/packages/mle86/wq-redis) (Redis server adapter).
 
 
 # Basic Concepts
@@ -107,8 +111,7 @@ and puts in into the “`mail`” work queue
 of the local Beanstalkd work server.
 
 (`BeanstalkdWorkServer` is an implementation of the `WorkServerAdapter` interface.
- It and `RedisWorkServer` are included in this package;
- more adapters are provided in other packages.)
+ It is provided in the [mle86/wq-beanstalkd](https://packagist.org/packages/mle86/wq-beanstalkd) package.)
 
 Alright, the job is now in the work queue.
 What next?
