@@ -65,15 +65,7 @@ abstract class AbstractWorkServerAdapterTest
 
 	protected static $ws_classname = null;
 	final protected function getWSClass () {
-		if (static::$ws_classname === null) {
-			$ws = $this->getWorkServerAdapter();
-			$name = get_class($ws);
-			$p = strrpos($name, '\\');
-			if ($p !== false) {
-				$name = substr($name, $p + 1);
-			}
-			static::$ws_classname = $name;
-		}
+		// set by testGetServerInstance()
 		return static::$ws_classname;
 	}
 
@@ -117,7 +109,19 @@ abstract class AbstractWorkServerAdapterTest
 	 * @return WorkServerAdapter
 	 */
 	final public function testGetServerInstance () : WorkServerAdapter {
-		return $this->getWorkServerAdapter();
+		$ws = $this->getWorkServerAdapter();
+
+		// Stores class name for better error messages.
+		// Use getWSClass() to retrieve it
+		$name = get_class($ws);
+		$p = strrpos($name, '\\');
+		if ($p !== false) {
+			// remove namespace prefix
+			$name = substr($name, $p + 1);
+		}
+		static::$ws_classname = $name;
+
+		return $ws;
 	}
 
 	/**
