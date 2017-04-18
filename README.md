@@ -518,8 +518,7 @@ in case of Redis, Work Queues are Lists.
 ## Exception classes
 
 * `interface mle86\WQ\Exception\`**`WQException`**  
-    All WQ Exceptions implement this interface.  
-    Empty.
+    All WQ Exceptions implement this empty interface.
 
 * `class mle86\WQ\Exception\`**`OptionValueException`** `extends \InvalidArgumentException`  
     Thrown by `WorkProcessor::setOption` and `WorkProcessor::setOptions`
