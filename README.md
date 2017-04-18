@@ -432,7 +432,7 @@ Usually, tasks like logging or stats collection should be done in the custom wor
 If multiple worker scripts share the same logging/stats code,
 it can be put into these hook functions instead
 by extending the `WorkProcessor` class.  
-All of these hook methods are called by the `executeNextJob()`.
+All of these hook methods are called by the `executeNextJob()` method.
 In the provided base class, they are empty.
 Their return value is ignored.
 
@@ -478,7 +478,7 @@ in case of Redis, Work Queues are Lists.
     This is probably not the method you want,
     because it will not try to execute the job
     and it won't handle any job exceptions either.
-    `WorkProcessor::executeNextJob()` instead.
+    Use `WorkProcessor::executeNextJob()` instead.
     Return `null` if no job was available after waiting for `$timeout` seconds.
     * `$workQueue`: The name of the Work Queue to poll.
     * `$timeout`: How many seconds to wait for a job to arrive, if none is available immediately.
