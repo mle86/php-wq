@@ -57,6 +57,7 @@ class WorkProcessorTest
 
 	/**
 	 * @depends testInsertOneSimpleJob
+	 * @param LoggingWorkProcessor $wp
 	 */
 	public function testExecuteOneSimpleJob (LoggingWorkProcessor $wp) {
 		// Now there is one ready job. It should be executed right away:
