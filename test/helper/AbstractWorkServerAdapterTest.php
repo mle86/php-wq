@@ -56,10 +56,14 @@ abstract class AbstractWorkServerAdapterTest
 			"This test script needs to be run inside a Docker container!");
 	}
 
-	final protected function checkWQEmpty (WorkServerAdapter $ws, $queues) {
+	final protected function checkWQEmpty (WorkServerAdapter $ws, $queues, string $message = '') {
+		if ($message !== '') {
+			$message = " ({$message})";
+		}
+
 		foreach ((array)$queues as $queue) {
 			$this->assertNull($ws->getNextQueueEntry($queue, $ws::NOBLOCK),
-				"Work queue '{$queue}' should have been empty!");
+				"Work queue '{$queue}' should have been empty!" . $message);
 		}
 	}
 
@@ -376,6 +380,11 @@ abstract class AbstractWorkServerAdapterTest
 		// take it out again:
 		/** @var Job|SimpleJob $job */
 		$qe = $ws->getNextQueueEntry($queue, 1);
+		$this->assertNotNull($qe,
+			"Re-queued job could not be retrieved with getNextQueueEntry()!");
+		$this->checkWQEmpty($ws, $queue,
+			"Re-queued job did not disappear from wq after successful getNextQueueEntry()!");
+
 		$job = $qe->getJob();
 		$this->assertSame($j->getMarker(), $job->getMarker());
 		$this->assertEquals(2, $job->jobTryIndex(),
