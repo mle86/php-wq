@@ -137,6 +137,8 @@ abstract class AbstractWorkServerAdapterTest
 	 */
 	public function testQueuesEmpty (string $queue_name, int $job_marker, WorkServerAdapter $ws) {
 		$this->checkWQEmpty($ws, $queue_name);
+
+		unset($job_marker);  // suppress "unused" warning
 	}
 
 	/**
