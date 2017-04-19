@@ -60,16 +60,16 @@ class WorkProcessor
 	 * no re-queueing will be attempted;
 	 * the job will be buried immediately.
 	 *
-	 * @param string $workQueue  See {@see WorkServerAdapter::getNextJob()}.
-	 * @param int $timeout       See {@see WorkServerAdapter::getNextJob()}.
+	 * @param string|string[] $workQueue  See {@see WorkServerAdapter::getNextJob()}.
+	 * @param int $timeout                See {@see WorkServerAdapter::getNextJob()}.
 	 * @throws \Throwable  Will pass on any Exceptions/Throwables from the {@see Job} class.
 	 * @return mixed|null Returns the {@see Job::execute()}'s return value on success (which might be NULL).
 	 *                    Returns NULL if there was no job in the work queue to be executed.
 	 */
-	public function executeNextJob (string $workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
+	public function executeNextJob ($workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
 		$qe = $this->server->getNextQueueEntry($workQueue, $timeout);
 		if (!$qe) {
-			$this->onNoJobAvailable($workQueue);
+			$this->onNoJobAvailable((array)$workQueue);
 			return null;
 		}
 
@@ -223,10 +223,10 @@ class WorkProcessor
 	 *
 	 * This is a hook method for sub-classes.
 	 *
-	 * @param string $workQueue  The work queue that was polled.
+	 * @param string[] $workQueues  The work queues that were polled.
 	 * @return void
 	 */
-	protected function onNoJobAvailable (string $workQueue) { }
+	protected function onNoJobAvailable (array $workQueues) { }
 
 	/**
 	 * This method is called if there is a job ready to be executed,

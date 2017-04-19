@@ -30,32 +30,41 @@ class MemoryWorkServer
 	protected static $index = 0;
 
 
-	public function getNextQueueEntry (string $workQueue, int $timeout = self::DEFAULT_TIMEOUT) : ?QueueEntry {
-		if (empty($this->storage[$workQueue])) {
+	public function getNextQueueEntry ($workQueues, int $timeout = self::DEFAULT_TIMEOUT) : ?QueueEntry {
+		$all_empty = true;
+		foreach ((array)$workQueues as $workQueue) {
+			if (!empty($this->storage[$workQueue])) {
+				$all_empty = false;
+				break;
+			}
+		}
+		if ($all_empty) {
 			if ($timeout > 0) {
 				sleep($timeout);
 			}
 			return null;
 		}
 
-		foreach ($this->storage[$workQueue] as $idx => $jobInfo) {
-			$activeTimestamp = $jobInfo[0];
-			$jobData         = $jobInfo[1];
+		foreach ((array)$workQueues as $workQueue) {
+			foreach ($this->storage[$workQueue] as $idx => $jobInfo) {
+				$activeTimestamp = $jobInfo[0];
+				$jobData         = $jobInfo[1];
 
-			if ($activeTimestamp <= time()) {
-				// reserve and return:
-				$activeTimestamp += self::RESERVE_SECONDS;
-				$this->storage[$workQueue][$idx][0] = $activeTimestamp;
+				if ($activeTimestamp <= time()) {
+					// reserve and return:
+					$activeTimestamp += self::RESERVE_SECONDS;
+					$this->storage[$workQueue][$idx][0] = $activeTimestamp;
 
-				return QueueEntry::fromSerializedJob($jobData, $workQueue, $idx, $idx);
-			} else {
-				// this job is delayed, skip
+					return QueueEntry::fromSerializedJob($jobData, $workQueue, $idx, $idx);
+				} else {
+					// this job is delayed, skip
+				}
 			}
 		}
 
 		if ($timeout > 0) {
 			sleep(1);
-			return $this->getNextQueueEntry($workQueue, $timeout - 1);
+			return $this->getNextQueueEntry($workQueues, $timeout - 1);
 		}
 
 		return null;

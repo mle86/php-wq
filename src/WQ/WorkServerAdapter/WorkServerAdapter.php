@@ -31,14 +31,16 @@ interface WorkServerAdapter
 	 * and it won't handle any job exceptions either.
 	 * See {@see WorkProcessor::executeNextJob()} instead.
 	 *
-	 * @param string $workQueue The name of the Work Queue to poll.
-	 * @param int    $timeout How many seconds to wait for a job to arrive, if none is available immediately.
+	 * @param string|string[] $workQueue The name or names of the Work Queue(s) to poll.
+	 *                                   If it's an array of Work Queue names,
+	 *                                   the first job in any of these Work Queues will be returned.
+	 * @param int             $timeout   How many seconds to wait for a job to arrive, if none is available immediately.
 	 *                        Set this to NOBLOCK if the method should return immediately.
 	 *                        Set this to FOREVER if the call should block until a job becomes available, no matter how long it takes.
-	 * @return QueueEntry  Returns the next job in the work queue,
+	 * @return QueueEntry  Returns the next job in the work queue(s),
 	 *                     or NULL if no job was available after waiting for $timeout seconds.
 	 */
-	public function getNextQueueEntry (string $workQueue, int $timeout = self::DEFAULT_TIMEOUT) : ?QueueEntry;
+	public function getNextQueueEntry ($workQueue, int $timeout = self::DEFAULT_TIMEOUT) : ?QueueEntry;
 
 	/**
 	 * Stores a job in the work queue for later processing.

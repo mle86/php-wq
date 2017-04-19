@@ -12,8 +12,8 @@ class LoggingWorkProcessor
 	public $log = [];
 
 
-	protected function onNoJobAvailable (string $workQueue) {
-		$this->log[] = ["NOJOBS", $workQueue];
+	protected function onNoJobAvailable (array $workQueues) {
+		$this->log[] = ["NOJOBS", join("|", $workQueues)];
 	}
 
 	protected function onJobAvailable (QueueEntry $qe) {
