@@ -320,6 +320,8 @@ abstract class AbstractWorkServerAdapterTest
 			"getNextQueueEntry(timeout=1) did not return our Job which had a 1s delay!");
 		$this->assertInstanceOf(Job::class, $qe->getJob(),
 			"Delayed job is not actually a Job object!");
+		$this->assertSame($queue, $qe->getWorkQueue(),
+			"Delayed job could be retrieved, but has incorrect origin reference!");
 
 		/** @var Job|SimpleJob $job */
 		$job = $qe->getJob();
@@ -353,6 +355,8 @@ abstract class AbstractWorkServerAdapterTest
 		$this->assertSame($j->getMarker(), $job->getMarker());
 		$this->assertEquals(1, $job->jobTryIndex(),
 			"Dequeued job has wrong try index!");
+		$this->assertSame($queue, $qe->getWorkQueue(),
+			"Dequeued job has incorrect origin reference!");
 
 		// requeue it:
 		$ws->requeueEntry($qe, $requeued_delay);
@@ -375,6 +379,8 @@ abstract class AbstractWorkServerAdapterTest
 		$this->assertSame($j->getMarker(), $job->getMarker());
 		$this->assertEquals(2, $job->jobTryIndex(),
 			"Dequeued job (was re-queued once) has wrong try index!");
+		$this->assertSame($queue, $qe->getWorkQueue(),
+			"Dequeued job (was re-queued once) has incorrect origin reference!");
 
 		$ws->deleteEntry($qe);
 	}
@@ -410,7 +416,11 @@ abstract class AbstractWorkServerAdapterTest
 				$ws->deleteEntry($qe);
 			}
 		};
-		$fn_check = function (array $poll_queues, int $n_expected = 1) use($ws, $job) {
+		$fn_check = function (array $poll_queues, int $n_expected = 1, $check_origins = null) use($ws, $job) {
+			if (is_string($check_origins)) {
+				$check_origins = [$check_origins];
+			}
+
 			$qes = [];
 			$n = 0;
 			while ($n < $n_expected) {
@@ -421,6 +431,12 @@ abstract class AbstractWorkServerAdapterTest
 					"Retrieved wrong from by polling multiple queues!? ({$n}/{$n_expected})");
 				$qes[] = $ret;
 				$n++;
+
+				if (isset($check_origins)) {
+					$this->assertContains($ret->getWorkQueue(), $check_origins,
+						"Job's origin reference (qe->getWorkQueue) is not in the list of expected origin queues!");
+					$check_origins = array_delete_one($check_origins, $ret->getWorkQueue());
+				}
 			}
 
 			$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK,
@@ -458,7 +474,7 @@ abstract class AbstractWorkServerAdapterTest
 		$fn_clear();
 
 		$fn_store();
-		$fn_check(["multiX5", "multi5", "multiX3", "multi1"], 1);
+		$fn_check(["multiX5", "multi5", "multiX3", "multi1"], 1, "multi1");
 		$fn_clear();
 
 
@@ -468,17 +484,17 @@ abstract class AbstractWorkServerAdapterTest
 		
 		$fn_store("mq1");
 		$fn_store("mq1");
-		$fn_check(["mq1", "mq1"], 2);
+		$fn_check(["mq1", "mq1"], 2, ["mq1", "mq1"]);
 		$fn_clear("mq1");
 		
 		$fn_store("mq1");
 		$fn_store("mq1");
-		$fn_check(["mq1", "mqX9"], 2);
+		$fn_check(["mq1", "mqX9"], 2, ["mq1", "mq1"]);
 		$fn_clear("mq1");
 
 		$fn_store("mq1");
 		$fn_store("mq2");
-		$fn_check(["mqX6", "mq1", "mqX7", "mq2", "mqX8"], 2);
+		$fn_check(["mqX6", "mq1", "mqX7", "mq2", "mqX8"], 2, ["mq1", "mq2"]);
 		$fn_clear("mq1");
 		$fn_clear("mq2");
 	}	

@@ -9,3 +9,12 @@ function wait_for_subsecond (float $required_remaining_subsecond = 0.3) {
 	}
 }
 
+function array_delete_one (array $input, $value_to_delete, bool $strict = true) {
+	foreach ($input as $idx => $value) {
+		if ($value === $value_to_delete || (!$strict && $value == $value_to_delete)) {
+			unset($input[$idx]);
+			break;  // only delete one
+		}
+	}
+	return $input;
+}
