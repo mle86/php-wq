@@ -524,5 +524,37 @@ abstract class AbstractWorkServerAdapterTest
 		$ws->deleteEntry($qe2);
 	}
 
+	/**
+	 * LAST TEST METHOD!
+	 *
+	 * @depends testGetServerInstance
+	 * @depends testRequeueJob
+	 * @depends testPollMultipleQueues
+	 * @depends testExecuteAndDeleteJobs
+	 * @see additionalTests
+	 */
+	final public function testSpecificImplementation (WorkServerAdapter $ws) {
+		$this->additionalTests($ws);
+	}
+
+	/**
+	 * PHPUnit does not deal well with test method overrides.
+	 * Also, class methods usually have priority over inherited methods,
+	 * so custom test methods would always run _before_ these inherited standard test methods,
+	 * making proper test dependencies hard to maintain.
+	 *
+	 * Instead, put all you implementation-specific additional tests
+	 * into this method --
+	 * it will be called last.
+	 *
+	 * This default implementation is empty.
+	 *
+	 * @param WorkServerAdapter $ws
+	 * @see testSpecificImplementation  last-called test method, calls this method in turn
+	 * @return void
+	 */
+	public function additionalTests (WorkServerAdapter $ws) {
+	}
+
 }
 
