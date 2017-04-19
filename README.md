@@ -238,7 +238,7 @@ use mle86\WQ\WorkProcessor;
 $queue = "mail";
 printf("%s worker %d starting.\n", $queue, getmypid());
 
-$processor = new WorkProcessor( BeanstalkdWorkServer::connect("localhost") );
+$processor = new WorkProcessor (BeanstalkdWorkServer::connect("localhost"));
 
 while (true) {
     try {
@@ -254,10 +254,10 @@ while (true) {
 
 ## `Job` interface
 
-`interface mle86\WQ\Job\`**`Job`**
+(<code>interface mle86\WQ\Job\\<b>Job</b></code>)
 
 A Job is a representation of some task to do.
-It can be `execute`d immediately,
+It can be `execute`'d immediately,
 or it can be stored in a Work Queue for later processing.
 
 This interface extends [`\Serializable`](https://secure.php.net/manual/en/class.serializable.php),
@@ -269,26 +269,26 @@ see the `AbstractJob` base class instead;
 it implements many of these functions already
 and is easier to work with.
 
-* `public function` **`execute`** `()`  
+* <code>public function <b>execute</b> ()</code>  
     This method should implement the job's functionality.  
     `WorkProcessor::executeNextJob()` will call this and return its return value.
     If it throws some Exception, it will bury the job;
     if it was a RuntimeException and `jobCanRetry` returns true,
     it will re-queue the job with a `jobRetryDelay`.
 
-* `public function` **`jobCanRetry`** `() : bool`  
+* <code>public function <b>jobCanRetry</b> () : bool</code>  
     Whether this job can be retried later.
     The `WorkServerAdapter` implementation will check this if `execute()` has failed.  
     If it returns true, the job will be stored in the Work Queue again
     to be re-executed after `jobRetryDelay()` seconds;
     if it returns false, the job will be buried for later inspection.
 
-* `public function` **`jobRetryDelay`** `() : ?int`  
+* <code>public function <b>jobRetryDelay</b> () : ?int</code>  
     How many seconds the job should be delayed in the Work Quere before being re-tried.
     If `jobCanRetry()` is true,
     this must return a positive integer.
 
-* `public function` **`jobTryIndex`** `() : int`  
+* <code>public function <b>jobTryIndex</b> () : int</code>  
     On the first try, this must return `1`,
     on the first retry, this must return `2`,
     and so on.
@@ -296,7 +296,7 @@ and is easier to work with.
 
 ## `AbstractJob` base class
 
-`abstract class mle86\WQ\Job\`**`AbstractJob`** `implements Job`
+(<code>abstract class mle86\WQ\Job\\<b>AbstractJob</b> implements Job</code>)
 
 To build a working Job class,
 simply extend this class
@@ -312,26 +312,26 @@ to do something.
 
 It implements the `Job` interface (partially).
 
-* `abstract public function` **`execute`** `()`  
+* <code>abstract public function <b>execute</b> ()</code>  
     See `Job::execute()`.
 
-* `const int` **`MAX_RETRY`** `= 0`  
+* <code>const int <b>MAX_RETRY</b> = 0</code>  
     How often a job of this type can be retried if it fails.
     Override this as necessary in subclasses.
     Zero or negative values mean that this job can only be tried once, never re-tried.
 
-* `public function` **`jobRetryDelay`** `(): ?int { … }`  
+* <code>public function <b>jobRetryDelay</b> (): ?int { … }</code>  
     See `Job::jobRetryDelay()`.
     This default implementation
     always returns 10 minutes.
 
-* `public function` **`jobTryIndex`** `(): int { … }`  
+* <code>public function <b>jobTryIndex</b> (): int { … }</code>  
     See `Job::jobTryIndex()`.
     This default implementation
     always returns the `$_try_index` value
     or `1`, whichever is greater.
 
-* `protected` **`$_try_index`** `= 0`  
+* <code>protected <b>$_try_index</b> = 0</code>  
     The current try index.  
     The default `serialize()` implementation
     will increase this by 1 before serializing it,
@@ -341,18 +341,18 @@ It implements the `Job` interface (partially).
     This should not be accessed directly,
     except for a custom `serialize()` override.
 
-* `public function` **`serialize`** `() { … }`  
+* <code>public function <b>serialize</b> () { … }</code>  
     This default implementation stores all public and protected properties.
     Override this method if that's not enough or if you want to do some additional pre-serialization processing,
     but don't forget to include `$_try_index + 1` in the serialization!
 
-* `public function` **`unserialize`** `(string $serialized) { … }`  
+* <code>public function <b>unserialize</b> (string $serialized) { … }</code>  
     This default implementation simply writes all serialized values
     to their corresponding object property.
     That includes the `$_try_index` counter.
     Private and/or static properties will never be written.
 
-* `public function` **`jobCanRetry`** `(): bool { … }`  
+* <code>public function <b>jobCanRetry</b> (): bool { … }</code>  
     See `Job::jobCanRetry()`.
     This default implementation
     always returns `true`
@@ -361,7 +361,7 @@ It implements the `Job` interface (partially).
 
 ## `WorkProcessor` class
 
-`class mle86\WQ\`**`WorkProcessor`**
+(<code>class mle86\WQ\\<b>WorkProcessor</b></code>)
 
 This class implements a wrapper around
 `WorkServerAdapter::getNextJob()`
@@ -369,7 +369,7 @@ called `executeNextJob()`
 that does not only execute the next job immediately
 but will also try to re-queue it if it fails.
 
-* `public function` **`__construct`** `(WorkServerAdapter $workServer, LoggerInterface $logger = null, array $options = [])`  
+* <code>public function <b>__construct</b> (WorkServerAdapter $workServer, LoggerInterface $logger = null, array $options = [])</code>  
     Instantiates a new WorkProcessor.
     This causes no side effects yet.
     * `$workServer`: The work server adapter to work with.
@@ -378,7 +378,7 @@ but will also try to re-queue it if it fails.
     * `$options`: Options to set, overriding the default options.
       Works the same as a `setOptions()` call right after instantiation.
 
-* `public function` **`executeNextJob`** `($workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed`  
+* <code>public function <b>executeNextJob</b> ($workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed</code>  
     Executes the next job in the Work Queue.  
     If that results in a `\RuntimeException`,
     the method will try to re-queue the job
@@ -392,29 +392,29 @@ but will also try to re-queue it if it fails.
     * `$workQueue`: See `WorkServerAdapter::getNextJob()`.
     * `$timeout`: See `WorkServerAdapter::getNextJob()`.
 
-* `public function` **`setOption`** `(int $option, $value)`  
+* <code>public function <b>setOption</b> (int $option, $value)</code>  
     Sets one of the configuration options.
     * `$option`: One of the `WP_` constants.
     * `$value`: The option's new value. The required type depends on the option.
 
-* `public function` **`setOptions`** `(array $options)`  
+* <code>public function <b>setOptions</b> (array $options)</code>  
     Sets one or more of the configuration options.
 
 
 Option keys:
 
-* `const` **`WP_ENABLE_RETRY`**  
+* <code>const <b>WP_ENABLE_RETRY</b></code>  
     If this option is `true` (default),
     failed jobs will be re-queued (if their `Job::jobCanRetry()` return value says so).  
     This option can be used to disable retries for all jobs if set to `false`;
     jobs will then be handled as if their `Job::jobCanRetry` methods always returned `false`,
     i.e. they'll be buried or deleted (depending on the `WS_ENABLE_BURY` option).
-* `const` **`WP_ENABLE_BURY`**  
+* <code>const <b>WP_ENABLE_BURY</b></code>  
     If this option is `true` (default),
     permanently failed jobs will be buried;
     if it is `false`,
     failed jobs will be deleted.
-* `const` **`WP_DELETE`**  
+* <code>const <b>WP_DELETE</b></code>  
     If this option is `true` (default),
     finished jobs will be deleted.
     Otherwise, its value is taken as a Work Queue name
@@ -435,20 +435,20 @@ All of these hook methods are called by the `executeNextJob()` method.
 In the provided base class, they are empty.
 Their return value is ignored.
 
-* `protected function` **`onNoJobAvailable`** `(array $workQueues)`  
+* <code>protected function <b>onNoJobAvailable</b> (array $workQueues)</code>  
     This method is called if there is currently no job to be executed in any of the polled work queues.
-* `protected function` **`onJobAvailable`** `(QueueEntry $qe)`  
+* <code>protected function <b>onJobAvailable</b> (QueueEntry $qe)</code>  
     This method is called if there is a job ready to be executed,
     right before it is actually executed.
-* `protected function` **`onSuccessfulJob`** `(QueueEntry $qe, $returnValue)`  
+* <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe, $returnValue)</code>  
     This method is called after a job has been successfully executed,
     right before it is deleted from the work queue.
-* `protected function` **`onJobRequeue`** `(QueueEntry $qe, \Throwable $e, int $delay)`  
+* <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay)</code>  
     This method is called after a job that can be re-tried at least one more time
     has failed (thrown an exception),
     right before `executeNextJob()` re-queues it
     and re-throws the exception.
-* `protected function` **`onFailedJob`** `(QueueEntry $qe, \Throwable $e)`  
+* <code>protected function <b>onFailedJob</b> (QueueEntry $qe, \Throwable $e)</code>  
     This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
     right before `executeNextJob()` buries/deletes it
     and re-throws the exception.
@@ -456,7 +456,7 @@ Their return value is ignored.
 
 ## `WorkServerAdapter` interface
 
-`interface mle86\WQ\WorkServerAdapter\`**`WorkServerAdapter`**
+(<code>interface mle86\WQ\WorkServerAdapter\\<b>WorkServerAdapter</b></code>)
 
 A Work Server stores jobs inside one or more Work Queues.
 
@@ -464,14 +464,14 @@ A Beanstalkd server or a Redis server might be such a Work Server.
 In case of Beanstalkd, Work Queues are Tubes;
 in case of Redis, Work Queues are Lists.
 
-* `const int` **`DEFAULT_TIMEOUT`** `= 5`  
+* <code>const int <b>DEFAULT_TIMEOUT</b> = 5</code>  
     The default timeout for `getNextQueueEntry()`, in seconds.
-* `const` **`NOBLOCK`**  
+* <code>const <b>NOBLOCK</b></code>  
     Causes `getNextQueueEntry()` to return immediately.
-* `const` **`FOREVER`**  
+* <code>const <b>FOREVER</b></code>  
     Causes `getNextQueueEntry()` to block indefinitely, until a job becomes available.
 
-* `public function` **`getNextQueueEntry`** `($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry`  
+* <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry</code>  
     This takes the next job from the named work queue(s)
     and returns it.  
     This is probably not the method you want,
@@ -485,20 +485,20 @@ in case of Redis, Work Queues are Lists.
       Set this to `NOBLOCK` if the method should return immediately.
       Set this to `FOREVER` if the call should block until a job becomes available, no matter how long it takes.
 
-* `public function` **`storeJob`** `(string $workQueue, Job $job, int $delay = 0)`  
+* <code>public function <b>storeJob</b> (string $workQueue, Job $job, int $delay = 0)</code>  
     Stores a job in the work queue for later processing.
     * `$workQueue`: The name of the Work Queue to store the job in.
     * `$job`: The job to store.
     * `$delay`:  The job delay in seconds after which it will become available to `getNextQueueEntry()`.
       Set to zero (default) for jobs which should be processed as soon as possible.
 
-* `public function` **`buryEntry`** `(QueueEntry $entry)`  
+* <code>public function <b>buryEntry</b> (QueueEntry $entry)</code>  
     Buries an existing job
     so that it won't be returned by `getNextQueueEntry()` again
     but is still present in the system for manual inspection.  
     This is what happens to failed jobs.
 
-* `public function` **`requeueEntry`** `(QueueEntry $entry, int $delay, string $workQueue = null)`  
+* <code>public function <b>requeueEntry</b> (QueueEntry $entry, int $delay, string $workQueue = null)</code>  
     Re-queues an existing job
     so that it can be returned by `getNextQueueEntry()`
     again at some later time.
@@ -510,21 +510,21 @@ in case of Redis, Work Queues are Lists.
     * `$workQueue`: By default, to job is re-queued into its original Work Queue.
       With this parameter, a different Work Queue can be chosen.
 
-* `public function` **`deleteEntry`** `(QueueEntry $entry)`  
+* <code>public function <b>deleteEntry</b> (QueueEntry $entry)</code>  
     Permanently deletes a job entry for its work queue.  
     This is what happens to finished jobs.
 
 
 ## Exception classes
 
-* `interface mle86\WQ\Exception\`**`WQException`**  
+* <code>interface mle86\WQ\Exception\\<b>WQException</b></code>  
     All WQ Exceptions implement this empty interface.
 
-* `class mle86\WQ\Exception\`**`OptionValueException`** `extends \InvalidArgumentException`  
+* <code>class mle86\WQ\Exception\\<b>OptionValueException</b> extends \InvalidArgumentException</code>  
     Thrown by `WorkProcessor::setOption` and `WorkProcessor::setOptions`
     in case of an invalid option value.
 
-* `class mle86\WQ\Exception\`**`UnserializationException`** `extends \UnexpectedValueException`  
+* <code>class mle86\WQ\Exception\\<b>UnserializationException</b> extends \UnexpectedValueException</code>  
     Thrown by `QueueEntry::fromSerializedJob()`
     in case of invalid job data:
     - invalid serialization
