@@ -141,6 +141,85 @@ class WorkProcessorTest
 		$this->expectEmptyWQ($wp, $expect_log, "third try, success");
 	}
 
+	/**
+	 * @depends testPollWithoutJobs
+	 */
+	public function testMultipleEmptyQueues () {
+		$wp = wp();
+
+		$queues = ["emptymq1", "emptymq1", "emptymq5"];
+
+		$ret = $wp->executeNextJob($queues, WorkServerAdapter::NOBLOCK);
+
+		$this->assertNull($ret,
+			"Polling multiple queues at once returned some result when they should all have been empty!");
+		$this->assertSame([["NOJOBS", join("|", $queues)]], $wp->log,
+			"Polling multiple empty WQs did not result in the correct hook call!");
+	}
+
+	/**
+	 * @depends testMultipleEmptyQueues
+	 * @depends testInsertOneSimpleJob
+	 */
+	public function testRetrieveJobFromMultipleQueues () {
+		$job = new SimpleJob (3355);
+
+		/** Returns a new LoggingWorkProcessor instance that contains one job in MULTI_QUEUES[0], nothing else. */
+		$fn_store = function () use($job) : LoggingWorkProcessor {
+			$wp = wp();
+			$wp->getWorkServerAdapter()->storeJob(
+				"mq1",
+				clone $job);
+			return $wp;
+		};
+
+		/** Checks that a number of queues to poll returns exactly the correct amount of queued jobs. */
+		$fn_check = function (LoggingWorkProcessor $wp, array $pollQueues, int $n_expected = 1) use($job) {
+			$expected_log = [];
+
+			for ($n = 0; $n < $n_expected; $n++) {
+				$ret = $wp->executeNextJob($pollQueues, WorkServerAdapter::NOBLOCK);
+
+				$expected_log[] = ["JOB", $job->getMarker()];
+				$expected_log[] = ["SUCCESS", $job->getMarker(), SimpleJob::EXECUTE_RETURN_VALUE];
+
+				$this->assertSame($expected_log, $wp->log,
+					"Could not execute a job in one of multiple queues! " .
+					"(There should have been {$n_expected} jobs, found only {$n})");
+
+				$this->assertSame(SimpleJob::EXECUTE_RETURN_VALUE, $ret,
+					"Return value of job in one of multiple queues was not correctly returned! " .
+					"(There should have been {$n_expected} jobs, found only {$n})");
+			}
+
+			$expected_log[] = ["NOJOBS", join("|", $pollQueues)];
+			$this->assertNull($wp->executeNextJob($pollQueues, WorkServerAdapter::NOBLOCK),
+				"Polling multiple queues after retrieving {$n_expected} jobs from them " .
+				"still returned something!");
+			$this->assertSame($expected_log, $wp->log,
+				"Polling multiple queues after retrieving {$n_expected} jobs from them " .
+				"did not clear all those queues!");
+			$expected_log[] = ["NOJOBS", join("|", $pollQueues)];
+			$this->assertNull($wp->executeNextJob($pollQueues, WorkServerAdapter::NOBLOCK),
+				"Polling multiple empty queues A SECOND TIME " .
+				"after retrieving {$n_expected} jobs from them " .
+				"still returned something!");
+			$this->assertSame($expected_log, $wp->log,
+				"Polling multiple empty queues A SECOND TIME " .
+				"after retrieving {$n_expected} jobs from them " .
+				"did not cause the correct hook calls!");
+		};
+
+		$fn_check($fn_store(), ["mq1"], 1);
+		$fn_check($fn_store(), ["mq2"], 0);
+		$fn_check($fn_store(), ["mq3"], 0);
+		$fn_check($fn_store(), ["mq1", "mq1"], 1);
+		$fn_check($fn_store(), ["mq2", "mq2"], 0);
+		$fn_check($fn_store(), ["mq3", "mq3", "mq3"], 0);
+		$fn_check($fn_store(), ["mq3", "mq1", "mq3", "mq3"], 1);
+		$fn_check($fn_store(), ["mq3", "mq1", "mq3", "mq1", "mq3"], 1);
+	}
+
 
 	private function expectSuccess (LoggingWorkProcessor $wp, int $marker, array &$expect_log) {
 		$ret = $wp->executeNextJob(self::QUEUE, WorkServerAdapter::NOBLOCK);
