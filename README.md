@@ -479,7 +479,7 @@ in case of Redis, Work Queues are Lists.
     because it will not try to execute the job
     and it won't handle any job exceptions either.
     Use `WorkProcessor::executeNextJob()` instead.
-    Return `null` if no job was available after waiting for `$timeout` seconds.
+    Returns `null` if no job was available after waiting for `$timeout` seconds.
     * `$workQueue`: The name of the Work Queue to poll.
     * `$timeout`: How many seconds to wait for a job to arrive, if none is available immediately.
       Set this to `NOBLOCK` if the method should return immediately.
