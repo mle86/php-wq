@@ -173,7 +173,14 @@ class WorkProcessorTest
 			return $wp;
 		};
 
-		/** Checks that a number of queues to poll returns exactly the correct amount of queued jobs. */
+		/**
+		 * Checks that a number of queues to poll
+		 * returns exactly the correct amount of queued jobs.
+		 *
+		 * @param LoggingWorkProcessor $wp
+		 * @param array $pollQueues
+		 * @param int $n_expected
+		 */
 		$fn_check = function (LoggingWorkProcessor $wp, array $pollQueues, int $n_expected = 1) use($job) {
 			$expected_log = [];
 

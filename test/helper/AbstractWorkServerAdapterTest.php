@@ -388,6 +388,7 @@ abstract class AbstractWorkServerAdapterTest
 	/**
 	 * @depends testGetServerInstance
 	 * @depends testQueuesEmpty
+	 * @param WorkServerAdapter $ws
 	 */
 	public function testMultipleEmptyQueues (WorkServerAdapter $ws) {
 		$queues = array_keys($this->jobQueueData());
@@ -404,6 +405,7 @@ abstract class AbstractWorkServerAdapterTest
 	/**
 	 * @depends testGetServerInstance
 	 * @depends testMultipleEmptyQueues
+	 * @param WorkServerAdapter $ws
 	 */
 	public function testPollMultipleQueues (WorkServerAdapter $ws) {
 		$job = new SimpleJob (4711);
@@ -497,11 +499,12 @@ abstract class AbstractWorkServerAdapterTest
 		$fn_check(["mqX6", "mq1", "mqX7", "mq2", "mqX8"], 2, ["mq1", "mq2"]);
 		$fn_clear("mq1");
 		$fn_clear("mq2");
-	}	
+	}
 
 	/**
 	 * @depends testGetServerInstance
 	 * @depends testStoredJobs
+	 * @param WorkServerAdapter $ws
 	 */
 	public function testQueueInterference (WorkServerAdapter $ws) {
 		$j1a = new SimpleJob (5011);
@@ -547,7 +550,8 @@ abstract class AbstractWorkServerAdapterTest
 	 * @depends testRequeueJob
 	 * @depends testPollMultipleQueues
 	 * @depends testExecuteAndDeleteJobs
-	 * @see additionalTests
+	 * @see     additionalTests
+	 * @param WorkServerAdapter $ws
 	 */
 	final public function testSpecificImplementation (WorkServerAdapter $ws) {
 		$this->additionalTests($ws);
