@@ -379,7 +379,7 @@ but will also try to re-queue it if it fails.
     * `$options`: Options to set, overriding the default options.
       Works the same as a `setOptions()` call right after instantiation.
 
-* `public function` **`executeNextJob`** `(string $workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed`  
+* `public function` **`executeNextJob`** `($workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed`  
     Executes the next job in the Work Queue.  
     If that results in a `\RuntimeException`,
     the method will try to re-queue the job
@@ -436,8 +436,8 @@ All of these hook methods are called by the `executeNextJob()` method.
 In the provided base class, they are empty.
 Their return value is ignored.
 
-* `protected function` **`onNoJobAvailable`** `(string $workQueue)`  
-    This method is called if there is currently no job to be executed in the work queue.
+* `protected function` **`onNoJobAvailable`** `(array $workQueues)`  
+    This method is called if there is currently no job to be executed in any of the polled work queues.
 * `protected function` **`onJobAvailable`** `(QueueEntry $qe)`  
     This method is called if there is a job ready to be executed,
     right before it is actually executed.
@@ -472,15 +472,16 @@ in case of Redis, Work Queues are Lists.
 * `const` **`FOREVER`**  
     Causes `getNextQueueEntry()` to block indefinitely, until a job becomes available.
 
-* `public function` **`getNextQueueEntry`** `(string $workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry`  
-    This takes the next job from the named work queue
+* `public function` **`getNextQueueEntry`** `($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry`  
+    This takes the next job from the named work queue(s)
     and returns it.  
     This is probably not the method you want,
     because it will not try to execute the job
     and it won't handle any job exceptions either.
     Use `WorkProcessor::executeNextJob()` instead.
     Returns `null` if no job was available after waiting for `$timeout` seconds.
-    * `$workQueue`: The name of the Work Queue to poll.
+    * `$workQueue`: The name of the Work Queue to poll (string) or an array of Work Queues to poll.
+      In the latter case, the first job in any of these Work Queues will be returned.
     * `$timeout`: How many seconds to wait for a job to arrive, if none is available immediately.
       Set this to `NOBLOCK` if the method should return immediately.
       Set this to `FOREVER` if the call should block until a job becomes available, no matter how long it takes.
