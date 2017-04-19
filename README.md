@@ -94,7 +94,7 @@ And that's it.
 (Obviously, that's an extremely simplified example for the sake of brevity;
  in a real-world application, one should definitely not use `mail()` anymore.)
 
-The `AbstractJob` class already implements the `Job` and the build-in `\Serializable` interfaces.
+The `AbstractJob` class already implements the `Job` and the built-in `\Serializable` interfaces.
 
 
 ## Execute or Queue
@@ -257,7 +257,7 @@ while (true) {
 
 `interface mle86\WQ\Job\`**`Job`**
 
-A Job is a representation of some task do to.
+A Job is a representation of some task to do.
 It can be `execute`d immediately,
 or it can be stored in a Work Queue for later processing.
 
