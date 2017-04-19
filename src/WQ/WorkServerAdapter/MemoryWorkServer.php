@@ -46,7 +46,7 @@ class MemoryWorkServer
 		}
 
 		foreach ((array)$workQueues as $workQueue) {
-			foreach ($this->storage[$workQueue] as $idx => $jobInfo) {
+			foreach (($this->storage[$workQueue] ?? []) as $idx => $jobInfo) {
 				$activeTimestamp = $jobInfo[0];
 				$jobData         = $jobInfo[1];
 
