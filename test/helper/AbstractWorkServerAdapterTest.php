@@ -250,24 +250,6 @@ abstract class AbstractWorkServerAdapterTest
 
 	/**
 	 * @depends testGetQueuedJobs
-	 * @depends testStoredJobs
-	 * @param array $queues
-	 */
-	public function testStoredJobsUniqueHandle (array $queues) {
-		$handles = [ ];
-
-		/** @var QueueEntry[] $qelist */
-		foreach ($queues as $qelist) {
-			foreach ($qelist as $qe) {
-				$this->assertNotContains($qe->getHandle(), $handles,
-					"The stored QueueEntries' handles are not unique!");
-				$handles[] = $qe->getHandle();
-			}
-		}
-	}
-
-	/**
-	 * @depends testGetQueuedJobs
 	 * @depends testGetServerInstance
 	 * @depends testStoredJobs
 	 * @param array $queues
