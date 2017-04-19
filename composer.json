@@ -1,7 +1,7 @@
 {
 	"name": "mle86/wq",
 	"type": "library",
-	"description": "A simple framework for work-queue and job handling.",
+	"description": "A simple library for work-queue and job handling.",
 	"license": "MIT",
 
 	"authors": [ {
