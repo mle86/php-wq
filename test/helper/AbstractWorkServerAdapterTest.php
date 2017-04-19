@@ -393,5 +393,103 @@ abstract class AbstractWorkServerAdapterTest
 			"Dequeued job (was re-queued once) has wrong try index!");
 	}
 
+	/**
+	 * @depends testGetServerInstance
+	 * @depends testQueuesEmpty
+	 */
+	public function testMultipleEmptyQueues (WorkServerAdapter $ws) {
+		$queues = array_keys($this->jobQueueData());
+
+		// this checks the queues one at a time
+		$this->checkWQEmpty($ws, $queues);
+
+		// now poll them all at once:
+		$this->assertNull($ws->getNextQueueEntry($queues, $ws::NOBLOCK),
+			"Polling multiple empty queues one at a time worked correctly, " .
+			"but polling them all at once returned something?!");
+	}
+
+	/**
+	 * @depends testGetServerInstance
+	 * @depends testMultipleEmptyQueues
+	 */
+	public function testPollMultipleQueues (WorkServerAdapter $ws) {
+		$job = new SimpleJob (4711);
+
+		$fn_store = function (string $into_queue = "multi1", Job $store_job = null) use($ws, $job) {
+			$ws->storeJob($into_queue, clone $job);
+		};
+		$fn_clear = function (string $from_queue = "multi1") use($ws) {
+			while ($ws->getNextQueueEntry($from_queue, $ws::NOBLOCK)) {
+				// nop
+			}
+		};
+		$fn_check = function (array $poll_queues, int $n_expected = 1) use($ws, $job) {
+			$n = 0;
+			while ($n < $n_expected) {
+				$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK);
+				$this->assertInstanceOf(QueueEntry::class, $ret,
+					"Could not retrieve job by polling multiple queues! ({$n}/{$n_expected})");
+				$this->assertSame($job->getMarker(), $ret->getJob()->getMarker(),
+					"Retrieved wrong from by polling multiple queues!? ({$n}/{$n_expected})");
+				$n++;
+			}
+
+			$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK,
+				"Polling multiple empty queues returned something!");
+			$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK,
+				"Polling multiple empty queues A SECOND TIME returned something!?");
+		};
+
+		$fn_store();
+		$fn_check(["multiX9", "multiX9"], 0);
+		$fn_clear();
+
+		$fn_store();
+		$fn_check(["multi1", "multi1"], 1);
+		$fn_clear();
+
+		$fn_store();
+		$fn_check(["multi1", "multiX3"], 1);
+		$fn_clear();
+
+		$fn_store();
+		$fn_check(["multiX3", "multi1"], 1);
+		$fn_clear();
+
+		$fn_store();
+		$fn_check(["multiX3", "multi1"], 1);
+		$fn_clear();
+
+		$fn_store();
+		$fn_check(["multi1", "multiX4", "multi1", "multiX4"], 1);
+		$fn_clear();
+
+		$fn_store();
+		$fn_check(["multiX5", "multi5", "multiX3", "multi1"], 1);
+		$fn_clear();
+
+
+		// Special cases:
+		// What if there's really multiple identical jobs in one or more queues,
+		// and we poll them at once?
+		
+		$fn_store("mq1");
+		$fn_store("mq1");
+		$fn_check(["mq1", "mq1"], 2);
+		$fn_clear("mq1");
+		
+		$fn_store("mq1");
+		$fn_store("mq1");
+		$fn_check(["mq1", "mqX9"], 2);
+		$fn_clear("mq1");
+
+		$fn_store("mq1");
+		$fn_store("mq2");
+		$fn_check(["mqX6", "mq1", "mqX7", "mq2", "mqX8"], 2);
+		$fn_clear("mq1");
+		$fn_clear("mq2");
+	}	
+
 }
 
