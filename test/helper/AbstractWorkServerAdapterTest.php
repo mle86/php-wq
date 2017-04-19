@@ -325,6 +325,8 @@ abstract class AbstractWorkServerAdapterTest
 		$job = $qe->getJob();
 		$this->assertSame($j->getMarker(), $job->getMarker(),
 			"Delayed job did not match the original job object!");
+
+		$ws->deleteEntry($qe);
 	}
 
 	/**
@@ -373,6 +375,8 @@ abstract class AbstractWorkServerAdapterTest
 		$this->assertSame($j->getMarker(), $job->getMarker());
 		$this->assertEquals(2, $job->jobTryIndex(),
 			"Dequeued job (was re-queued once) has wrong try index!");
+
+		$ws->deleteEntry($qe);
 	}
 
 	/**
@@ -402,11 +406,12 @@ abstract class AbstractWorkServerAdapterTest
 			$ws->storeJob($into_queue, clone $job);
 		};
 		$fn_clear = function (string $from_queue = "multi1") use($ws) {
-			while ($ws->getNextQueueEntry($from_queue, $ws::NOBLOCK)) {
-				// nop
+			while (($qe = $ws->getNextQueueEntry($from_queue, $ws::NOBLOCK))) {
+				$ws->deleteEntry($qe);
 			}
 		};
 		$fn_check = function (array $poll_queues, int $n_expected = 1) use($ws, $job) {
+			$qes = [];
 			$n = 0;
 			while ($n < $n_expected) {
 				$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK);
@@ -414,6 +419,7 @@ abstract class AbstractWorkServerAdapterTest
 					"Could not retrieve job by polling multiple queues! ({$n}/{$n_expected})");
 				$this->assertSame($job->getMarker(), $ret->getJob()->getMarker(),
 					"Retrieved wrong from by polling multiple queues!? ({$n}/{$n_expected})");
+				$qes[] = $ret;
 				$n++;
 			}
 
@@ -421,6 +427,10 @@ abstract class AbstractWorkServerAdapterTest
 				"Polling multiple empty queues returned something!");
 			$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK,
 				"Polling multiple empty queues A SECOND TIME returned something!?");
+
+			foreach ($qes as $qe) {
+				$ws->deleteEntry($qe);
+			}
 		};
 
 		$fn_store();
