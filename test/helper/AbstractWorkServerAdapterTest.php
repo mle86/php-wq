@@ -483,5 +483,46 @@ abstract class AbstractWorkServerAdapterTest
 		$fn_clear("mq2");
 	}	
 
+	/**
+	 * @depends testGetServerInstance
+	 * @depends testStoredJobs
+	 */
+	public function testQueueInterference (WorkServerAdapter $ws) {
+		$j1a = new SimpleJob (5011);
+		$j1b = new SimpleJob (5022);
+		$j2  = new SimpleJob (7011);
+
+		$ws->storeJob("qi1", $j1a);
+		$ws->storeJob("qi2", $j2 );
+		$ws->storeJob("qi1", $j1b);
+
+		// Now we should be able get j1a back from qi1.
+
+		$qe1a = $ws->getNextQueueEntry("qi1", $ws::NOBLOCK);
+		$this->assertInstanceOf(QueueEntry::class, $qe1a);
+		$this->assertSame($j1a->getMarker(), $qe1a->getJob()->getMarker());
+
+		// Now we know that j1b is still in qi1,
+		//         and that j2  is in qi2.
+
+		$qe2  = $ws->getNextQueueEntry("qi2", $ws::NOBLOCK);
+		$qe1b = $ws->getNextQueueEntry("qi1", $ws::NOBLOCK);
+		$this->assertInstanceOf(QueueEntry::class, $qe2,
+			"Queue interference: unable to get unrelated job from qi2!");
+		$this->assertInstanceOf(QueueEntry::class, $qe1b,
+			"Queue interference: unable to get second queued job from qi1 after polling qi2 first!");
+
+		$this->assertNotEquals($j2->getMarker(), $qe1b->getJob()->getMarker(),
+			"Queue interference: after polling qi1 once, we got the next qi1 job from polling qi2!");
+		$this->assertSame($j1b->getMarker(), $qe1b->getJob()->getMarker(),
+			"Queue interference: after polling both qi1 and qi2 once, we got something UNEXPECTED from polling qi1 AGAIN!");
+		$this->assertSame($j2->getMarker(), $qe2->getJob()->getMarker(),
+			"Queue interference: after polling both qi1, we got something UNEXPECTED from polling qi2!");
+
+		$ws->deleteEntry($qe1a);
+		$ws->deleteEntry($qe1b);
+		$ws->deleteEntry($qe2);
+	}
+
 }
 
