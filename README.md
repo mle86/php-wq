@@ -16,6 +16,11 @@ This is
 $ composer require mle86/wq
 ```
 
+It requires PHP 7.1
+and has no other dependencies
+(apart from PHPUnit for development
+ and the PSR-3 interfaces).
+
 You'll also want to install at least one other package
 which contains a `WorkServerAdapter` implementation,
 such as:
