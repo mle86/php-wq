@@ -59,9 +59,9 @@ Each instance represents one e-mail to be sent.
 The application can decide whether it should be sent immediately
 or if it should be put in a work queue.
 
-We could start by writing a class that implements the `Job` interface,
+We could start by writing a class that implements the [`Job`](#job-interface) interface,
 but it has rather a lot of required methods.
-It's easier to extend the provided `AbstractJob` class,
+It's easier to extend the provided [`AbstractJob`](#abstractjob-base-class) class,
 which requires only an `execute()` method:
 
 ```php
@@ -125,7 +125,7 @@ This serializes the `$mail` job
 and puts in into the “`mail`” work queue
 of the local Beanstalkd work server.
 
-(`BeanstalkdWorkServer` is an implementation of the `WorkServerAdapter` interface.
+(`BeanstalkdWorkServer` is an implementation of the [`WorkServerAdapter`](#workserveradapter-interface) interface.
  It is provided in the [mle86/wq-beanstalkd](https://packagist.org/packages/mle86/wq-beanstalkd) package.)
 
 Alright, the job is now in the work queue.
@@ -142,7 +142,7 @@ executing any jobs it finds.
 We could write a cronjob script
 that regularly calls `$workServer->getNextQueueEntry("mail")->getJob()->execute()`,
 but we'd need to add some custom error handling.
-There's a `WorkProcessor` class that already does all of that:
+There's a [`WorkProcessor`](#workprocessor-class) class that already does all of that:
 
 ```php
 use mle86\WQ\WorkProcessor;
