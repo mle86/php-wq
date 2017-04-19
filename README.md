@@ -117,7 +117,7 @@ Or it can put the job in a work queue for later execution:
 ```php
 use mle86\WQ\WorkServerAdapter\BeanstalkdWorkServer;
 
-$workServer = new BeanstalkdWorkServer ("localhost");
+$workServer = BeanstalkdWorkServer::connect("localhost");
 $workServer->storeJob("mail", $mail);
 ```
 
@@ -222,7 +222,7 @@ use mle86\WQ\WorkServerAdapter\BeanstalkdWorkServer;
 
 $mail = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
 
-$workServer = BeanstalkdWorkServer ("localhost");
+$workServer = BeanstalkdWorkServer::connect("localhost");
 $workServer->storeJob("mail", $mail);
 ```
 
@@ -239,7 +239,7 @@ use mle86\WQ\WorkProcessor;
 $queue = "mail";
 printf("%s worker %d starting.\n", $queue, getmypid());
 
-$processor = new WorkProcessor( new BeanstalkdWorkServer ("localhost"));
+$processor = new WorkProcessor( BeanstalkdWorkServer::connect("localhost") );
 
 while (true) {
     try {
