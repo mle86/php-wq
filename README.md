@@ -91,8 +91,7 @@ class EMail
 ```
 
 And that's it.
-(Obviously, that's an extremely simplified example for the sake of brevity;
- in a real-world application, one should definitely not use `mail()` anymore.)
+(Obviously, that's an extremely simplified example for the sake of brevity.)
 
 The `AbstractJob` class already implements the `Job` and the built-in `\Serializable` interfaces.
 
@@ -332,7 +331,7 @@ It implements the `Job` interface (partially).
     always returns the `$_try_index` value
     or `1`, whichever is greater.
 
-* `protected` **`$_try_index`** `= 0;`  
+* `protected` **`$_try_index`** `= 0`  
     The current try index.  
     The default `serialize()` implementation
     will increase this by 1 before serializing it,
@@ -344,7 +343,7 @@ It implements the `Job` interface (partially).
 
 * `public function` **`serialize`** `() { … }`  
     This default implementation stores all public and protected properties.
-    Override this method if that's not enough or if you want to do some additional pre-serialize processing,
+    Override this method if that's not enough or if you want to do some additional pre-serialization processing,
     but don't forget to include `$_try_index + 1` in the serialization!
 
 * `public function` **`unserialize`** `(string $serialized) { … }`  
@@ -412,7 +411,7 @@ Option keys:
     i.e. they'll be buried or deleted (depending on the `WS_ENABLE_BURY` option).
 * `const` **`WP_ENABLE_BURY`**  
     If this option is `true` (default),
-    failed jobs will be buried;
+    permanently failed jobs will be buried;
     if it is `false`,
     failed jobs will be deleted.
 * `const` **`WP_DELETE`**  
