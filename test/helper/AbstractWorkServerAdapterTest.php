@@ -411,7 +411,7 @@ abstract class AbstractWorkServerAdapterTest
 		$job = new SimpleJob (4711);
 
 		$fn_store = function (string $into_queue = "multi1", Job $store_job = null) use($ws, $job) {
-			$ws->storeJob($into_queue, clone $job);
+			$ws->storeJob($into_queue, ($store_job ?? (clone $job)));
 		};
 		$fn_clear = function (string $from_queue = "multi1") use($ws) {
 			while (($qe = $ws->getNextQueueEntry($from_queue, $ws::NOBLOCK))) {
