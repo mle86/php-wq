@@ -441,9 +441,9 @@ abstract class AbstractWorkServerAdapterTest
 				}
 			}
 
-			$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK,
+			$this->assertNull($ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK),
 				"Polling multiple empty queues returned something!");
-			$ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK,
+			$this->assertNull($ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK),
 				"Polling multiple empty queues A SECOND TIME returned something!?");
 
 			foreach ($qes as $qe) {
