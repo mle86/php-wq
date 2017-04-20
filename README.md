@@ -7,7 +7,7 @@ such as Beanstalkd or Redis
 to execute them at a later time.
 
 This is
-**version 0.3**.
+**version 0.3.1**.
 
 
 # Installation
@@ -249,7 +249,7 @@ while (true) {
     try {
         $processor->executeNextJob($queue);
     } catch (\Throwable $e) {
-        echo $e . "\n";
+        echo $e . "\n";  // TODO: add some real logging here
     }
 }
 ```
