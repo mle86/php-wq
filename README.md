@@ -530,14 +530,14 @@ in case of Redis, Work Queues are Lists.
 * <code>interface mle86\WQ\Exception\\<b>WQException</b></code>  
     All WQ Exceptions implement this empty interface.
 
-* <code>class mle86\WQ\Exception\\<b>OptionValueException</b> extends \InvalidArgumentException</code>  
-    Thrown by `WorkProcessor::setOption` and `WorkProcessor::setOptions`
-    in case of an invalid option value.
+    * <code>class mle86\WQ\Exception\\<b>OptionValueException</b> extends \InvalidArgumentException</code>  
+        Thrown by `WorkProcessor::setOption` and `WorkProcessor::setOptions`
+        in case of an invalid option value.
 
-* <code>class mle86\WQ\Exception\\<b>UnserializationException</b> extends \UnexpectedValueException</code>  
-    Thrown by `QueueEntry::fromSerializedJob()`
-    in case of invalid job data:
-    - invalid serialization
-    - non-object
-    - object, but not a Job implementation
+    * <code>class mle86\WQ\Exception\\<b>UnserializationException</b> extends \UnexpectedValueException</code>  
+        Thrown by `QueueEntry::fromSerializedJob()`
+        in case of invalid job data:
+        - invalid serialization
+        - non-object
+        - object, but not a Job implementation
 
