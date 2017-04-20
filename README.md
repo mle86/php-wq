@@ -465,6 +465,11 @@ Their return value is ignored.
 
 A Work Server stores jobs inside one or more Work Queues.
 
+A `WorkServerAdapter` implementation
+uses a connection handle to an existing Work Server:
+for example, the `RedisWorkServer` implementation
+takes a `\Redis` instance from the phpredis extension.
+
 A Beanstalkd server or a Redis server might be such a Work Server.
 In case of Beanstalkd, Work Queues are Tubes;
 in case of Redis, Work Queues are Lists.
