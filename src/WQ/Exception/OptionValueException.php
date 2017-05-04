@@ -7,7 +7,8 @@ namespace mle86\WQ\Exception;
  * in case of an invalid option value.
  */
 class OptionValueException
-	extends \InvalidArgumentException
-	implements WQException
+    extends \InvalidArgumentException
+    implements WQException
 {
 }
+

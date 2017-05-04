@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit bootstrap="vendor/autoload.php" colors="true">
-	<testsuites>
-		<testsuite name="WQ Test Suite">
-			<directory suffix="Test.php">./test/</directory>
-		</testsuite>
-	</testsuites>
+    <testsuites>
+        <testsuite name="WQ Test Suite">
+            <directory suffix="Test.php">./test/</directory>
+        </testsuite>
+    </testsuites>
 
-	<filter>
-		<whitelist>
-			<directory suffix=".php">./src/WQ/</directory>
-		</whitelist>
-	</filter>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./src/WQ/</directory>
+        </whitelist>
+    </filter>
 </phpunit>

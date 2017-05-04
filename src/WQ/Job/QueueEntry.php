@@ -22,56 +22,57 @@ use mle86\WQ\Exception\UnserializationException;
 final class QueueEntry
 {
 
-	private $job;
-	private $handle;
-	private $workQueue;
+    private $job;
+    private $handle;
+    private $workQueue;
 
-	public function __construct (Job $job, string $workQueue, $handle) {
-		$this->job       = $job;
-		$this->handle    = $handle;
-		$this->workQueue = $workQueue;
-	}
+    public function __construct (Job $job, string $workQueue, $handle) {
+        $this->job       = $job;
+        $this->handle    = $handle;
+        $this->workQueue = $workQueue;
+    }
 
-	public function getJob () : Job {
-		return $this->job;
-	}
+    public function getJob () : Job {
+        return $this->job;
+    }
 
-	public function getHandle () {
-		return $this->handle;
-	}
+    public function getHandle () {
+        return $this->handle;
+    }
 
-	public function getWorkQueue () : string {
-		return $this->workQueue;
-	}
+    public function getWorkQueue () : string {
+        return $this->workQueue;
+    }
 
 
-	/**
-	 * Unserializes a stored {@see Job} instance
-	 * from a Work Queue entry's raw data
-	 * and wraps it in a {@see QueueEntry} instance.
-	 *
-	 * @param string $serializedData  The serialized raw data.
-	 * @param string $originWorkQueue
-	 * @param mixed $handle  The Work Server adapter's representation of this job.
-	 * @param string $jobId  A unique ID for this job. Only used for logging. Not every WorkServer implementation provides this!
-	 * @return QueueEntry
-	 * @throws UnserializationException  if $serializedData corresponded to a non-object or to a non-{@see Job} object
-	 */
-	public static function fromSerializedJob (string $serializedData, string $originWorkQueue, $handle, string $jobId) : self {
-		/** @var Job $job */
-		$job = unserialize($serializedData);
+    /**
+     * Unserializes a stored {@see Job} instance
+     * from a Work Queue entry's raw data
+     * and wraps it in a {@see QueueEntry} instance.
+     *
+     * @param string $serializedData The serialized raw data.
+     * @param string $originWorkQueue
+     * @param mixed $handle          The Work Server adapter's representation of this job.
+     * @param string $jobId          A unique ID for this job. Only used for logging. Not every WorkServer implementation provides this!
+     * @return QueueEntry
+     * @throws UnserializationException  if $serializedData corresponded to a non-object or to a non-{@see Job} object
+     */
+    public static function fromSerializedJob (string $serializedData, string $originWorkQueue, $handle, string $jobId) : self {
+        /** @var Job $job */
+        $job = unserialize($serializedData);
 
-		if ($job === false) {
-			throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained an invalid serialization!");
-		}
-		if (!is_object($job)) {
-			throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained a non-object serialization!");
-		}
-		if (!($job instanceof Job)) {
-			throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained a non-Job object serialization!");
-		}
+        if ($job === false) {
+            throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained an invalid serialization!");
+        }
+        if (!is_object($job)) {
+            throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained a non-object serialization!");
+        }
+        if (!($job instanceof Job)) {
+            throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained a non-Job object serialization!");
+        }
 
-		return new QueueEntry ($job, $originWorkQueue, $handle);
-	}
+        return new QueueEntry ($job, $originWorkQueue, $handle);
+    }
 
 }
+

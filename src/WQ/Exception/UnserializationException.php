@@ -11,7 +11,8 @@ namespace mle86\WQ\Exception;
  *  - object, but not a Job implementation
  */
 class UnserializationException
-	extends \UnexpectedValueException
-	implements WQException
+    extends \UnexpectedValueException
+    implements WQException
 {
 }
+

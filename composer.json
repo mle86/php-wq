@@ -1,27 +1,29 @@
 {
-	"name": "mle86/wq",
-	"type": "library",
-	"description": "A simple library for work-queue and job handling.",
-	"license": "MIT",
+  "name": "mle86/wq",
+  "type": "library",
+  "description": "A simple library for work-queue and job handling.",
+  "license": "MIT",
 
-	"authors": [ {
-		"name": "Maximilian Eul",
-		"email": "maximilian@eul.cc",
-		"homepage": "https://github.com/mle86/php-wq"
-	} ],
+  "authors": [
+    {
+      "name": "Maximilian Eul",
+      "email": "maximilian@eul.cc",
+      "homepage": "https://github.com/mle86/php-wq"
+    }
+  ],
 
-	"autoload": {
-		"psr-4": {
-			"mle86\\WQ\\": "src/WQ/"
-		}
-	},
+  "autoload": {
+    "psr-4": {
+      "mle86\\WQ\\": "src/WQ/"
+    }
+  },
 
-	"require-dev": {
-		"phpunit/phpunit": "4.*"
-	},
+  "require-dev": {
+    "phpunit/phpunit": "4.*"
+  },
 
-	"require": {
-		"php": ">=7.1",
-		"psr/log": "^1.0"
-	}
+  "require": {
+    "php": ">=7.1",
+    "psr/log": "^1.0"
+  }
 }

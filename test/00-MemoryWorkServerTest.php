@@ -7,12 +7,12 @@ use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 require_once 'helper/AbstractWorkServerAdapterTest.php';
 
 class MemoryWorkServerTest
-	extends AbstractWorkServerAdapterTest
+    extends AbstractWorkServerAdapterTest
 {
 
-	public function getWorkServerAdapter () : WorkServerAdapter {
-		return new MemoryWorkServer ();
-	}
+    public function getWorkServerAdapter () : WorkServerAdapter {
+        return new MemoryWorkServer ();
+    }
 
 }
 

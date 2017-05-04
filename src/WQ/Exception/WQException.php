@@ -11,3 +11,4 @@ namespace mle86\WQ\Exception;
 interface WQException
 {
 }
+

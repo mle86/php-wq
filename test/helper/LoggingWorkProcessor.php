@@ -6,43 +6,43 @@ use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkProcessor;
 
 class LoggingWorkProcessor
-	extends WorkProcessor
+    extends WorkProcessor
 {
 
-	public $log = [];
+    public $log = [];
 
 
-	protected function onNoJobAvailable (array $workQueues) {
-		$this->log[] = ["NOJOBS", join("|", $workQueues)];
-	}
+    protected function onNoJobAvailable (array $workQueues) {
+        $this->log[] = ["NOJOBS", join("|", $workQueues)];
+    }
 
-	protected function onJobAvailable (QueueEntry $qe) {
-		/** @var Job|SimpleJob $job */
-		$job = $qe->getJob();
+    protected function onJobAvailable (QueueEntry $qe) {
+        /** @var Job|SimpleJob $job */
+        $job = $qe->getJob();
 
-		$this->log[] = ["JOB", $job->getMarker()];
-	}
+        $this->log[] = ["JOB", $job->getMarker()];
+    }
 
-	protected function onSuccessfulJob (QueueEntry $qe, $returnValue) {
-		/** @var Job|SimpleJob $job */
-		$job = $qe->getJob();
+    protected function onSuccessfulJob (QueueEntry $qe, $returnValue) {
+        /** @var Job|SimpleJob $job */
+        $job = $qe->getJob();
 
-		$this->log[] = ["SUCCESS", $job->getMarker(), $returnValue];
-	}
+        $this->log[] = ["SUCCESS", $job->getMarker(), $returnValue];
+    }
 
-	protected function onJobRequeue (QueueEntry $qe, \Throwable $e, int $delay) {
-		/** @var Job|SimpleJob $job */
-		$job = $qe->getJob();
+    protected function onJobRequeue (QueueEntry $qe, \Throwable $e, int $delay) {
+        /** @var Job|SimpleJob $job */
+        $job = $qe->getJob();
 
-		$this->log[] = ["REQUEUE", $job->getMarker(), $e->getMessage(), $delay];
-	}
+        $this->log[] = ["REQUEUE", $job->getMarker(), $e->getMessage(), $delay];
+    }
 
-	protected function onFailedJob (QueueEntry $qe, \Throwable $e) {
-		/** @var Job|SimpleJob $job */
-		$job = $qe->getJob();
+    protected function onFailedJob (QueueEntry $qe, \Throwable $e) {
+        /** @var Job|SimpleJob $job */
+        $job = $qe->getJob();
 
-		$this->log[] = ["FAILED", $job->getMarker(), $e->getMessage()];
-	}
+        $this->log[] = ["FAILED", $job->getMarker(), $e->getMessage()];
+    }
 
 }
 
