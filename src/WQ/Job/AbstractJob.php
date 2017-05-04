@@ -13,6 +13,8 @@ namespace mle86\WQ\Job;
  *   or somewhere else entirely, like the queue worker script.
  * - If the jobs should be re-tried after an initial failure,
  *   override the {@see MAX_RETRY} constant.
+ * - If the retry condition is more complex,
+ *   override the {@see jobCanRetry()} method instead.
  * - To change the retry delay interval,
  *   override the {@see jobRetryDelay()} method
  *   (you'll probably want to have an increasing delay,

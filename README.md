@@ -314,6 +314,8 @@ simply extend this class.
   or somewhere else entirely, like the queue worker script.
 * If the jobs should be re-tried after an initial failure,
   override the `MAX_RETRY` constant.
+* If the retry condition is more complex,
+  override the `jobCanRetry()` method instead.
 * To change the retry delay interval,
   override the `jobRetryDelay()` method
   (you'll probably want to have an increasing delay,
