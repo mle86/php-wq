@@ -67,7 +67,7 @@ or if it should be put in a work queue.
 We could start by writing a class that implements the [`Job`](#job-interface) interface,
 but it has rather a lot of required methods.
 It's easier to extend the provided [`AbstractJob`](#abstractjob-base-class) class,
-which requires only an `execute()` method:
+which has no required methods:
 
 ```php
 use mle86\WQ\Job\AbstractJob;
@@ -152,7 +152,9 @@ There's a [`WorkProcessor`](#workprocessor-class) class that already does all of
 use mle86\WQ\WorkProcessor;
 
 $processor = new WorkProcessor ($workServer);
-$processor->executeNextJob("mail");
+$processor->executeNextJob("mail", function (EMail $job) {
+    $job->execute();
+});
 ```
 
 This will fetch the next job from the “`mail`” queue
@@ -167,16 +169,16 @@ and be done.
 
 ## Error handling
 
-So what happens if `Job::execute()` throws an Exception?
+So what happens if the execution throws an Exception?
 
-* If the `Job::execute()` implementation
+* If the handler callback passed to `executeNextJob()`
   throws a `\RuntimeException`
   (or some subclass of that),
   the `WorkProcessor` will attempt to *retry* the job later.
   That means putting it back into the work queue with a delay (*re-queue*).  
   Retrying only works if the Job class is okay with that
   (see `Job::canRetry()` and `AbstractJob::MAX_RETRY`).
-* If the `Job::execute()` implementation
+* If the callback
   throws any other exception,
   the job will be *buried* immediately.
 * If the unserialization of a job in the work queue fails for any reason,
@@ -243,11 +245,14 @@ use mle86\WQ\WorkProcessor;
 $queue = "mail";
 printf("%s worker %d starting.\n", $queue, getmypid());
 
-$processor = new WorkProcessor (BeanstalkdWorkServer::connect("localhost"));
+$processor  = new WorkProcessor (BeanstalkdWorkServer::connect("localhost"));
+$fn_handler = function (EMail $job) {
+    $job->execute();
+};
 
 while (true) {
     try {
-        $processor->executeNextJob($queue);
+        $processor->executeNextJob($queue, $fn_handler);
     } catch (\Throwable $e) {
         echo $e . "\n";  // TODO: add some real logging here
     }
@@ -262,8 +267,7 @@ while (true) {
 (<code>interface mle86\WQ\Job\\<b>Job</b></code>)
 
 A Job is a representation of some task to do.
-It can be `execute`'d immediately,
-or it can be stored in a Work Queue for later processing.
+It can be stored in a Work Queue with `WorkServerAdapter::storeJob()`.
 
 This interface extends [`\Serializable`](https://secure.php.net/manual/en/class.serializable.php),
 because all Jobs have to be serializable
@@ -271,19 +275,18 @@ in order to be stored in a Work Queue.
 
 For your own Job classes,
 see the `AbstractJob` base class instead;
-it implements many of these functions already
-and is easier to work with.
+it is easier to work with
+as it provides default implementations
+for the required methods.
 
-* <code>public function <b>execute</b> ()</code>  
-    This method should implement the job's functionality.  
-    `WorkProcessor::executeNextJob()` will call this and return its return value.
-    If it throws some Exception, it will bury the job;
-    if it was a RuntimeException and `jobCanRetry` returns true,
-    it will re-queue the job with a `jobRetryDelay`.
+This interface does not specify how a Job should be executed
+or how the responsible method(s) should be named,
+if they are part of the Job implementation at all.
+
 
 * <code>public function <b>jobCanRetry</b> () : bool</code>  
     Whether this job can be retried later.
-    The `WorkServerAdapter` implementation will check this if `execute()` has failed.  
+    The `WorkServerAdapter` implementation will check this job execution has failed.  
     If it returns true, the job will be stored in the Work Queue again
     to be re-executed after `jobRetryDelay()` seconds;
     if it returns false, the job will be buried for later inspection.
@@ -304,10 +307,11 @@ and is easier to work with.
 (<code>abstract class mle86\WQ\Job\\<b>AbstractJob</b> implements Job</code>)
 
 To build a working Job class,
-simply extend this class
-and implement the `execute()` method
-to do something.
+simply extend this class.
 
+* It's your choice
+  whether to put your job execution logic in the Job class
+  or somewhere else entirely, like the queue worker script.
 * If the jobs should be re-tried after an initial failure,
   override the `MAX_RETRY` constant.
 * To change the retry delay interval,
@@ -383,18 +387,22 @@ but will also try to re-queue it if it fails.
     * `$options`: Options to set, overriding the default options.
       Works the same as a `setOptions()` call right after instantiation.
 
-* <code>public function <b>executeNextJob</b> ($workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed</code>  
-    Executes the next job in the Work Queue.  
+* <code>public function <b>executeNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed</code>  
+    Executes the next job in the Work Queue
+    by passing it to the callback function.  
     If that results in a `\RuntimeException`,
     the method will try to re-queue the job
     and re-throw the exception.  
     If the execution results in any other `\Throwable`,
     no re-queueing will be attempted;
     the job will be buried immediately.  
-    Returns the `Job::execute`'s return value on success (which might be `null`).
+    Returns `$callback(Job)`'s return value on success (which might be `null`).
     Returns `null` if there was no job in the work queue to be executed.  
     Will re-throw any exceptions/throwables from the `Job` class.
     * `$workQueue`: See `WorkServerAdapter::getNextJob()`.
+    * `$callback`: The handler callback to execute each Job.  
+      Expected signature: `function(Job)`.
+      Its return value will be returned by this method.
     * `$timeout`: See `WorkServerAdapter::getNextJob()`.
 
 * <code>public function <b>setOption</b> (int $option, $value)</code>  
@@ -484,10 +492,11 @@ in case of Redis, Work Queues are Lists.
 * <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry</code>  
     This takes the next job from the named work queue(s)
     and returns it.  
-    This is probably not the method you want,
-    because it will not try to execute the job
-    and it won't handle any job exceptions either.
-    Use `WorkProcessor::executeNextJob()` instead.
+    This method will reserve the returned job for a short time.
+    If you want to delete/bury/re-queue the job,
+    use the `deleteEntry`/`buryEntry`/`requeueEntry` methods.  
+    If you don't want to do all of this manually,
+    use `WorkProcessor::executeNextJob()` instead.
     Returns `null` if no job was available after waiting for `$timeout` seconds.
     * `$workQueue`: The name of the Work Queue to poll (string) or an array of Work Queues to poll.
       In the latter case, the first job in any of these Work Queues will be returned.
