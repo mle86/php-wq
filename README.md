@@ -7,7 +7,7 @@ such as Beanstalkd or Redis
 to execute them at a later time.
 
 This is
-**version 0.3.1**.
+**version 0.4**.
 
 
 # Installation
@@ -106,14 +106,14 @@ The `AbstractJob` class already implements the `Job` and the built-in `\Serializ
 Now if our application wants to send an e-mail...
 
 ```php
-$mail = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
+$mailJob = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
 ```
 
 ...then it can either do that right away,
 delaying the application's response and requiring exception handling:
 
 ```php
-$mail->execute();  // this might throw a RuntimeException!
+$mailJob->execute();  // this might throw a RuntimeException!
 ```
 
 Or it can put the job in a work queue for later execution:
@@ -122,10 +122,10 @@ Or it can put the job in a work queue for later execution:
 use mle86\WQ\WorkServerAdapter\BeanstalkdWorkServer;
 
 $workServer = BeanstalkdWorkServer::connect("localhost");
-$workServer->storeJob("mail", $mail);
+$workServer->storeJob("mail", $mailJob);
 ```
 
-This serializes the `$mail` job
+This serializes the `$mailJob`
 and puts in into the “`mail`” work queue
 of the local Beanstalkd work server.
 
@@ -152,15 +152,17 @@ There's a [`WorkProcessor`](#workprocessor-class) class that already does all of
 use mle86\WQ\WorkProcessor;
 
 $processor = new WorkProcessor ($workServer);
-$processor->executeNextJob("mail", function (EMail $job) {
-    $job->execute();
+$processor->executeNextJob("mail", function (EMail $mailJob) {
+    $mailJob->execute();
 });
 ```
 
 This will fetch the next job from the “`mail`” queue
-(waiting up to 5 seconds until a job arrives if there's no job currently available),
-execute it,
-and then delete it from the work queue if it did not throw an exception.
+(waiting up to 5 seconds until a job arrives
+ if there's no job currently available),
+run the callback function to call its `execute()` send method,
+and then delete it from the work queue
+(unless it threw an exception).
 
 We could easily wrap that `executeNextJob()` call in a `while(true)` loop,
 call that script once on system boot,
@@ -226,10 +228,10 @@ We have some code using that e-mail class.
 <?php
 use mle86\WQ\WorkServerAdapter\BeanstalkdWorkServer;
 
-$mail = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
+$mailJob = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
 
 $workServer = BeanstalkdWorkServer::connect("localhost");
-$workServer->storeJob("mail", $mail);
+$workServer->storeJob("mail", $mailJob);
 ```
 
 And finally,
@@ -246,8 +248,8 @@ $queue = "mail";
 printf("%s worker %d starting.\n", $queue, getmypid());
 
 $processor  = new WorkProcessor (BeanstalkdWorkServer::connect("localhost"));
-$fn_handler = function (EMail $job) {
-    $job->execute();
+$fn_handler = function (EMail $mailJob) {
+    $mailJob->execute();
 };
 
 while (true) {
