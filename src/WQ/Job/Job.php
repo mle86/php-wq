@@ -4,8 +4,7 @@ namespace mle86\WQ\Job;
 
 /**
  * A Job is a representation of some task do to.
- * It can be {@see execute}d immediately,
- * or it can be stored in a Work Queue for later processing.
+ * It can be stored in a Work Queue with {@see WorkServerAdapter::storeJob()}.
  *
  * This interface extends {@see \Serializable},
  * because all Jobs have to be serializable
@@ -13,26 +12,21 @@ namespace mle86\WQ\Job;
  *
  * For your own Job classes,
  * see the {@see AbstractJob} base class instead;
- * it implements many of these functions already
- * and is easier to work with.
+ * it is easier to work with
+ * as it provides default implementations
+ * for the required methods.
+ *
+ * This interface does not specify how a Job should be executed
+ * or how the responsible method(s) should be named,
+ * if they are part of the Job implementation at all.
  */
 interface Job
     extends \Serializable
 {
 
     /**
-     * This method should implement the job's functionality.
-     *
-     * {@see WorkProcessor::executeNextJob()} will call this and return its return value.
-     * If it throws some Exception, it will bury the job;
-     * if it was a RuntimeException and {@see jobCanRetry} returns true,
-     * it will re-queue the job with a {@see jobRetryDelay}.
-     */
-    public function execute ();
-
-    /**
      * Whether this job can be retried later.
-     * The WorkServerAdapter implementation will check this if {@see execute()} has failed.
+     * The WorkServerAdapter implementation will check this if job execution has failed.
      * If it returns true, the job will be stored in the Work Queue again
      * to be re-executed after {@see jobRetryDelay()} seconds;
      * if it returns false, the job will be buried for later inspection.

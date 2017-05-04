@@ -6,10 +6,11 @@ namespace mle86\WQ\Job;
  * This base class implements some of the {@see Job} interface's requirements.
  *
  * To build a working Job class,
- * simply extend this class
- * and implement the {@see execute()} method
- * to do something.
+ * simply extend this class.
  *
+ * - It's your choice
+ *   whether to put your job execution logic in the Job class
+ *   or somewhere else entirely, like the queue worker script.
  * - If the jobs should be re-tried after an initial failure,
  *   override the {@see MAX_RETRY} constant.
  * - To change the retry delay interval,
@@ -81,8 +82,7 @@ abstract class AbstractJob
 
     /**
      * Whether this job can be retried later.
-     *
-     * The WorkServerAdapter implementation will check this if {@see execute()} has failed.
+     * The WorkServerAdapter implementation will check this if job execution has failed.
      * If it returns true, the job will be stored in the Work Queue again
      * to be re-executed after {@see jobRetryDelay()} seconds;
      * if it returns false, the job will be buried for later inspection.
@@ -109,7 +109,7 @@ abstract class AbstractJob
     public function jobTryIndex () : int {
         /* Before first serialization, _try_index is zero.
          * On every serialization, this value will be increased by 1.
-         * Still, someone could call execute() on a never-serialized job
+         * Still, someone could try to execute a never-serialized job
          * and still expect a reasonable result,
          * so we'll never return zero here.  */
         return $this->_try_index ?: 1;

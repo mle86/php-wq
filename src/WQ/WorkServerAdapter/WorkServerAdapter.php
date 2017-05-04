@@ -26,10 +26,12 @@ interface WorkServerAdapter
      * This takes the next job from the named work queue
      * and returns it.
      *
-     * This is probably not the method you want,
-     * because it will not try to execute the job
-     * and it won't handle any job exceptions either.
-     * See {@see WorkProcessor::executeNextJob()} instead.
+     * This method will reserve the returned job for a short time.
+     * If you want to delete/bury/re-queue the job,
+     * use the {@see deleteEntry}/{@see buryEntry}/{@see requeueEntry} methods.
+     *
+     * If you don't want to do all of this manually,
+     * use {@see WorkProcessor::executeNextJob()} instead.
      *
      * @param string|string[] $workQueue The name or names of the Work Queue(s) to poll.
      *                                   If it's an array of Work Queue names,

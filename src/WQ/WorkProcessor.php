@@ -50,7 +50,8 @@ class WorkProcessor
     }
 
     /**
-     * Executes the next job in the Work Queue.
+     * Executes the next job in the Work Queue
+     * by passing it to the callback function.
      *
      * If that results in a {@see \RuntimeException},
      * the method will try to re-queue the job
@@ -61,12 +62,15 @@ class WorkProcessor
      * the job will be buried immediately.
      *
      * @param string|string[] $workQueue See {@see WorkServerAdapter::getNextJob()}.
+     * @param callable $callback         The handler callback to execute each Job.
+     *                                   Expected signature: <tt>function(Job)</tt>.
+     *                                   Its return value will be returned by this method.
      * @param int $timeout               See {@see WorkServerAdapter::getNextJob()}.
-     * @throws \Throwable  Will pass on any Exceptions/Throwables from the {@see Job} class.
-     * @return mixed|null Returns the {@see Job::execute()}'s return value on success (which might be NULL).
-     *                    Returns NULL if there was no job in the work queue to be executed.
+     * @throws \Throwable  Will pass on any Exceptions/Throwables from the <tt>$callback</tt>.
+     * @return mixed|null Returns <tt>$callback(Job)</tt>'s return value on success (which might be NULL).
+     *                    Also returns NULL if there was no job in the work queue to be executed.
      */
-    public function executeNextJob ($workQueue, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
+    public function executeNextJob ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
         $qe = $this->server->getNextQueueEntry($workQueue, $timeout);
         if (!$qe) {
             $this->onNoJobAvailable((array)$workQueue);
@@ -80,7 +84,7 @@ class WorkProcessor
         $ret = null;
 
         try {
-            $ret = $job->execute();
+            $ret = $callback($job);
         } catch (\Throwable $e) {
             // The job failed.
             $this->handleFailedJob($qe, $e);
@@ -246,7 +250,7 @@ class WorkProcessor
      * This is a hook method for sub-classes.
      *
      * @param QueueEntry $qe The executed job.
-     * @param mixed $ret     The {@see Job::execute()} method's return value.
+     * @param mixed $ret     The return value of the job handler callback.
      * @return void
      */
     protected function onSuccessfulJob (QueueEntry $qe, $ret) { }
@@ -278,8 +282,8 @@ class WorkProcessor
      *
      * This is a hook method for sub-classes.
      *
-     * @param QueueEntry $qe The job that could not be {@see Job::execute()}d correctly.
-     * @param \Throwable $e  The exception that was thrown by the job.
+     * @param QueueEntry $qe The job that could not be executed correctly.
+     * @param \Throwable $e  The exception that was thrown by the job or the job handler callback.
      * @return void
      */
     protected function onFailedJob (QueueEntry $qe, \Throwable $e) { }
