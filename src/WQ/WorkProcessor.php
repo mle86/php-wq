@@ -87,6 +87,7 @@ class WorkProcessor
         $job = $qe->getJob();
 
         if ($job->jobIsExpired()) {
+            $this->onExpiredJob($qe);
             $this->handleExpiredJob($qe);
             return null;
         }
@@ -306,6 +307,17 @@ class WorkProcessor
      * @return void
      */
     protected function onSuccessfulJob (QueueEntry $qe, $ret) { }
+
+    /**
+     * This method is called if an expired job is encountered,
+     * right before it gets deleted.
+     *
+     * This is a hook method for sub-classes.
+     *
+     * @param QueueEntry $qe  The expired job.
+     * @return void
+     */
+    protected function onExpiredJob (QueueEntry $qe) { }
 
     /**
      * This method is called after a job that can be re-tried at least one more time

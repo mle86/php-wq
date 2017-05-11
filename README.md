@@ -492,6 +492,9 @@ Their return value is ignored.
 * <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe, $returnValue)</code>  
     This method is called after a job has been successfully executed,
     right before it is deleted from the work queue.
+* <code>protected function <b>onExpiredJob</b> (QueueEntry $qe)</code>  
+    This method is called if an expired job is encountered,
+    right before it gets deleted.
 * <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay)</code>  
     This method is called after a job that can be re-tried at least one more time
     has failed (thrown an exception),
