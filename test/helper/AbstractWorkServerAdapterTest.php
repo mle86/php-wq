@@ -430,8 +430,13 @@ abstract class AbstractWorkServerAdapterTest
                 $ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK);
                 $this->assertInstanceOf(QueueEntry::class, $ret,
                     "Could not retrieve job by polling multiple queues! ({$n}/{$n_expected})");
-                $this->assertSame($job->getMarker(), $ret->getJob()->getMarker(),
+
+                /** @var Job|SimpleJob $qjob */
+                $qjob = $ret->getJob();
+
+                $this->assertSame($job->getMarker(), $qjob->getMarker(),
                     "Retrieved wrong from by polling multiple queues!? ({$n}/{$n_expected})");
+
                 $qes[] = $ret;
                 $n++;
 
@@ -520,7 +525,10 @@ abstract class AbstractWorkServerAdapterTest
 
         $qe1a = $ws->getNextQueueEntry("qi1", $ws::NOBLOCK);
         $this->assertInstanceOf(QueueEntry::class, $qe1a);
-        $this->assertSame($j1a->getMarker(), $qe1a->getJob()->getMarker());
+
+        /** @var Job|SimpleJob $qj1a */
+        $qj1a = $qe1a->getJob();
+        $this->assertSame($j1a->getMarker(), $qj1a->getMarker());
 
         // Now we know that j1b is still in qi1,
         //         and that j2  is in qi2.
@@ -532,11 +540,16 @@ abstract class AbstractWorkServerAdapterTest
         $this->assertInstanceOf(QueueEntry::class, $qe1b,
             "Queue interference: unable to get second queued job from qi1 after polling qi2 first!");
 
-        $this->assertNotEquals($j2->getMarker(), $qe1b->getJob()->getMarker(),
+        /** @var Job|SimpleJob $qj1b */
+        $qj1b = $qe1b->getJob();
+        /** @var Job|SimpleJob $qj2 */
+        $qj2  = $qe2->getJob();
+
+        $this->assertNotEquals($j2->getMarker(), $qj1b->getMarker(),
             "Queue interference: after polling qi1 once, we got the next qi1 job from polling qi2!");
-        $this->assertSame($j1b->getMarker(), $qe1b->getJob()->getMarker(),
+        $this->assertSame($j1b->getMarker(), $qj1b->getMarker(),
             "Queue interference: after polling both qi1 and qi2 once, we got something UNEXPECTED from polling qi1 AGAIN!");
-        $this->assertSame($j2->getMarker(), $qe2->getJob()->getMarker(),
+        $this->assertSame($j2->getMarker(), $qj2->getMarker(),
             "Queue interference: after polling both qi1, we got something UNEXPECTED from polling qi2!");
 
         $ws->deleteEntry($qe1a);
