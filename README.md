@@ -453,7 +453,7 @@ Option keys:
     if it is `false`,
     failed jobs will be deleted.
 * <code>const <b>WP_DELETE</b></code>  
-    If this option is `true` (default),
+    If this option is set to `DELETE_FINISHED` (default),
     finished jobs will be deleted.
     Otherwise, its value is taken as a Work Queue name
     where all finished jobs will be moved to.  

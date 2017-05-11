@@ -133,7 +133,7 @@ class WorkProcessor
 
     private function handleFinishedJob (QueueEntry $qe) {
         // Make sure the finished job is really gone before returning:
-        if ($this->options[self::WP_DELETE] === true) {
+        if ($this->options[self::WP_DELETE] === self::DELETE_FINISHED) {
             $this->server->deleteEntry($qe);
             $this->log(LogLevel::INFO, "success, deleted", $qe);
         } else {
@@ -180,7 +180,8 @@ class WorkProcessor
     const WP_ENABLE_BURY = 2;
 
     /**
-     * If this option is TRUE (default), finished jobs will be deleted.
+     * If this option is set to {@see DELETE_FINISHED} (default),
+     * finished jobs will be deleted.
      * Otherwise, its value is taken as a Work Queue name
      * where all finished jobs will be moved to.
      *
@@ -211,6 +212,8 @@ class WorkProcessor
     const WP_EXPIRED = 4;
 
 
+    /** @see WP_DELETE */
+    const DELETE_FINISHED = true;
     /** @see WP_EXPIRED */
     const DELETE_EXPIRED = true;
     /** @see WP_EXPIRED */
@@ -220,7 +223,7 @@ class WorkProcessor
     protected static $defaultOptions = [
         self::WP_ENABLE_RETRY => true,
         self::WP_ENABLE_BURY  => true,
-        self::WP_DELETE       => true,
+        self::WP_DELETE       => self::DELETE_FINISHED,
         self::WP_EXPIRED      => self::DELETE_EXPIRED,
     ];
 
