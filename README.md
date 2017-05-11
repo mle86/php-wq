@@ -418,6 +418,9 @@ but will also try to re-queue it if it fails.
     If the execution results in any other `\Throwable`,
     no re-queueing will be attempted;
     the job will be buried immediately.  
+    If the next job in the Work Queue is expired,
+    it will be silently deleted
+    and the method will return `null`.  
     Returns `$callback(Job)`'s return value on success (which might be `null`).
     Returns `null` if there was no job in the work queue to be executed.  
     Will re-throw any exceptions/throwables from the `Job` class.

@@ -61,6 +61,10 @@ class WorkProcessor
      * no re-queueing will be attempted;
      * the job will be buried immediately.
      *
+     * If the next job in the Work Queue is expired,
+     * it will be silently deleted
+     * and the method will return NULL.
+     *
      * @param string|string[] $workQueue See {@see WorkServerAdapter::getNextJob()}.
      * @param callable $callback         The handler callback to execute each Job.
      *                                   Expected signature: <tt>function(Job)</tt>.
@@ -81,8 +85,13 @@ class WorkProcessor
         $this->onJobAvailable($qe);
 
         $job = $qe->getJob();
-        $ret = null;
 
+        if ($job->jobIsExpired()) {
+            $this->handleExpiredJob($qe);
+            return null;
+        }
+
+        $ret = null;
         try {
             $ret = $callback($job);
         } catch (\Throwable $e) {
@@ -132,6 +141,12 @@ class WorkProcessor
             $this->server->requeueEntry($qe, 0, $this->options[self::WP_DELETE]);
             $this->log(LogLevel::NOTICE, "success, moved to {$this->options[self::WP_DELETE]}", $qe);
         }
+    }
+
+    private function handleExpiredJob (QueueEntry $qe) {
+        // We'll never execute expired jobs.
+        $this->server->deleteEntry($qe);
+        $this->log(LogLevel::NOTICE, "expired, deleted", $qe);
     }
 
 
