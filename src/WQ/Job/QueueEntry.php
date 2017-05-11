@@ -76,7 +76,7 @@ final class QueueEntry
             throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained a non-Job object serialization!");
         }
 
-        return new QueueEntry ($job, $originWorkQueue, $handle);
+        return new self ($job, $originWorkQueue, $handle);
     }
 
 }
