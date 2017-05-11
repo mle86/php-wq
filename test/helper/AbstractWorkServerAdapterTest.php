@@ -577,8 +577,8 @@ abstract class AbstractWorkServerAdapterTest
      * so custom test methods would always run _before_ these inherited standard test methods,
      * making proper test dependencies hard to maintain.
      *
-     * Instead, put all you implementation-specific additional tests
-     * into this method --
+     * Instead, put all your implementation-specific additional tests
+     * into this method –
      * it will be called last.
      *
      * This default implementation is empty.
