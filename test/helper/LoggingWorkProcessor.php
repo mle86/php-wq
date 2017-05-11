@@ -44,5 +44,12 @@ class LoggingWorkProcessor
         $this->log[] = ["FAILED", $job->getMarker(), $e->getMessage()];
     }
 
+    protected function onExpiredJob (QueueEntry $qe) {
+        /** @var Job|SimpleJob $job */
+        $job = $qe->getJob();
+
+        $this->log[] = ["EXPIRED", $job->getMarker()];
+    }
+
 }
 

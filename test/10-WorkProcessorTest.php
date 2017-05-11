@@ -227,6 +227,84 @@ class WorkProcessorTest
         $fn_check($fn_store(), ["mq3", "mq1", "mq3", "mq1", "mq3"], 1);
     }
 
+    /**
+     * @depends testRecoverableJob
+     */
+    public function testExpiredJob () {
+        $marker = 9102;
+        $job = new ConfigurableJob (
+            $marker,
+            1,  // one retry
+            2,  // succeeds on retry
+            0
+        );
+
+        $wp = wp();
+        $wp->getWorkServerAdapter()->storeJob(self::QUEUE, $job);
+
+        ConfigurableJob::$expired_marker = $marker;  // this job is expired already!
+
+        $ret = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $this->assertNull($ret,
+            "An expired job was executed (or executeNextJob() returned something for some other reason)!");
+        $this->assertNotContains("EXECUTE-" . $marker, SimpleJob::$log,
+            "Expired job was executed!");
+        $this->assertSame(
+            ($expect_log = [
+                ["JOB", $marker],
+                ["EXPIRED", $marker],
+            ]),
+            $wp->log,
+            "The hook functions were called incorrectly for an expired job!"
+        );
+
+        ConfigurableJob::$expired_marker = null;
+
+        $this->expectEmptyWQ($wp, $expect_log, "expired");
+    }
+
+    /**
+     * @depends testExpiredJob
+     * @depends testExecuteUnrecoverableJob
+     */
+    public function testRetryExpiredJob () {
+        $marker = 9103;
+        $job = new ConfigurableJob (
+            $marker,
+            1,  // one retry
+            2,  // succeeds on retry
+            0
+        );
+
+        $wp = wp();
+        $wp->getWorkServerAdapter()->storeJob(self::QUEUE, $job);
+        $expect_log = [];
+
+        // is not expired yet, but will fail
+        $this->expectFailAndRequeue($wp, $marker, 0, $expect_log, "first try, before expiry");
+
+        // first retry would succeed, but it's expired now:
+        ConfigurableJob::$expired_marker = $marker;
+
+        $ret = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $this->assertNull($ret,
+            "An expired-on-retry job was executed (or executeNextJob() returned something for some other reason)!");
+        $this->assertNotContains("EXECUTE-" . $marker, SimpleJob::$log,
+            "Expired-on-retry job was executed!");
+        $this->assertSame(
+            ($expect_log = array_merge($expect_log, [
+                ["JOB", $marker],
+                ["EXPIRED", $marker],
+            ])),
+            $wp->log,
+            "The hook functions were called incorrectly for an expired-on-retry job!"
+        );
+
+        ConfigurableJob::$expired_marker = null;
+
+        $this->expectEmptyWQ($wp, $expect_log, "expired-on-retry");
+    }
+
 
     private function expectSuccess (LoggingWorkProcessor $wp, int $marker, array &$expect_log) {
         $ret = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);

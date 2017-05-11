@@ -21,6 +21,8 @@ class ConfigurableJob
 
     public static $log = [];
 
+    public static $expired_marker = null;
+
     protected $marker = 0;
     protected $max_retries;
     protected $retry_delay;
@@ -40,6 +42,10 @@ class ConfigurableJob
 
     public function jobRetryDelay () : int {
         return $this->retry_delay;
+    }
+
+    public function jobIsExpired () : bool {
+        return ($this->marker === self::$expired_marker);
     }
 
     public function execute () {
