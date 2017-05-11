@@ -164,7 +164,7 @@ class WorkProcessorTest
     public function testRetrieveJobFromMultipleQueues () {
         $job = new SimpleJob (3355);
 
-        /** Returns a new LoggingWorkProcessor instance that contains one job in MULTI_QUEUES[0], nothing else. */
+        /** Returns a new LoggingWorkProcessor instance that contains one job in mq1, nothing else. */
         $fn_store = function () use($job) : LoggingWorkProcessor {
             $wp = wp();
             $wp->getWorkServerAdapter()->storeJob(
@@ -174,7 +174,7 @@ class WorkProcessorTest
         };
 
         /**
-         * Checks that a number of queues to poll
+         * Checks polling multiple queues at once
          * returns exactly the correct amount of queued jobs.
          *
          * @param LoggingWorkProcessor $wp
