@@ -8,8 +8,8 @@ use mle86\WQ\Exception\UnserializationException;
  * This class wraps a {@see Job} instance
  * recently fetched and unserialized from some Work Queue.
  *
- * The instance also records the Work Server's original handle for that stored job
- * and the Work Queue name the job came from.
+ * The instance also records the name of the job's original work queue
+ * and the Work Server's opaque handle for that job.
  * (That is why this class exists in the first place:
  *  we don't want to force {@see Job} implementors
  *  to have to record that stuff.)
@@ -36,6 +36,11 @@ final class QueueEntry
         return $this->job;
     }
 
+    /**
+     * @internal This is an opaque handle
+     *           which belongs to the originating {@see WorkServerAdapter}.
+     *           Don't use this value unless you know exactly what you're doing.
+     */
     public function getHandle () {
         return $this->handle;
     }
