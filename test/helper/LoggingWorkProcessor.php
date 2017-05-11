@@ -5,6 +5,9 @@ use mle86\WQ\Job\Job;
 use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkProcessor;
 
+/**
+ * @internal This is part of the unit tests.
+ */
 class LoggingWorkProcessor
     extends WorkProcessor
 {

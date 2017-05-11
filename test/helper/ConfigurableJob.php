@@ -10,6 +10,8 @@ namespace mle86\WQ\Tests;
  *
  * Actions like construction and execution are logged in the public class property {@see $log}.
  * Apart from that, {@see execute()} does nothing.
+ *
+ * @internal This is part of the unit tests.
  */
 class ConfigurableJob
     extends SimpleJob
