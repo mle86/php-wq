@@ -40,10 +40,10 @@ abstract class AbstractJob
 
     /**
      * @var int  The current try index.
-     * The default {@see serialize()} implementation
-     * will increase this by 1 before serializing it,
-     * so that the serialization always contains
-     * the correct next value.
+     *           The default {@see serialize()} implementation
+     *           will increase this by 1 before serializing it,
+     *           so that the serialization always contains
+     *           the correct next value.
      * @internal This should not be accessed directly, except for a custom {@see serialize()} override.
      * @see      jobTryIndex()
      */
@@ -69,7 +69,7 @@ abstract class AbstractJob
      * This default implementation simply writes all serialized values
      * to their corresponding object property.
      * That includes the {@see $_try_index} counter.
-     * Private and/or static properties will never be written.
+     * Private and/or static properties will never be written to.
      *
      * @param string $serialized
      */
@@ -82,32 +82,15 @@ abstract class AbstractJob
         }
     }
 
-    /**
-     * Whether this job can be retried later.
-     * The WorkServerAdapter implementation will check this if job execution has failed.
-     * If it returns true, the job will be stored in the Work Queue again
-     * to be re-executed after {@see jobRetryDelay()} seconds;
-     * if it returns false, the job will be buried for later inspection.
-     */
+
     public function jobCanRetry () : bool {
         return ($this->jobTryIndex() <= static::MAX_RETRY);
     }
 
-    /**
-     * How many seconds this job should be delayed in the Work Queue
-     * before the next retry.
-     * If {@see jobCanRetry()} is true,
-     * this must return a positive integer.
-     */
     public function jobRetryDelay () : ?int {
         return self::DEFAULT_RETRY_DELAY;
     }
 
-    /**
-     * On the first try, this must return 1,
-     * on the first retry, this must return 2,
-     * and so on.
-     */
     public function jobTryIndex () : int {
         /* Before first serialization, _try_index is zero.
          * On every serialization, this value will be increased by 1.

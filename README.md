@@ -363,7 +363,7 @@ It implements the `Job` interface (partially).
     This default implementation simply writes all serialized values
     to their corresponding object property.
     That includes the `$_try_index` counter.
-    Private and/or static properties will never be written.
+    Private and/or static properties will never be written to.
 
 * <code>public function <b>jobCanRetry</b> (): bool { … }</code>  
     See `Job::jobCanRetry()`.
