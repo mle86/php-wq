@@ -145,8 +145,17 @@ class WorkProcessor
 
     private function handleExpiredJob (QueueEntry $qe) {
         // We'll never execute expired jobs.
-        $this->server->deleteEntry($qe);
-        $this->log(LogLevel::NOTICE, "expired, deleted", $qe);
+        if ($this->options[self::WP_EXPIRED] === self::DELETE_EXPIRED) {
+            $this->server->deleteEntry($qe);
+            $this->log(LogLevel::NOTICE, "expired, deleted", $qe);
+        } elseif ($this->options[self::WP_EXPIRED] === self::BURY_EXPIRED) {
+            $this->server->buryEntry($qe);
+            $this->log(LogLevel::NOTICE, "expired, buried", $qe);
+        } else {
+            // move it to a different wq
+            $this->server->requeueEntry($qe, 0, $this->options[self::WP_EXPIRED]);
+            $this->log(LogLevel::NOTICE, "expired, moved to {$this->options[self::WP_EXPIRED]}", $qe);
+        }
     }
 
 
@@ -184,11 +193,35 @@ class WorkProcessor
      */
     const WP_DELETE = 3;
 
+    /**
+     * If this option is set to {@see DELETE_EXPIRED} (default),
+     * expired jobs will be deleted.
+     * If this option is set to {@see BURY_EXPIRED},
+     * expired jobs will be buried instead.
+     * Otherwise, its value is taken as a Work Queue name
+     * where all expired jobs will be moved to.
+     *
+     * (It's possible to put the origin work queue name here,
+     *  resulting in an infinite loop
+     *  as soon as an expired job is encountered.
+     *  Probably not what you want.)
+     *
+     * @see setOptions()
+     */
+    const WP_EXPIRED = 4;
+
+
+    /** @see WP_EXPIRED */
+    const DELETE_EXPIRED = true;
+    /** @see WP_EXPIRED */
+    const BURY_EXPIRED = false;
+
 
     protected static $defaultOptions = [
         self::WP_ENABLE_RETRY => true,
         self::WP_ENABLE_BURY  => true,
         self::WP_DELETE       => true,
+        self::WP_EXPIRED      => self::DELETE_EXPIRED,
     ];
 
     protected $options = [];
@@ -212,6 +245,7 @@ class WorkProcessor
      *   - {@see WorkProcessor::WP_ENABLE_RETRY}
      *   - {@see WorkProcessor::WP_ENABLE_BURY}
      *   - {@see WorkProcessor::WP_DELETE}
+     *   - {@see WorkProcessor::WP_EXPIRED}
      *
      * @param array $options
      *   Example:

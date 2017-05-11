@@ -461,6 +461,17 @@ Option keys:
      resulting in an infinite loop
      as all jobs in the queue will be executed over and over.
      Probably not what you want.)
+* <code>const <b>WP_EXPIRED</b></code>  
+    If this option is set to `DELETE_EXPIRED` (default),
+    expired jobs will be deleted.
+    If this option is set to `BURY_EXPIRED`,
+    expired jobs will be buried instead.
+    Otherwise, its value is taken as a Work Queue name
+    where all expired jobs will be moved to.  
+    (It's possible to put the origin work queue name here,
+     resulting in an infinite loop
+     as soon as an expired job is encountered.
+     Probably not what you want.)
 
 
 Hook methods:
