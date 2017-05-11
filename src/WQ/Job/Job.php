@@ -48,5 +48,14 @@ interface Job
      */
     public function jobTryIndex () : int;
 
+    /**
+     * Return `true` here if the instance should be considered expired.
+     * The `WorkServerAdapter` implementation will still return expired instances,
+     * but the `WorkProcessor` class won't process them –
+     * they will be deleted as soon as they are encountered.
+     * Always return `false` here if your job class cannot expire.
+     */
+    public function jobIsExpired () : bool;
+
 }
 

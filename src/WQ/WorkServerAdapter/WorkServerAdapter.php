@@ -29,6 +29,8 @@ interface WorkServerAdapter
      * This method will reserve the returned job for a short time.
      * If you want to delete/bury/re-queue the job,
      * use the {@see deleteEntry}/{@see buryEntry}/{@see requeueEntry} methods.
+     * Keep in mind to check the {@see Job::jobIsExpired()} flag
+     * before executing the job.
      *
      * If you don't want to do all of this manually,
      * use {@see WorkProcessor::executeNextJob()} instead.

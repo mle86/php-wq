@@ -19,6 +19,10 @@ namespace mle86\WQ\Job;
  *   override the {@see jobRetryDelay()} method
  *   (you'll probably want to have an increasing delay,
  *    so base it on the {@see jobTryIndex()} counter value).
+ * - If your queued jobs can expire before being executed,
+ *   override {@see jobIsExpired()} so that it returns true
+ *   if the expiry condition is reached. You may need to
+ *   add a job creation timestamp property for that.
  */
 abstract class AbstractJob
     implements Job
@@ -98,6 +102,10 @@ abstract class AbstractJob
          * and still expect a reasonable result,
          * so we'll never return zero here.  */
         return $this->_try_index ?: 1;
+    }
+
+    public function jobIsExpired () : bool {
+        return false;
     }
 
 

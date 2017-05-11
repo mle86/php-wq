@@ -29,6 +29,8 @@ class AbstractJobTest
             "New AbstractJob instance's jobTryIndex() value should be 1!");
         $this->assertFalse($j->jobCanRetry(),
             "AbstractJob::jobCanRetry() returned true for a newly-created MAX_RETRY=0 instance!");
+        $this->assertFalse($j->jobIsExpired(),
+            "AbstractJob::jobIsExpired() did not return false for a newly-created instance!");
 
         return $j;
     }

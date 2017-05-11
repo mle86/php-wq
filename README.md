@@ -303,6 +303,13 @@ if they are part of the Job implementation at all.
     on the first retry, this must return `2`,
     and so on.
 
+* <code>public function <b>jobIsExpired</b> () : bool</code>  
+    Return `true` here if the instance should be considered expired.
+    The `WorkServerAdapter` implementation will still return expired instances,
+    but the `WorkProcessor` class won't process them –
+    they will be deleted as soon as they are encountered.
+    Always return `false` here if your job class cannot expire.
+
 
 ## `AbstractJob` base class
 
@@ -322,6 +329,10 @@ simply extend this class.
   override the `jobRetryDelay()` method
   (you'll probably want to have an increasing delay,
    so base it on the `jobTryIndex()` counter value).
+* If your queued jobs can expire before being executed,
+  override `jobIsExpired()` so that it returns `true`
+  if the expiry condition is reached. You may need to
+  add a job creation timestamp property for that.
 
 It implements the `Job` interface (partially).
 
@@ -370,6 +381,13 @@ It implements the `Job` interface (partially).
     This default implementation
     always returns `true`
     if `jobTryIndex() ≤ MAX_RETRY`.
+
+* <code>public function <b>jobIsExpired</b> () : bool { … }</code>  
+    See `Job::jobIsExpired()`.
+    This default implementation
+    always returns `false`,
+    meaning that `AbstractJob` implementations
+    never expire by default.
 
 
 ## `WorkProcessor` class
@@ -498,7 +516,9 @@ in case of Redis, Work Queues are Lists.
     and returns it.  
     This method will reserve the returned job for a short time.
     If you want to delete/bury/re-queue the job,
-    use the `deleteEntry`/`buryEntry`/`requeueEntry` methods.  
+    use the `deleteEntry`/`buryEntry`/`requeueEntry` methods.
+    Keep in mind to check the `Job::jobIsExpired()` flag
+    before executing the job.  
     If you don't want to do all of this manually,
     use `WorkProcessor::executeNextJob()` instead.
     Returns `null` if no job was available after waiting for `$timeout` seconds.
