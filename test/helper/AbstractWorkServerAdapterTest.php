@@ -550,7 +550,7 @@ abstract class AbstractWorkServerAdapterTest
         $this->assertSame($j1b->getMarker(), $qj1b->getMarker(),
             "Queue interference: after polling both qi1 and qi2 once, we got something UNEXPECTED from polling qi1 AGAIN!");
         $this->assertSame($j2->getMarker(), $qj2->getMarker(),
-            "Queue interference: after polling both qi1, we got something UNEXPECTED from polling qi2!");
+            "Queue interference: after polling both qi1 and qi2, we got something UNEXPECTED from polling qi2!");
 
         $ws->deleteEntry($qe1a);
         $ws->deleteEntry($qe1b);
@@ -558,7 +558,7 @@ abstract class AbstractWorkServerAdapterTest
     }
 
     /**
-     * LAST TEST METHOD!
+     * LAST TEST METHOD IN THIS BASE CLASS!
      *
      * @depends testGetServerInstance
      * @depends testRequeueJob
