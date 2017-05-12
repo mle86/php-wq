@@ -26,7 +26,7 @@ interface Job
 
     /**
      * Whether this job can be retried later.
-     * The WorkServerAdapter implementation will check this if job execution has failed.
+     * The {@see WorkProcessor} helper class will check this if job execution has failed.
      * If it returns true, the job will be stored in the Work Queue again
      * to be re-executed after {@see jobRetryDelay()} seconds;
      * if it returns false, the job will be buried for later inspection.
