@@ -59,7 +59,7 @@ final class QueueEntry
      * @param string $originWorkQueue
      * @param mixed $handle          The Work Server adapter's representation of this job.
      * @param string $jobId          A unique ID for this job. Only used for logging. Not every WorkServerAdapter implementation provides this!
-     * @return QueueEntry
+     * @return self
      * @throws UnserializationException  if $serializedData corresponded to a non-object or to a non-{@see Job} object
      */
     public static function fromSerializedJob (string $serializedData, string $originWorkQueue, $handle, string $jobId) : self {
