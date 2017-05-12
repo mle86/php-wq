@@ -81,9 +81,6 @@ class WorkProcessor
             return null;
         }
 
-        $this->log(LogLevel::INFO, "got job");
-        $this->onJobAvailable($qe);
-
         $job = $qe->getJob();
 
         if ($job->jobIsExpired()) {
@@ -91,6 +88,9 @@ class WorkProcessor
             $this->handleExpiredJob($qe);
             return null;
         }
+
+        $this->log(LogLevel::INFO, "got job");
+        $this->onJobAvailable($qe);
 
         $ret = null;
         try {

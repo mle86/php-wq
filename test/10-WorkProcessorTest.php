@@ -251,7 +251,6 @@ class WorkProcessorTest
             "Expired job was executed!");
         $this->assertSame(
             ($expect_log = [
-                ["JOB", $marker],
                 ["EXPIRED", $marker],
             ]),
             $wp->log,
@@ -293,7 +292,6 @@ class WorkProcessorTest
             "Expired-on-retry job was executed!");
         $this->assertSame(
             ($expect_log = array_merge($expect_log, [
-                ["JOB", $marker],
                 ["EXPIRED", $marker],
             ])),
             $wp->log,
