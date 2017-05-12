@@ -36,6 +36,6 @@ What next?
 **See next: [Work the Queue].**
 
 
-[WorkServerAdapter]: <Ref WorkServerAdapter interface.md>
-[Work the Queue]: <Work the Queue.md>
+[WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
+[Work the Queue]: Work_the_Queue.md
 

@@ -84,5 +84,5 @@ It fully implements the [`Job`][Job] interface.
     except for a custom `serialize()` override.
 
 
-[Job]: <Ref Job interface.md>
+[Job]: Ref_Job_interface.md
 

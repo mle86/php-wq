@@ -31,8 +31,8 @@ So what happens if the execution throws an Exception?
    It will throw an <code>[UnserializationException]</code>.)
 
 
-[WorkServerAdapter]: <Ref WorkServerAdapter interface.md>
-[AbstractJob]: <Ref AbstractJob base class.md>
-[Job]: <Ref Job interface.md>
-[UnserializationException]: <Ref Exceptions.md>
+[WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
+[AbstractJob]: Ref_AbstractJob_base_class.md
+[Job]: Ref_Job_interface.md
+[UnserializationException]: Ref_Exceptions.md
 

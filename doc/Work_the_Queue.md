@@ -33,6 +33,6 @@ and be done.
 
 **See next: [Error Handling].**
 
-[Error Handling]: <Error Handling.md>
-[WorkProcessor]: <Ref WorkProcessor class.md>
+[Error Handling]: Error_Handling.md
+[WorkProcessor]: Ref_WorkProcessor_class.md
 

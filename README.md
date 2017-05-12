@@ -145,16 +145,16 @@ Class reference:
 * [AbstractJob] base class
 * [WorkServerAdapter] interface
 * [WorkProcessor] class
-* [Exceptions](doc/Ref Exceptions.md)
+* [Exceptions](doc/Ref_Exceptions.md)
 
 
-[Job]: <doc/Ref Job interface.md>
-[AbstractJob]: <doc/Ref AbstractJob base class.md>
-[WorkServerAdapter]: <doc/Ref WorkServerAdapter interface.md>
-[WorkProcessor]: <doc/Ref WorkProcessor class.md>
+[Job]: doc/Ref_Job_interface.md
+[AbstractJob]: doc/Ref_AbstractJob_base_class.md
+[WorkServerAdapter]: doc/Ref_WorkServerAdapter_interface.md
+[WorkProcessor]: doc/Ref_WorkProcessor_class.md
 
-[Implementing a Job class]: <doc/Implementing a Job class.md>
-[Execute or Queue]: <Execute or Queue.md>
-[Work the Queue]: <doc/Work the Queue.md>
-[Error Handling]: <doc/Error Handling.md>
+[Implementing a Job class]: doc/Implementing_a_Job_class.md
+[Execute or Queue]: Execute_or_Queue.md
+[Work the Queue]: doc/Work_the_Queue.md
+[Error Handling]: doc/Error_Handling.md
 

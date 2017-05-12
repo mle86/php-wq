@@ -48,7 +48,7 @@ and the built-in [`Serializable`](http://php.net/manual/en/class.serializable.ph
 **See next: [Execute or Queue].**
 
 
-[WorkServerAdapter]: <Ref WorkServerAdapter interface.md>
-[AbstractJob]: <Ref AbstractJob base class.md>
-[Job]: <Ref Job interface.md>
-[Execute or Queue]: <Execute or Queue.md>
+[WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
+[AbstractJob]: Ref_AbstractJob_base_class.md
+[Job]: Ref_Job_interface.md
+[Execute or Queue]: Execute_or_Queue.md
