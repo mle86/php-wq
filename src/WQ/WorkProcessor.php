@@ -89,7 +89,7 @@ class WorkProcessor
             return null;
         }
 
-        $this->log(LogLevel::INFO, "got job");
+        $this->log(LogLevel::INFO, "got job", $qe);
         $this->onJobAvailable($qe);
 
         $ret = null;
