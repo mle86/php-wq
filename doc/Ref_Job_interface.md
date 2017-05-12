@@ -11,7 +11,7 @@ because all Jobs have to be serializable
 in order to be stored in a Work Queue.
 
 For your own Job classes,
-see the `AbstractJob` base class instead;
+see the [`AbstractJob`](AbstractJob) base class instead;
 it is easier to work with
 as it provides default implementations
 for the required methods.
@@ -25,7 +25,7 @@ if they are part of the Job implementation at all.
 
 * <code>public function <b>jobCanRetry</b> () : bool</code>  
     Whether this job can be retried later.
-    The `WorkProcessor` helper class will check this job execution has failed.  
+    The [WorkProcessor] helper class will check this job execution has failed.  
     If it returns true, the job will be stored in the Work Queue again
     to be re-executed after `jobRetryDelay()` seconds;
     if it returns false, the job will be buried for later inspection.
@@ -43,7 +43,11 @@ if they are part of the Job implementation at all.
 * <code>public function <b>jobIsExpired</b> () : bool</code>  
     Return `true` here if the instance should be considered expired.
     The `WorkServerAdapter` implementation will still return expired instances,
-    but the `WorkProcessor` class won't process them –
+    but the [WorkProcessor] class won't process them –
     they will be deleted as soon as they are encountered.
     Always return `false` here if your job class cannot expire.
+
+
+[AbstractJob]: Ref_AbstractJob_base_class.md
+[WorkProcessor]: Ref_WorkProcessor_class.md
 
