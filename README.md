@@ -116,7 +116,7 @@ $mailJob = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
 delaying the application's response and requiring exception handling:
 
 ```php
-$mailJob->execute();  // this might throw a RuntimeException!
+$mailJob->send();  // this might throw a RuntimeException!
 ```
 
 Or it can put the job in a work queue for later execution:
@@ -147,7 +147,7 @@ We need a process that checks the work queue regularly,
 executing any jobs it finds.
 
 We could write a cronjob script
-that regularly calls `$workServer->getNextQueueEntry("mail")->getJob()->execute()`,
+that regularly calls `$workServer->getNextQueueEntry("mail")->getJob()->send()`,
 but we'd need to add some custom error handling.
 There's a [`WorkProcessor`](#workprocessor-class) class that already does all of that:
 
@@ -156,14 +156,14 @@ use mle86\WQ\WorkProcessor;
 
 $processor = new WorkProcessor ($workServer);
 $processor->executeNextJob("mail", function (EMail $mailJob) {
-    $mailJob->execute();
+    $mailJob->send();
 });
 ```
 
 This will fetch the next job from the “`mail`” queue
 (waiting up to 5 seconds until a job arrives
  if there's no job currently available),
-run the callback function to call its `execute()` send method,
+run the callback function to call its `send()` method,
 and then delete it from the work queue
 (unless it threw an exception).
 
@@ -215,7 +215,7 @@ class EMail
         $this->message   = $message;
     }
     
-    public function execute () {
+    public function send () {
         if (mail($this->recipient, $this->subject, $this->message)) {
             // ok, has been sent!
         } else {
@@ -252,7 +252,7 @@ printf("%s worker %d starting.\n", $queue, getmypid());
 
 $processor  = new WorkProcessor (BeanstalkdWorkServer::connect("localhost"));
 $fn_handler = function (EMail $mailJob) {
-    $mailJob->execute();
+    $mailJob->send();
 };
 
 while (true) {
