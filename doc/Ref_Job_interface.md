@@ -1,4 +1,4 @@
-# Reference: `Job` interface
+# `Job` interface
 
 Declaration: <code>interface mle86\WQ\Job\\<b>Job</b> implements \Serializable</code>  
 Source file: [src/WQ/Job/Job.php](/src/WQ/Job/Job.php)
