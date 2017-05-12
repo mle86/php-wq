@@ -26,7 +26,7 @@ in case of Redis, Work Queues are Lists.
     Keep in mind to check the `Job::jobIsExpired()` flag
     before executing the job.  
     If you don't want to do all of this manually,
-    use `WorkProcessor::processNextJob()` instead.
+    use `WorkProcessor::processNextJob()` instead.  
     Returns `null` if no job was available after waiting for `$timeout` seconds.
     * `$workQueue`: The name of the Work Queue to poll (string) or an array of Work Queues to poll.
       In the latter case, the first job in any of these Work Queues will be returned.

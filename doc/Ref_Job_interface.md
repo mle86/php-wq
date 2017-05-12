@@ -25,7 +25,7 @@ if they are part of the Job implementation at all.
 
 * <code>public function <b>jobCanRetry</b> () : bool</code>  
     Whether this job can be retried later.
-    The [WorkProcessor] helper class will check this job execution has failed.  
+    The [WorkProcessor] helper class will check this if job execution has failed.  
     If it returns true, the job will be stored in the Work Queue again
     to be re-executed after `jobRetryDelay()` seconds;
     if it returns false, the job will be buried for later inspection.
