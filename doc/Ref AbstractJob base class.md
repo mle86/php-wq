@@ -22,7 +22,7 @@ simply extend this class.
   if the expiry condition is reached. You may need to
   add a job creation timestamp property for that.
 
-It implements the `Job` interface (partially).
+It implements the [`Job`][Job] interface (partially).
 
 * <code>const int <b>MAX_RETRY</b> = 0</code>  
     How often a job of this type can be retried if it fails.
@@ -73,4 +73,7 @@ It implements the `Job` interface (partially).
     always returns `false`,
     meaning that `AbstractJob` implementations
     never expire by default.
+
+
+[Job]: <Ref Job interface.md>
 

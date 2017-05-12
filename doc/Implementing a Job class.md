@@ -26,7 +26,7 @@ class EMail
         $this->message   = $message;
     }
     
-    public function execute () {
+    public function send () {
         if (mail($this->recipient, $this->subject, $this->message)) {
             // ok, has been sent!
         } else {
