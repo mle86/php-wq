@@ -9,6 +9,9 @@ called `processNextJob()`
 that does not only execute the next job immediately
 but will also try to re-queue it if it fails.
 
+
+## Methods:
+
 * <code>public function <b>__construct</b> (WorkServerAdapter $workServer, LoggerInterface $logger = null, array $options = [])</code>  
     Instantiates a new WorkProcessor.
     This causes no side effects yet.

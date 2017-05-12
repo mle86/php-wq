@@ -42,7 +42,7 @@ interface WorkServerAdapter
      *                                   Set this to NOBLOCK if the method should return immediately.
      *                                   Set this to FOREVER if the call should block until a job becomes available, no matter how long it takes.
      * @return QueueEntry  Returns the next job in the work queue(s),
-     *                                   or NULL if no job was available after waiting for $timeout seconds.
+     *                     or NULL if no job was available after waiting for $timeout seconds.
      */
     public function getNextQueueEntry ($workQueue, int $timeout = self::DEFAULT_TIMEOUT) : ?QueueEntry;
 

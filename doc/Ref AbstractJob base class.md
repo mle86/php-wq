@@ -24,10 +24,8 @@ simply extend this class.
 
 It implements the [`Job`][Job] interface (partially).
 
-* <code>const int <b>MAX_RETRY</b> = 0</code>  
-    How often a job of this type can be retried if it fails.
-    Override this as necessary in subclasses.
-    Zero or negative values mean that this job can only be tried once, never re-tried.
+
+## Methods:
 
 * <code>public function <b>jobRetryDelay</b> (): ?int { … }</code>  
     See `Job::jobRetryDelay()`.
@@ -39,16 +37,6 @@ It implements the [`Job`][Job] interface (partially).
     This default implementation
     always returns the `$_try_index` value
     or `1`, whichever is greater.
-
-* <code>protected <b>$_try_index</b> = 0</code>  
-    The current try index.  
-    The default `serialize()` implementation
-    will increase this by 1 before serializing it,
-    so that the serialization always contains
-    the correct next value.  
-    *Internal:*
-    This should not be accessed directly,
-    except for a custom `serialize()` override.
 
 * <code>public function <b>serialize</b> () { … }</code>  
     This default implementation stores all public and protected properties.
@@ -73,6 +61,27 @@ It implements the [`Job`][Job] interface (partially).
     always returns `false`,
     meaning that `AbstractJob` implementations
     never expire by default.
+
+
+## Constants:
+
+* <code>const int <b>MAX_RETRY</b> = 0</code>  
+    How often a job of this type can be retried if it fails.
+    Override this as necessary in subclasses.
+    Zero or negative values mean that this job can only be tried once, never re-tried.
+
+
+## Internals:
+
+* <code>protected <b>$_try_index</b> = 0</code>  
+    The current try index.  
+    The default `serialize()` implementation
+    will increase this by 1 before serializing it,
+    so that the serialization always contains
+    the correct next value.  
+    *Internal:*
+    This should not be accessed directly,
+    except for a custom `serialize()` override.
 
 
 [Job]: <Ref Job interface.md>

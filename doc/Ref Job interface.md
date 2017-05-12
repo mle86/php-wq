@@ -21,6 +21,8 @@ or how the responsible method(s) should be named,
 if they are part of the Job implementation at all.
 
 
+## Methods:
+
 * <code>public function <b>jobCanRetry</b> () : bool</code>  
     Whether this job can be retried later.
     The `WorkProcessor` helper class will check this job execution has failed.  
