@@ -98,7 +98,14 @@ class WorkProcessor
         } catch (\Throwable $e) {
             // The job failed.
             $this->handleFailedJob($qe, $e);
-            throw $e;
+
+            if ($this->options[self::WP_RETHROW_EXCEPTIONS]) {
+                // pass exception to caller
+                throw $e;
+            } else {
+                // drop it
+                return null;
+            }
         }
 
         // The job succeeded!
@@ -212,6 +219,18 @@ class WorkProcessor
      */
     const WP_EXPIRED = 4;
 
+    /**
+     * If this option is TRUE (default),
+     *  all exceptions thrown by handler callback
+     *  will be re-thrown so that the caller
+     *  receives them as well.
+     * If this option is FALSE,
+     *  {@see processNextJob()} will silently return NULL instead.
+     *
+     * @see setOptions()
+     */
+    const WP_RETHROW_EXCEPTIONS = 5;
+
 
     /** @see WP_DELETE */
     const DELETE_FINISHED = true;
@@ -222,10 +241,11 @@ class WorkProcessor
 
 
     protected static $defaultOptions = [
-        self::WP_ENABLE_RETRY => true,
-        self::WP_ENABLE_BURY  => true,
-        self::WP_DELETE       => self::DELETE_FINISHED,
-        self::WP_EXPIRED      => self::DELETE_EXPIRED,
+        self::WP_ENABLE_RETRY       => true,
+        self::WP_ENABLE_BURY        => true,
+        self::WP_DELETE             => self::DELETE_FINISHED,
+        self::WP_EXPIRED            => self::DELETE_EXPIRED,
+        self::WP_RETHROW_EXCEPTIONS => true,
     ];
 
     protected $options = [];
@@ -250,6 +270,7 @@ class WorkProcessor
      *   - {@see WorkProcessor::WP_ENABLE_BURY}
      *   - {@see WorkProcessor::WP_DELETE}
      *   - {@see WorkProcessor::WP_EXPIRED}
+     *   - {@see WorkProcessor::WP_RETHROW_EXCEPTIONS}
      *
      * @param array $options
      *   Example:

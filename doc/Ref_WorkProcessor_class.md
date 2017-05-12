@@ -84,6 +84,13 @@ but will also try to re-queue it if it fails.
      resulting in an infinite loop
      as soon as an expired job is encountered.
      Probably not what you want.)
+* <code>const <b>WP_RETHROW_EXCEPTIONS</b></code>  
+    If this option is `true` (default),
+    all exceptions thrown by handler callback
+    will be re-thrown so that the caller
+    receives them as well.
+    If this option is `false`,
+    `processNextJob()` will silently return `null` instead.
 
 
 ## Hook methods:
