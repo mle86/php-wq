@@ -7,7 +7,7 @@ such as Beanstalkd or Redis
 to execute them at a later time.
 
 This is
-**version 0.5.1**.
+**version 0.5.2**.
 
 
 # Installation
@@ -253,6 +253,7 @@ printf("%s worker %d starting.\n", $queue, getmypid());
 $processor  = new WorkProcessor (BeanstalkdWorkServer::connect("localhost"));
 $fn_handler = function (EMail $mailJob) {
     $mailJob->send();
+    // don't catch exceptions here, or the WorkProcessor won't see them.
 };
 
 while (true) {
