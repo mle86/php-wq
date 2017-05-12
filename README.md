@@ -269,7 +269,7 @@ while (true) {
 
 ## `Job` interface
 
-(<code>interface mle86\WQ\Job\\<b>Job</b></code>)
+(<code>interface [mle86\WQ\Job\\<b>Job</b>](src/WQ/Job/Job.php)</code>)
 
 A Job is a representation of some task to do.
 It can be stored in a Work Queue with `WorkServerAdapter::storeJob()`.
@@ -316,7 +316,7 @@ if they are part of the Job implementation at all.
 
 ## `AbstractJob` base class
 
-(<code>abstract class mle86\WQ\Job\\<b>AbstractJob</b> implements Job</code>)
+(<code>abstract class [mle86\WQ\Job\\<b>AbstractJob</b>](src/WQ/Job/AbstractJob.php) implements Job</code>)
 
 To build a working Job class,
 simply extend this class.
@@ -395,7 +395,7 @@ It implements the `Job` interface (partially).
 
 ## `WorkProcessor` class
 
-(<code>class mle86\WQ\\<b>WorkProcessor</b></code>)
+(<code>class [mle86\WQ\\<b>WorkProcessor</b>](src/WQ/WorkProcessor.php)</code>)
 
 This class implements a wrapper around
 `WorkServerAdapter::getNextJob()`
@@ -511,7 +511,7 @@ Their return value is ignored.
 
 ## `WorkServerAdapter` interface
 
-(<code>interface mle86\WQ\WorkServerAdapter\\<b>WorkServerAdapter</b></code>)
+(<code>interface [mle86\WQ\WorkServerAdapter\\<b>WorkServerAdapter</b>](src/WQ/WorkServerAdapter/WorkServerAdapter.php)</code>)
 
 A Work Server stores jobs inside one or more Work Queues.
 
@@ -580,14 +580,14 @@ in case of Redis, Work Queues are Lists.
 
 ## Exception classes
 
-* <code>interface mle86\WQ\Exception\\<b>WQException</b></code>  
+* <code>interface [mle86\WQ\Exception\\<b>WQException</b>](src/WQ/Exception/WQException.php)</code>  
     All WQ Exceptions implement this empty interface.
 
-    * <code>class mle86\WQ\Exception\\<b>OptionValueException</b> extends \InvalidArgumentException</code>  
+    * <code>class [mle86\WQ\Exception\\<b>OptionValueException</b>](src/WQ/Exception/OptionValueException.php) extends \InvalidArgumentException</code>  
         Thrown by `WorkProcessor::setOption` and `WorkProcessor::setOptions`
         in case of an invalid option value.
 
-    * <code>class mle86\WQ\Exception\\<b>UnserializationException</b> extends \UnexpectedValueException</code>  
+    * <code>class [mle86\WQ\Exception\\<b>UnserializationException</b>](src/WQ/Exception/UnserializationException.php) extends \UnexpectedValueException</code>  
         Thrown by `QueueEntry::fromSerializedJob()`
         in case of invalid job data:
         - invalid serialization
