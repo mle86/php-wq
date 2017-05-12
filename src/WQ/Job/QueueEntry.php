@@ -17,7 +17,7 @@ use mle86\WQ\Exception\UnserializationException;
  * that handle is the original {@see \Pheanstalk\Job} instance.
  *
  * Returned by {@see WorkServerAdapter::getNextQueueEntry()}
- * and used by {@see WorkProcessor::executeNextJob()}.
+ * and used by {@see WorkProcessor::processNextJob()}.
  */
 final class QueueEntry
 {

@@ -22,7 +22,7 @@ function array_delete_one (array $input, $value_to_delete, bool $strict = true) 
 /**
  * This function executes any {@see SimpleJob}'s built-in {@see execute()} method,
  * returning its return value.
- * It's only here to shorten our test {@see WorkProcessor::executeNextJob()} calls.
+ * It's only here to shorten our test {@see WorkProcessor::processNextJob()} calls.
  *
  * @param SimpleJob $job
  * @return mixed

@@ -29,7 +29,7 @@ class WorkProcessorTest
     public function testPollWithoutJobs () {
         $wp  = wp();
         $q   = "some-queue-name";
-        $ret = $wp->executeNextJob($q, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $ret = $wp->processNextJob($q, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
 
         $this->assertNull($ret,
             "We got a job from a non-existent work queue?!?");
@@ -64,7 +64,7 @@ class WorkProcessorTest
         $expect_log = [];
         $this->expectSuccess($wp, self::SIMPLE_JOB_MARKER, $expect_log);
 
-        $ret = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $ret = $wp->processNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
         $this->assertNull($ret,
             "Finished job was not removed from the queue!");
     }
@@ -149,7 +149,7 @@ class WorkProcessorTest
 
         $queues = ["emptymq1", "emptymq1", "emptymq5"];
 
-        $ret = $wp->executeNextJob($queues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $ret = $wp->processNextJob($queues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
 
         $this->assertNull($ret,
             "Polling multiple queues at once returned some result when they should all have been empty!");
@@ -185,7 +185,7 @@ class WorkProcessorTest
             $expected_log = [];
 
             for ($n = 0; $n < $n_expected; $n++) {
-                $ret = $wp->executeNextJob($pollQueues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+                $ret = $wp->processNextJob($pollQueues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
 
                 $expected_log[] = ["JOB", $job->getMarker()];
                 $expected_log[] = ["SUCCESS", $job->getMarker(), SimpleJob::EXECUTE_RETURN_VALUE];
@@ -200,14 +200,14 @@ class WorkProcessorTest
             }
 
             $expected_log[] = ["NOJOBS", join("|", $pollQueues)];
-            $this->assertNull($wp->executeNextJob($pollQueues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK),
+            $this->assertNull($wp->processNextJob($pollQueues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK),
                 "Polling multiple queues after retrieving {$n_expected} jobs from them " .
                 "still returned something!");
             $this->assertSame($expected_log, $wp->log,
                 "Polling multiple queues after retrieving {$n_expected} jobs from them " .
                 "did not clear all those queues!");
             $expected_log[] = ["NOJOBS", join("|", $pollQueues)];
-            $this->assertNull($wp->executeNextJob($pollQueues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK),
+            $this->assertNull($wp->processNextJob($pollQueues, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK),
                 "Polling multiple empty queues A SECOND TIME " .
                 "after retrieving {$n_expected} jobs from them " .
                 "still returned something!");
@@ -244,9 +244,9 @@ class WorkProcessorTest
 
         ConfigurableJob::$expired_marker = $marker;  // this job is expired already!
 
-        $ret = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $ret = $wp->processNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
         $this->assertNull($ret,
-            "An expired job was executed (or executeNextJob() returned something for some other reason)!");
+            "An expired job was executed (or processNextJob() returned something for some other reason)!");
         $this->assertNotContains("EXECUTE-" . $marker, SimpleJob::$log,
             "Expired job was executed!");
         $this->assertSame(
@@ -285,9 +285,9 @@ class WorkProcessorTest
         // first retry would succeed, but it's expired now:
         ConfigurableJob::$expired_marker = $marker;
 
-        $ret = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $ret = $wp->processNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
         $this->assertNull($ret,
-            "An expired-on-retry job was executed (or executeNextJob() returned something for some other reason)!");
+            "An expired-on-retry job was executed (or processNextJob() returned something for some other reason)!");
         $this->assertNotContains("EXECUTE-" . $marker, SimpleJob::$log,
             "Expired-on-retry job was executed!");
         $this->assertSame(
@@ -305,12 +305,12 @@ class WorkProcessorTest
 
 
     private function expectSuccess (LoggingWorkProcessor $wp, int $marker, array &$expect_log) {
-        $ret = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $ret = $wp->processNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
 
         $this->assertContains("EXECUTE-" . $marker, SimpleJob::$log,
             "Job was not executed!");
         $this->assertSame(SimpleJob::EXECUTE_RETURN_VALUE, $ret,
-            "Job was executed, but its return value was not returned by executeNextJob()!");
+            "Job was executed, but its return value was not returned by processNextJob()!");
         $this->assertSame(
             ($expect_log = array_merge($expect_log, [
                 ["JOB", $marker],
@@ -324,7 +324,7 @@ class WorkProcessorTest
     private function expectFail (LoggingWorkProcessor $wp, string $desc) {
         $e = null;
         try {
-            $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+            $wp->processNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
         } catch (\Throwable $e) {
             // ok!
         }
@@ -356,7 +356,7 @@ class WorkProcessorTest
     }
 
     private function expectEmptyWQ (LoggingWorkProcessor $wp, array &$expect_log, string $desc) {
-        $ret          = $wp->executeNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
+        $ret          = $wp->processNextJob(self::QUEUE, __NAMESPACE__.'\\xsj', WorkServerAdapter::NOBLOCK);
         $expect_log[] = ["NOJOBS", self::QUEUE];
         $this->assertNull($ret,
             "There still was a job in the wq! Previous job ({$desc}) not removed or re-queued without delay?");

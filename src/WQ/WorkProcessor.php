@@ -11,7 +11,7 @@ use Psr\Log\NullLogger;
 /**
  * This class implements a wrapper around
  * {@see WorkServerAdapter::getNextJob()}
- * called {@see executeNextJob()}
+ * called {@see processNextJob()}
  * that does not only execute the next job immediately
  * but will also try to re-queue it if it fails.
  */
@@ -74,7 +74,7 @@ class WorkProcessor
      * @return mixed|null Returns <tt>$callback(Job)</tt>'s return value on success (which might be NULL).
      *                    Also returns NULL if there was no job in the work queue to be executed.
      */
-    public function executeNextJob ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
+    public function processNextJob ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
         $qe = $this->server->getNextQueueEntry($workQueue, $timeout);
         if (!$qe) {
             $this->onNoJobAvailable((array)$workQueue);
@@ -275,7 +275,7 @@ class WorkProcessor
 
 
     /**
-     * This method is called by {@see executeNextJob()}
+     * This method is called by {@see processNextJob()}
      * if there is currently no job to be executed in the work queue.
      *
      * This is a hook method for sub-classes.
@@ -287,7 +287,7 @@ class WorkProcessor
 
     /**
      * This method is called if there is a job ready to be executed,
-     * right before {@see executeNextJob()} actually executes it.
+     * right before {@see processNextJob()} actually executes it.
      *
      * This is a hook method for sub-classes.
      *
@@ -298,7 +298,7 @@ class WorkProcessor
 
     /**
      * This method is called after a job has been successfully executed,
-     * right before {@see executeNextJob()} deletes it from the work queue.
+     * right before {@see processNextJob()} deletes it from the work queue.
      *
      * This is a hook method for sub-classes.
      *
@@ -322,7 +322,7 @@ class WorkProcessor
     /**
      * This method is called after a job that can be re-tried at least one more time
      * has failed (thrown an exception),
-     * right before {@see executeNextJob()} re-queues it
+     * right before {@see processNextJob()} re-queues it
      * and re-throws the exception.
      *
      * (If the failed job can _not_ be re-queued, {@see onFailedJob()} is called instead.)
@@ -338,7 +338,7 @@ class WorkProcessor
 
     /**
      * This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
-     * right before {@see executeNextJob()} buries/deletes it
+     * right before {@see processNextJob()} buries/deletes it
      * and re-throws the exception.
      *
      * (If the failed job can be re-tried at least one more time,

@@ -155,7 +155,7 @@ There's a [`WorkProcessor`](#workprocessor-class) class that already does all of
 use mle86\WQ\WorkProcessor;
 
 $processor = new WorkProcessor ($workServer);
-$processor->executeNextJob("mail", function (EMail $mailJob) {
+$processor->processNextJob("mail", function (EMail $mailJob) {
     $mailJob->send();
 });
 ```
@@ -167,7 +167,7 @@ run the callback function to call its `send()` method,
 and then delete it from the work queue
 (unless it threw an exception).
 
-We could easily wrap that `executeNextJob()` call in a `while(true)` loop,
+We could easily wrap that `processNextJob()` call in a `while(true)` loop,
 call that script once on system boot,
 and be done.
 
@@ -176,7 +176,7 @@ and be done.
 
 So what happens if the execution throws an Exception?
 
-* If the handler callback passed to `executeNextJob()`
+* If the handler callback passed to `processNextJob()`
   throws a `\RuntimeException`
   (or some subclass of that),
   the `WorkProcessor` will attempt to *retry* the job later.
@@ -258,7 +258,7 @@ $fn_handler = function (EMail $mailJob) {
 
 while (true) {
     try {
-        $processor->executeNextJob($queue, $fn_handler);
+        $processor->processNextJob($queue, $fn_handler);
     } catch (\Throwable $e) {
         echo $e . "\n";  // TODO: add some real logging here
     }
@@ -397,7 +397,7 @@ It implements the `Job` interface (partially).
 
 This class implements a wrapper around
 `WorkServerAdapter::getNextJob()`
-called `executeNextJob()`
+called `processNextJob()`
 that does not only execute the next job immediately
 but will also try to re-queue it if it fails.
 
@@ -410,7 +410,7 @@ but will also try to re-queue it if it fails.
     * `$options`: Options to set, overriding the default options.
       Works the same as a `setOptions()` call right after instantiation.
 
-* <code>public function <b>executeNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed</code>  
+* <code>public function <b>processNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed</code>  
     Executes the next job in the Work Queue
     by passing it to the callback function.  
     If that results in a `\RuntimeException`,
@@ -481,7 +481,7 @@ Usually, tasks like logging or stats collection should be done in the custom wor
 If multiple worker scripts share the same logging/stats code,
 it can be put into these hook functions instead
 by extending the `WorkProcessor` class.  
-All of these hook methods are called by the `executeNextJob()` method.
+All of these hook methods are called by the `processNextJob()` method.
 In the provided base class, they are empty.
 Their return value is ignored.
 
@@ -499,11 +499,11 @@ Their return value is ignored.
 * <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay)</code>  
     This method is called after a job that can be re-tried at least one more time
     has failed (thrown an exception),
-    right before `executeNextJob()` re-queues it
+    right before `processNextJob()` re-queues it
     and re-throws the exception.
 * <code>protected function <b>onFailedJob</b> (QueueEntry $qe, \Throwable $e)</code>  
     This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
-    right before `executeNextJob()` buries/deletes it
+    right before `processNextJob()` buries/deletes it
     and re-throws the exception.
 
 
@@ -538,7 +538,7 @@ in case of Redis, Work Queues are Lists.
     Keep in mind to check the `Job::jobIsExpired()` flag
     before executing the job.  
     If you don't want to do all of this manually,
-    use `WorkProcessor::executeNextJob()` instead.
+    use `WorkProcessor::processNextJob()` instead.
     Returns `null` if no job was available after waiting for `$timeout` seconds.
     * `$workQueue`: The name of the Work Queue to poll (string) or an array of Work Queues to poll.
       In the latter case, the first job in any of these Work Queues will be returned.
