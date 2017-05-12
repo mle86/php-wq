@@ -16,8 +16,11 @@ use mle86\WQ\Exception\UnserializationException;
  * In case of the Beanstalkd adapter,
  * that handle is the original {@see \Pheanstalk\Job} instance.
  *
- * Returned by {@see WorkServerAdapter::getNextQueueEntry()}
+ * Instances of this class are
+ * returned by {@see WorkServerAdapter::getNextQueueEntry()}
  * and used by {@see WorkProcessor::processNextJob()}.
+ * Unless you process your jobs manually using getNextQueueEntry(),
+ * you won't need to use this class in any way.
  */
 final class QueueEntry
 {
