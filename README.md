@@ -98,7 +98,10 @@ class EMail
 And that's it.
 (Obviously, that's an extremely simplified example for the sake of brevity.)
 
-The `AbstractJob` class already implements the `Job` and the built-in `\Serializable` interfaces.
+The `AbstractJob` class
+already implements
+the `Job` interface
+and the built-in [`Serializable`](http://php.net/manual/en/class.serializable.php) interface.
 
 
 ## Execute or Queue
