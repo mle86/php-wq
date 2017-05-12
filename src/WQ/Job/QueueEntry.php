@@ -58,7 +58,7 @@ final class QueueEntry
      * @param string $serializedData The serialized raw data.
      * @param string $originWorkQueue
      * @param mixed $handle          The Work Server adapter's representation of this job.
-     * @param string $jobId          A unique ID for this job. Only used for logging. Not every WorkServer implementation provides this!
+     * @param string $jobId          A unique ID for this job. Only used for logging. Not every WorkServerAdapter implementation provides this!
      * @return QueueEntry
      * @throws UnserializationException  if $serializedData corresponded to a non-object or to a non-{@see Job} object
      */
