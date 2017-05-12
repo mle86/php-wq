@@ -37,7 +37,8 @@ interface Job
      * How many seconds the job should be delayed in the Work Quere
      * before being re-tried.
      * If {@see jobCanRetry()} is true,
-     * this must return a positive integer.
+     * this must return a positive integer
+     * (or zero, if the job should be re-tried as soon as possible).
      */
     public function jobRetryDelay () : ?int;
 
