@@ -200,7 +200,7 @@ It represents an e-mail that can be sent.
 
 ```php
 <?php
-use mle86\WQ\AbstractJob;
+use mle86\WQ\Job\AbstractJob;
 
 class EMail
     extends AbstractJob
