@@ -44,7 +44,7 @@ but will also try to re-queue it if it fails.
 
 * <code>public function <b>setOption</b> (int $option, $value)</code>  
     Sets one of the configuration options.
-    * `$option`: One of the `WP_` constants.
+    * `$option`: One of the [`WP_` constants](#option-keys).
     * `$value`: The option's new value. The required type depends on the option.
 
 * <code>public function <b>setOptions</b> (array $options)</code>  

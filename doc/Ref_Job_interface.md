@@ -43,7 +43,7 @@ if they are part of the Job implementation at all.
 
 * <code>public function <b>jobIsExpired</b> () : bool</code>  
     Return `true` here if the instance should be considered expired.
-    The `WorkServerAdapter` implementation will still return expired instances,
+    The [WorkServerAdapter] implementations will still return expired instances,
     but the [WorkProcessor] class won't process them –
     they will be deleted as soon as they are encountered.
     Always return `false` here if your job class cannot expire.
@@ -51,4 +51,5 @@ if they are part of the Job implementation at all.
 
 [AbstractJob]: Ref_AbstractJob_base_class.md
 [WorkProcessor]: Ref_WorkProcessor_class.md
+[WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
 

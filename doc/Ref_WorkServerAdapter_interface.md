@@ -8,7 +8,7 @@ A Work Server stores jobs inside one or more Work Queues.
 A `WorkServerAdapter` implementation
 uses a connection handle to an existing Work Server:
 for example, the `RedisWorkServer` implementation
-takes a `\Redis` instance from the phpredis extension.
+takes a `\Redis` instance from the [phpredis extension](https://github.com/phpredis/phpredis).
 
 A Beanstalkd server or a Redis server might be such a Work Server.
 In case of Beanstalkd, Work Queues are Tubes;
@@ -26,7 +26,7 @@ in case of Redis, Work Queues are Lists.
     Keep in mind to check the `Job::jobIsExpired()` flag
     before executing the job.  
     If you don't want to do all of this manually,
-    use `WorkProcessor::processNextJob()` instead.  
+    use <code>[WorkProcessor]::processNextJob()</code> instead.  
     Returns `null` if no job was available after waiting for `$timeout` seconds.
     * `$workQueue`: The name of the Work Queue to poll (string) or an array of Work Queues to poll.
       In the latter case, the first job in any of these Work Queues will be returned.
@@ -72,4 +72,7 @@ in case of Redis, Work Queues are Lists.
     Causes `getNextQueueEntry()` to return immediately.
 * <code>const <b>FOREVER</b></code>  
     Causes `getNextQueueEntry()` to block indefinitely, until a job becomes available.
+
+
+[WorkProcessor]: Ref_WorkProcessor_class.md
 
