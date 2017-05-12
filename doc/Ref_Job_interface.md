@@ -23,6 +23,7 @@ if they are part of the Job implementation at all.
 
 ## Methods:
 
+<a name="jobCanRetry"></a>
 * <code>public function <b>jobCanRetry</b> () : bool</code>  
     Whether this job can be retried later.
     The [WorkProcessor] helper class will check this if job execution has failed.  
@@ -30,17 +31,20 @@ if they are part of the Job implementation at all.
     to be re-executed after `jobRetryDelay()` seconds;
     if it returns false, the job will be buried for later inspection.
 
+<a name="jobRetryDelay"></a>
 * <code>public function <b>jobRetryDelay</b> () : ?int</code>  
     How many seconds the job should be delayed in the Work Quere before being re-tried.
     If `jobCanRetry()` is true,
     this must return a positive integer
     (or zero, if the job should be re-tried as soon as possible).
 
+<a name="jobTryIndex"></a>
 * <code>public function <b>jobTryIndex</b> () : int</code>  
     On the first try, this must return `1`,
     on the first retry, this must return `2`,
     and so on.
 
+<a name="jobIsExpired"></a>
 * <code>public function <b>jobIsExpired</b> () : bool</code>  
     Return `true` here if the instance should be considered expired.
     The [WorkServerAdapter] implementations will still return expired instances,

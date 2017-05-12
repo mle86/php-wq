@@ -17,6 +17,7 @@ in case of Redis, Work Queues are Lists.
 
 ## Methods:
 
+<a name="getNextQueueEntry"></a>
 * <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry</code>  
     This takes the next job from the named work queue(s)
     and returns it.  
@@ -34,6 +35,7 @@ in case of Redis, Work Queues are Lists.
       Set this to `NOBLOCK` if the method should return immediately.
       Set this to `FOREVER` if the call should block until a job becomes available, no matter how long it takes.
 
+<a name="storeJob"></a>
 * <code>public function <b>storeJob</b> (string $workQueue, Job $job, int $delay = 0)</code>  
     Stores a job in the work queue for later processing.
     * `$workQueue`: The name of the Work Queue to store the job in.
@@ -41,12 +43,14 @@ in case of Redis, Work Queues are Lists.
     * `$delay`:  The job delay in seconds after which it will become available to `getNextQueueEntry()`.
       Set to zero (default) for jobs which should be processed as soon as possible.
 
+<a name="buryEntry"></a>
 * <code>public function <b>buryEntry</b> (QueueEntry $entry)</code>  
     Buries an existing job
     so that it won't be returned by `getNextQueueEntry()` again
     but is still present in the system for manual inspection.  
     This is what happens to failed jobs.
 
+<a name="requeueEntry"></a>
 * <code>public function <b>requeueEntry</b> (QueueEntry $entry, int $delay, string $workQueue = null)</code>  
     Re-queues an existing job
     so that it can be returned by `getNextQueueEntry()`
@@ -59,6 +63,7 @@ in case of Redis, Work Queues are Lists.
     * `$workQueue`: By default, to job is re-queued into its original Work Queue.
       With this parameter, a different Work Queue can be chosen.
 
+<a name="deleteEntry"></a>
 * <code>public function <b>deleteEntry</b> (QueueEntry $entry)</code>  
     Permanently deletes a job entry for its work queue.  
     This is what happens to finished jobs.
@@ -66,6 +71,7 @@ in case of Redis, Work Queues are Lists.
 
 ## Constants:
 
+<a name="DEFAULT_TIMEOUT"></a>
 * <code>const int <b>DEFAULT_TIMEOUT</b> = 5</code>  
     The default timeout for `getNextQueueEntry()`, in seconds.
 * <code>const <b>NOBLOCK</b></code>  

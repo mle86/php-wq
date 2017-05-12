@@ -27,34 +27,40 @@ It fully implements the [`Job`][Job] interface.
 
 ## Methods:
 
+<a name="jobRetryDelay"></a>
 * <code>public function <b>jobRetryDelay</b> (): ?int { … }</code>  
     See `Job::jobRetryDelay()`.
     This default implementation
     always returns 10 minutes.
 
+<a name="jobTryIndex"></a>
 * <code>public function <b>jobTryIndex</b> (): int { … }</code>  
     See `Job::jobTryIndex()`.
     This default implementation
     always returns the `$_try_index` value
     or `1`, whichever is greater.
 
+<a name="serialize"></a>
 * <code>public function <b>serialize</b> () { … }</code>  
     This default implementation stores all public and protected properties.
     Override this method if that's not enough or if you want to do some additional pre-serialization processing,
     but don't forget to include `$_try_index + 1` in the serialization!
 
+<a name="unserialize"></a>
 * <code>public function <b>unserialize</b> (string $serialized) { … }</code>  
     This default implementation simply writes all serialized values
     to their corresponding object property.
     That includes the `$_try_index` counter.
     Private and/or static properties will never be written to.
 
+<a name="jobCanRetry"></a>
 * <code>public function <b>jobCanRetry</b> (): bool { … }</code>  
     See `Job::jobCanRetry()`.
     This default implementation
     always returns `true`
     if `jobTryIndex() ≤ MAX_RETRY`.
 
+<a name="jobIsExpired"></a>
 * <code>public function <b>jobIsExpired</b> () : bool { … }</code>  
     See `Job::jobIsExpired()`.
     This default implementation
@@ -65,6 +71,7 @@ It fully implements the [`Job`][Job] interface.
 
 ## Constants:
 
+<a name="MAX_RETRY"></a>
 * <code>const int <b>MAX_RETRY</b> = 0</code>  
     How often a job of this type can be retried if it fails.
     Override this as necessary in subclasses.

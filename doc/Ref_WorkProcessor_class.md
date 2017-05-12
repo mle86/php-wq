@@ -21,6 +21,7 @@ but will also try to re-queue it if it fails.
     * `$options`: Options to set, overriding the default options.
       Works the same as a `setOptions()` call right after instantiation.
 
+<a name="processNextJob"></a>
 * <code>public function <b>processNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed</code>  
     Executes the next job in the Work Queue
     by passing it to the callback function.  
@@ -42,28 +43,33 @@ but will also try to re-queue it if it fails.
       Its return value will be returned by this method.
     * `$timeout`: See `WorkServerAdapter::getNextJob()`.
 
+<a name="setOption"></a>
 * <code>public function <b>setOption</b> (int $option, $value)</code>  
     Sets one of the configuration options.
     * `$option`: One of the [`WP_` constants](#option-keys).
     * `$value`: The option's new value. The required type depends on the option.
 
+<a name="setOptions"></a>
 * <code>public function <b>setOptions</b> (array $options)</code>  
     Sets one or more of the configuration options.
 
 
 ## Option keys:
 
+<a name="WP_ENABLE_RETRY"></a>
 * <code>const <b>WP_ENABLE_RETRY</b></code>  
     If this option is `true` (default),
     failed jobs will be re-queued (if their `Job::jobCanRetry()` return value says so).  
     This option can be used to disable retries for all jobs if set to `false`;
     jobs will then be handled as if their `Job::jobCanRetry` methods always returned `false`,
     i.e. they'll be buried or deleted (depending on the `WS_ENABLE_BURY` option).
+<a name="WP_ENABLE_BURY"></a>
 * <code>const <b>WP_ENABLE_BURY</b></code>  
     If this option is `true` (default),
     permanently failed jobs will be buried;
     if it is `false`,
     failed jobs will be deleted.
+<a name="WP_DELETE"></a>
 * <code>const <b>WP_DELETE</b></code>  
     If this option is set to `DELETE_FINISHED` (default),
     finished jobs will be deleted.
@@ -73,6 +79,7 @@ but will also try to re-queue it if it fails.
      resulting in an infinite loop
      as all jobs in the queue will be executed over and over.
      Probably not what you want.)
+<a name="WP_EXPIRED"></a>
 * <code>const <b>WP_EXPIRED</b></code>  
     If this option is set to `DELETE_EXPIRED` (default),
     expired jobs will be deleted.
@@ -84,6 +91,7 @@ but will also try to re-queue it if it fails.
      resulting in an infinite loop
      as soon as an expired job is encountered.
      Probably not what you want.)
+<a name="WP_RETHROW_EXCEPTIONS"></a>
 * <code>const <b>WP_RETHROW_EXCEPTIONS</b></code>  
     If this option is `true` (default),
     all exceptions thrown by handler callback
@@ -104,22 +112,28 @@ All of these hook methods are called by the `processNextJob()` method.
 In the provided base class, they are empty.
 Their return value is ignored.
 
+<a name="onNoJobAvailable"></a>
 * <code>protected function <b>onNoJobAvailable</b> (array $workQueues)</code>  
     This method is called if there is currently no job to be executed in any of the polled work queues.
+<a name="onJobAvailable"></a>
 * <code>protected function <b>onJobAvailable</b> (QueueEntry $qe)</code>  
     This method is called if there is a job ready to be executed,
     right before it is actually executed.
+<a name="onSuccessfulJob"></a>
 * <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe, $returnValue)</code>  
     This method is called after a job has been successfully executed,
     right before it is deleted from the work queue.
+<a name="onExpiredJob"></a>
 * <code>protected function <b>onExpiredJob</b> (QueueEntry $qe)</code>  
     This method is called if an expired job is encountered,
     right before it gets deleted.
+<a name="onJobRequeue"></a>
 * <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay)</code>  
     This method is called after a job that can be re-tried at least one more time
     has failed (thrown an exception),
     right before `processNextJob()` re-queues it
     and re-throws the exception.
+<a name="onFailedJob"></a>
 * <code>protected function <b>onFailedJob</b> (QueueEntry $qe, \Throwable $e)</code>  
     This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
     right before `processNextJob()` buries/deletes it
