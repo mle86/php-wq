@@ -138,6 +138,7 @@ while (true) {
 1. [Execute or Queue]
 1. [Work the Queue]
 1. [Error Handling]
+1. [Usage Examples]
 
 Class reference:
 
@@ -159,4 +160,5 @@ Class reference:
 [Execute or Queue]: doc/Execute_or_Queue.md
 [Work the Queue]: doc/Work_the_Queue.md
 [Error Handling]: doc/Error_Handling.md
+[Usage Examples]: doc/Usage_Examples.md
 
