@@ -22,7 +22,7 @@ simply extend this class.
   if the expiry condition is reached. You may need to
   add a job creation timestamp property for that.
 
-It implements the [`Job`][Job] interface (partially).
+It fully implements the [`Job`][Job] interface.
 
 
 ## Methods:
