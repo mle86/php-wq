@@ -1,7 +1,7 @@
 # `WorkServerAdapter` interface
 
 Declaration: <code>interface mle86\WQ\WorkServerAdapter\\<b>WorkServerAdapter</b></code>  
-Source file: [src/WQ/WorkServerAdapter/WorkServerAdapter.php](src/WQ/WorkServerAdapter/WorkServerAdapter.php)
+Source file: [src/WQ/WorkServerAdapter/WorkServerAdapter.php](/src/WQ/WorkServerAdapter/WorkServerAdapter.php)
 
 A Work Server stores jobs inside one or more Work Queues.
 

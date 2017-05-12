@@ -1,7 +1,7 @@
 # `WorkProcessor` class
 
 Declaration: <code>class mle86\WQ\\<b>WorkProcessor</b></code>  
-Source file: [src/WQ/WorkProcessor.php](src/WQ/WorkProcessor.php)
+Source file: [src/WQ/WorkProcessor.php](/src/WQ/WorkProcessor.php)
 
 This class implements a wrapper around
 `WorkServerAdapter::getNextJob()`
