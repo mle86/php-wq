@@ -339,9 +339,6 @@ simply extend this class.
 
 It implements the `Job` interface (partially).
 
-* <code>abstract public function <b>execute</b> ()</code>  
-    See `Job::execute()`.
-
 * <code>const int <b>MAX_RETRY</b> = 0</code>  
     How often a job of this type can be retried if it fails.
     Override this as necessary in subclasses.
