@@ -34,8 +34,8 @@ but will also try to re-queue it if it fails.
     it will be silently deleted
     and the method will return `null`.  
     Returns `$callback(Job)`'s return value on success (which might be `null`).
-    Returns `null` if there was no job in the work queue to be executed.  
-    Will re-throw any exceptions/throwables from the `Job` class.
+    Returns `null` if there was no job in the work queue to be executed.
+    Will re-throw on any Exceptions/Throwables from the `$callback`.
     * `$workQueue`: See `WorkServerAdapter::getNextJob()`.
     * `$callback`: The handler callback to execute each Job.  
       Expected signature: `function(Job)`.

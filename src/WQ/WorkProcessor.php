@@ -70,7 +70,7 @@ class WorkProcessor
      *                                   Expected signature: <tt>function(Job)</tt>.
      *                                   Its return value will be returned by this method.
      * @param int $timeout               See {@see WorkServerAdapter::getNextJob()}.
-     * @throws \Throwable  Will pass on any Exceptions/Throwables from the <tt>$callback</tt>.
+     * @throws \Throwable  Will re-throw on any Exceptions/Throwables from the <tt>$callback</tt>.
      * @return mixed|null Returns <tt>$callback(Job)</tt>'s return value on success (which might be NULL).
      *                    Also returns NULL if there was no job in the work queue to be executed.
      */
@@ -351,7 +351,7 @@ class WorkProcessor
      * This is a hook method for sub-classes.
      *
      * @param QueueEntry $qe The failed job.
-     * @param \Throwable $t  The exception that was thrown by the job.
+     * @param \Throwable $t  The exception that was thrown by the job handler callback.
      * @param int $delay     The delay before the next retry, in seconds.
      * @return void
      */
@@ -368,7 +368,7 @@ class WorkProcessor
      * This is a hook method for sub-classes.
      *
      * @param QueueEntry $qe The job that could not be executed correctly.
-     * @param \Throwable $e  The exception that was thrown by the job or the job handler callback.
+     * @param \Throwable $e  The exception that was thrown by the job handler callback.
      * @return void
      */
     protected function onFailedJob (QueueEntry $qe, \Throwable $e) { }
