@@ -135,6 +135,7 @@ while (true) {
 # Documentation
 
 1. [Implementing a Job class]
+1. [Execute or Queue]
 1. [Work the Queue]
 1. [Error Handling]
 
@@ -153,6 +154,7 @@ Class reference:
 [WorkProcessor]: <doc/Ref WorkProcessor class.md>
 
 [Implementing a Job class]: <doc/Implementing a Job class.md>
+[Execute or Queue]: <Execute or Queue.md>
 [Work the Queue]: <doc/Work the Queue.md>
 [Error Handling]: <doc/Error Handling.md>
 
