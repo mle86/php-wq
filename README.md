@@ -146,6 +146,7 @@ Class reference:
 * [AbstractJob] base class
 * [WorkServerAdapter] interface
 * [WorkProcessor] class
+* [SignalSafeWorkProcessor] class
 * [QueueEntry] wrapper class
 * [Exceptions](doc/Ref_Exceptions.md)
 
@@ -161,4 +162,5 @@ Class reference:
 [Work the Queue]: doc/Work_the_Queue.md
 [Error Handling]: doc/Error_Handling.md
 [Usage Examples]: doc/Usage_Examples.md
+[SignalSafeWorkProcessor]: doc/Ref_SignalSafeWorkProcessor_class.md
 
