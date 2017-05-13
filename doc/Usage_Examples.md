@@ -72,28 +72,38 @@ in the middle of a job execution,
 resulting in inconsistencies
 and in the job still being available in the queue.
 
-Use a signal handler like this
-to shut down your worker script cleanly:
+Use the [SignalSafeWorkProcessor]
+instead of the regular [WorkProcessor]
+to avoid those problems:
 
 ```php
-$doRun = true;
-pcntl_signal(SIGTERM, function() use(&$doRun) { $doRun = false; });
-pcntl_signal(SIGINT,  function() use(&$doRun) { $doRun = false; });
+$workProcessor = new SignalSafeWorkProcessor ($workServerAdapter);
 
-while ($doRun) {
+$workProcessor->installSignalHandler();
+
+while ($workProcessor->isAlive()) {
     $workProcessor->processNextJob("queue-name", $fn_my_callback);
-    pcntl_signal_dispatch();
 }
 
+printf("Killed by signal %d.\n", $workProcessor->lastSignal());
 exit();
 ```
 
+This `installSignalHandler()` method
+will install signal handlers
+for the SIGTERM (15)
+and the SIGINT (2)
+signals.
+(SIGTERM is commonly sent to all processes on system shutdown
+ and is the default signal for the `kill`(1) program.
+ SIGINT is raised when the user terminates a process with Ctrl-C.)
+
 Now if your running worker script
-gets a SIGTERM,
+receives one of those signals,
 it will finish whatever it's currently doing
 (e.g. processing some job and then deleting it),
-then the signal handler will clear the `$doRun` flag
-and your script will terminate.
+then the signal handler will clear the `isAlive()` flag
+and your script can terminate.
 (It may take a few seconds for your scripts to terminate
  if your [WorkServerAdapter] is currently waiting for a job to arrive –
  by default, it waits for [up to 5 seconds](Ref_WorkServerAdapter_interface.md#DEFAULT_TIMEOUT).)
@@ -165,4 +175,6 @@ of the `processNextJob()` method.
 
 [WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
 [WorkProcessor]: Ref_WorkProcessor_class.md
+[SignalSafeWorkProcessor]: Ref_SignalSafeWorkProcessor_class.md
 [Job]: Ref_Job_interface.md
+
