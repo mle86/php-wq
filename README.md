@@ -7,7 +7,7 @@ such as Beanstalkd or Redis
 to execute them at a later time.
 
 This is
-**version 0.7**.
+**version 0.7.1**.
 
 
 # Installation
@@ -143,11 +143,11 @@ while (true) {
 Class reference:
 
 * [Job] interface
-* [AbstractJob] base class
+    * [AbstractJob] base class
+    * [QueueEntry] wrapper class
 * [WorkServerAdapter] interface
 * [WorkProcessor] class
-* [SignalSafeWorkProcessor] class
-* [QueueEntry] wrapper class
+    * [SignalSafeWorkProcessor] class
 * [Exceptions](doc/Ref_Exceptions.md)
 
 
