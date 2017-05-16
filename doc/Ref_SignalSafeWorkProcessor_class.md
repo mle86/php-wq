@@ -22,7 +22,8 @@ check `isAlive()` in the loop condition.
 Installs a signal handler that will clear the `isAlive()` flag.  
 The registered signals will not immediately terminate the program anymore,
 giving the job handler callback enough time to finish their execution.
-After `processNextJob()` returns,
+If `isAlive()` is false
+after `processNextJob()` returns,
 you should `exit` the program.
     * `$signals`:
       An array of signal numbers for which to install the signal handler.

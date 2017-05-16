@@ -43,7 +43,9 @@ class SignalSafeWorkProcessor
      *
      * The registered signals will not immediately terminate the program anymore,
      * giving the job handler callback enough time to finish their execution.
-     * After {@see processNextJob()} returns,
+     *
+     * If {@see isAlive()} is false
+     * after {@see processNextJob()} returns,
      * you should {@see exit} the program.
      *
      * @param int[] $signals  An array of signal numbers for which to install the signal handler.
