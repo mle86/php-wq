@@ -81,7 +81,6 @@ class WorkProcessor
         $job = $qe->getJob();
 
         if ($job->jobIsExpired()) {
-            $this->onExpiredJob($qe);
             $this->handleExpiredJob($qe);
             return;
         }
@@ -108,7 +107,6 @@ class WorkProcessor
         switch ($ret ?? JobResult::DEFAULT) {
             case JobResult::SUCCESS:
                 // The job succeeded!
-                $this->onSuccessfulJob($qe);
                 $this->handleFinishedJob($qe);
                 break;
             case JobResult::FAILED:
@@ -144,6 +142,8 @@ class WorkProcessor
     }
 
     private function handleFinishedJob (QueueEntry $qe) {
+        $this->onSuccessfulJob($qe);
+
         // Make sure the finished job is really gone before returning:
         if ($this->options[self::WP_DELETE] === self::DELETE_FINISHED) {
             $this->server->deleteEntry($qe);
@@ -156,6 +156,8 @@ class WorkProcessor
     }
 
     private function handleExpiredJob (QueueEntry $qe) {
+        $this->onExpiredJob($qe);
+
         // We'll never execute expired jobs.
         if ($this->options[self::WP_EXPIRED] === self::DELETE_EXPIRED) {
             $this->server->deleteEntry($qe);
