@@ -343,7 +343,7 @@ class WorkProcessorTest
         $this->assertSame(
             ($expect_log = array_merge($expect_log, [
                 ["JOB", $marker],
-                ["REQUEUE", $marker, $e->getMessage(), $requeue_delay],
+                ["REQUEUE", $marker, $requeue_delay, $e->getMessage()],
             ])),
             $wp->log,
             "Failing job ({$desc}) did not cause the correct hook calls!");

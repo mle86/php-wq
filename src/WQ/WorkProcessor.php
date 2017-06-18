@@ -121,7 +121,7 @@ class WorkProcessor
         if ($do_retry) {
             // re-queue:
             $delay = $job->jobRetryDelay();
-            $this->onJobRequeue($qe, $e, $delay);
+            $this->onJobRequeue($qe, $delay, $e);
             $this->server->requeueEntry($qe, $delay);
             $this->log(LogLevel::NOTICE, "failed, re-queued with {$delay}s delay ({$exception_class})", $qe);
         } elseif ($this->options[self::WP_ENABLE_BURY]) {
@@ -350,7 +350,7 @@ class WorkProcessor
      * @param int $delay     The delay before the next retry, in seconds.
      * @return void
      */
-    protected function onJobRequeue (QueueEntry $qe, \Throwable $t, int $delay) { }
+    protected function onJobRequeue (QueueEntry $qe, int $delay, \Throwable $t) { }
 
     /**
      * This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
