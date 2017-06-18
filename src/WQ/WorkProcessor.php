@@ -184,7 +184,7 @@ class WorkProcessor
     const WP_ENABLE_BURY = 2;
 
     /**
-     * If this option is set to {@see DELETE_FINISHED} (default),
+     * If this option is set to {@see WorkProcessor::DELETE_FINISHED} (default),
      * finished jobs will be deleted.
      * Otherwise, its value is taken as a Work Queue name
      * where all finished jobs will be moved to.
@@ -199,9 +199,9 @@ class WorkProcessor
     const WP_DELETE = 3;
 
     /**
-     * If this option is set to {@see DELETE_EXPIRED} (default),
+     * If this option is set to {@see WorkProcessor::DELETE_EXPIRED} (default),
      * expired jobs will be deleted.
-     * If this option is set to {@see BURY_EXPIRED},
+     * If this option is set to {@see WorkProcessor::BURY_EXPIRED},
      * expired jobs will be buried instead.
      * Otherwise, its value is taken as a Work Queue name
      * where all expired jobs will be moved to.
@@ -228,11 +228,11 @@ class WorkProcessor
     const WP_RETHROW_EXCEPTIONS = 5;
 
 
-    /** @see WP_DELETE */
+    /** @see WorkProcessor::WP_DELETE */
     const DELETE_FINISHED = true;
-    /** @see WP_EXPIRED */
+    /** @see WorkProcessor::WP_EXPIRED */
     const DELETE_EXPIRED = true;
-    /** @see WP_EXPIRED */
+    /** @see WorkProcessor::WP_EXPIRED */
     const BURY_EXPIRED = false;
 
 
