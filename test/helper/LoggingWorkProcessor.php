@@ -26,11 +26,11 @@ class LoggingWorkProcessor
         $this->log[] = ["JOB", $job->getMarker()];
     }
 
-    protected function onSuccessfulJob (QueueEntry $qe, $returnValue) {
+    protected function onSuccessfulJob (QueueEntry $qe) {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 
-        $this->log[] = ["SUCCESS", $job->getMarker(), $returnValue];
+        $this->log[] = ["SUCCESS", $job->getMarker()];
     }
 
     protected function onJobRequeue (QueueEntry $qe, \Throwable $e, int $delay) {

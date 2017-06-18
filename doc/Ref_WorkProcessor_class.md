@@ -22,7 +22,7 @@ but will also try to re-queue it if it fails.
       Works the same as a `setOptions()` call right after instantiation.
 
 <a name="processNextJob"></a>
-* <code>public function <b>processNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : ?mixed</code>  
+* <code>public function <b>processNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : void</code>  
     Executes the next job in the Work Queue
     by passing it to the callback function.  
     If that results in a `\RuntimeException`,
@@ -32,15 +32,11 @@ but will also try to re-queue it if it fails.
     no re-queueing will be attempted;
     the job will be buried immediately.  
     If the next job in the Work Queue is expired,
-    it will be silently deleted
-    and the method will return `null`.  
-    Returns `$callback(Job)`'s return value on success (which might be `null`).
-    Returns `null` if there was no job in the work queue to be executed.
+    it will be silently deleted.
     Will re-throw on any Exceptions/Throwables from the `$callback`.
     * `$workQueue`: See `WorkServerAdapter::getNextJob()`.
     * `$callback`: The handler callback to execute each Job.  
       Expected signature: `function(Job)`.
-      Its return value will be returned by this method.
     * `$timeout`: See `WorkServerAdapter::getNextJob()`.
 
 <a name="setOption"></a>
@@ -98,7 +94,7 @@ but will also try to re-queue it if it fails.
     will be re-thrown so that the caller
     receives them as well.
     If this option is `false`,
-    `processNextJob()` will silently return `null` instead.
+    `processNextJob()` will silently return instead.
 
 
 ## Hook methods:
@@ -120,7 +116,7 @@ Their return value is ignored.
     This method is called if there is a job ready to be executed,
     right before it is actually executed.
 <a name="onSuccessfulJob"></a>
-* <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe, $returnValue)</code>  
+* <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe)</code>  
     This method is called after a job has been successfully executed,
     right before it is deleted from the work queue.
 <a name="onExpiredJob"></a>

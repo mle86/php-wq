@@ -19,15 +19,33 @@ function array_delete_one (array $input, $value_to_delete, bool $strict = true) 
     return $input;
 }
 
+global $_xsj_called;
+$_xsj_called = false;
+
+/**
+ * @return bool
+ *   Returns true once after {@see xsj()} has been called at least once.
+ */
+function xsj_called () : bool {
+    global $_xsj_called;
+    if ($_xsj_called) {
+        $_xsj_called = false;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 /**
  * This function executes any {@see SimpleJob}'s built-in {@see execute()} method,
  * returning its return value.
  * It's only here to shorten our test {@see WorkProcessor::processNextJob()} calls.
  *
  * @param SimpleJob $job
- * @return mixed
  */
 function xsj (SimpleJob $job) {
-    return $job->execute();
+    global $_xsj_called;
+    $_xsj_called = true;
+    $job->execute();
 }
 

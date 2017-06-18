@@ -154,9 +154,8 @@ That means this short call...
 ```php
 if (($queueEntry = $workServerAdapter->getNextQueueEntry("queue-name"))) {
     try {
-        $ret = $queueEntry->getJob()->execute();
+        $queueEntry->getJob()->execute();
         $workServerAdapter->deleteJob($queueEntry);
-        return $ret;
     } catch (\Throwable $e) {
         $workServerAdapter->buryJob($queueEntry);
         throw $e;

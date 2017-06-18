@@ -62,23 +62,19 @@ class WorkProcessor
      * the job will be buried immediately.
      *
      * If the next job in the Work Queue is expired,
-     * it will be silently deleted
-     * and the method will return NULL.
+     * it will be silently deleted.
      *
      * @param string|string[] $workQueue See {@see WorkServerAdapter::getNextJob()}.
      * @param callable $callback         The handler callback to execute each Job.
      *                                   Expected signature: <tt>function(Job)</tt>.
-     *                                   Its return value will be returned by this method.
      * @param int $timeout               See {@see WorkServerAdapter::getNextJob()}.
      * @throws \Throwable  Will re-throw on any Exceptions/Throwables from the <tt>$callback</tt>.
-     * @return mixed|null Returns <tt>$callback(Job)</tt>'s return value on success (which might be NULL).
-     *                    Also returns NULL if there was no job in the work queue to be executed.
      */
     public function processNextJob ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
         $qe = $this->server->getNextQueueEntry($workQueue, $timeout);
         if (!$qe) {
             $this->onNoJobAvailable((array)$workQueue);
-            return null;
+            return;
         }
 
         $job = $qe->getJob();
@@ -86,7 +82,7 @@ class WorkProcessor
         if ($job->jobIsExpired()) {
             $this->onExpiredJob($qe);
             $this->handleExpiredJob($qe);
-            return null;
+            return;
         }
 
         $this->log(LogLevel::INFO, "got job", $qe);
@@ -104,14 +100,14 @@ class WorkProcessor
                 throw $e;
             } else {
                 // drop it
-                return null;
+                return;
             }
         }
 
         // The job succeeded!
-        $this->onSuccessfulJob($qe, $ret);
+        $this->onSuccessfulJob($qe);
         $this->handleFinishedJob($qe);
-        return $ret;
+        return;
     }
 
     private function handleFailedJob (QueueEntry $qe, \Throwable $e) {
@@ -225,7 +221,7 @@ class WorkProcessor
      *  will be re-thrown so that the caller
      *  receives them as well.
      * If this option is FALSE,
-     *  {@see processNextJob()} will silently return NULL instead.
+     *  {@see processNextJob()} will silently return instead.
      *
      * @see setOptions()
      */
@@ -324,10 +320,9 @@ class WorkProcessor
      * This is a hook method for sub-classes.
      *
      * @param QueueEntry $qe The executed job.
-     * @param mixed $ret     The return value of the job handler callback.
      * @return void
      */
-    protected function onSuccessfulJob (QueueEntry $qe, $ret) { }
+    protected function onSuccessfulJob (QueueEntry $qe) { }
 
     /**
      * This method is called if an expired job is encountered,
