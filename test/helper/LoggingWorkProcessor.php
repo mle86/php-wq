@@ -33,18 +33,18 @@ class LoggingWorkProcessor
         $this->log[] = ["SUCCESS", $job->getMarker()];
     }
 
-    protected function onJobRequeue (QueueEntry $qe, int $delay, \Throwable $e) {
+    protected function onJobRequeue (QueueEntry $qe, int $delay, \Throwable $e = null) {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 
-        $this->log[] = ["REQUEUE", $job->getMarker(), $delay, $e->getMessage()];
+        $this->log[] = ["REQUEUE", $job->getMarker(), $delay, (($e) ? $e->getMessage() : null)];
     }
 
-    protected function onFailedJob (QueueEntry $qe, \Throwable $e) {
+    protected function onFailedJob (QueueEntry $qe, \Throwable $e = null) {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 
-        $this->log[] = ["FAILED", $job->getMarker(), $e->getMessage()];
+        $this->log[] = ["FAILED", $job->getMarker(), (($e) ? $e->getMessage() : null)];
     }
 
     protected function onExpiredJob (QueueEntry $qe) {

@@ -1,6 +1,7 @@
 <?php
 namespace mle86\WQ;
 
+use mle86\WQ\Job\JobResult;
 use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use Psr\Log\LoggerInterface;
@@ -104,13 +105,20 @@ class WorkProcessor
             }
         }
 
-        // The job succeeded!
-        $this->onSuccessfulJob($qe);
-        $this->handleFinishedJob($qe);
-        return;
+        switch ($ret ?? JobResult::DEFAULT) {
+            case JobResult::SUCCESS:
+                // The job succeeded!
+                $this->onSuccessfulJob($qe);
+                $this->handleFinishedJob($qe);
+                break;
+            case JobResult::FAILED:
+                // The job failed.
+                $this->handleFailedJob($qe);
+                break;
+        }
     }
 
-    private function handleFailedJob (QueueEntry $qe, \Throwable $e) {
+    private function handleFailedJob (QueueEntry $qe, \Throwable $e = null) {
         $job = $qe->getJob();
 
         $exception_class = get_class($e);
@@ -345,12 +353,13 @@ class WorkProcessor
      *
      * This is a hook method for sub-classes.
      *
-     * @param QueueEntry $qe The failed job.
-     * @param \Throwable $t  The exception that was thrown by the job handler callback.
-     * @param int $delay     The delay before the next retry, in seconds.
+     * @param QueueEntry $qe      The failed job.
+     * @param int $delay          The delay before the next retry, in seconds.
+     * @param \Throwable|null $t  The exception that was thrown by the job handler callback
+     *                            or NULL if it returned {@see JobResult::FAILED}.
      * @return void
      */
-    protected function onJobRequeue (QueueEntry $qe, int $delay, \Throwable $t) { }
+    protected function onJobRequeue (QueueEntry $qe, int $delay, \Throwable $t = null) { }
 
     /**
      * This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
@@ -362,11 +371,12 @@ class WorkProcessor
      *
      * This is a hook method for sub-classes.
      *
-     * @param QueueEntry $qe The job that could not be executed correctly.
-     * @param \Throwable $e  The exception that was thrown by the job handler callback.
+     * @param QueueEntry      $qe The job that could not be executed correctly.
+     * @param \Throwable|null $e  The exception that was thrown by the job handler callback
+     *                            or NULL if it returned {@see JobResult::FAILED}.
      * @return void
      */
-    protected function onFailedJob (QueueEntry $qe, \Throwable $e) { }
+    protected function onFailedJob (QueueEntry $qe, \Throwable $e = null) { }
 
 }
 
