@@ -6,7 +6,7 @@ use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use mle86\WQ\WorkProcessor;
 use mle86\WQ\SignalSafeWorkProcessor;
 
-function wp () : WorkProcessor {
+function sswp () : SignalSafeWorkProcessor {
     $wsa = new MemoryWorkServer ();
     $wp  = new SignalSafeWorkProcessor ($wsa);
     return $wp;
@@ -66,7 +66,7 @@ class SignalSafeWorkProcessorTest
 
 
     public function testInstance () {
-        wp();
+        sswp();
     }
 
     /**
@@ -76,7 +76,7 @@ class SignalSafeWorkProcessorTest
      * @dataProvider registeredSignals
      */
     public function testUninitializedInstance (int $signo) {
-        $wp = wp();
+        $wp = sswp();
 
         $signame = self::signame($signo);
         $e = null;
@@ -96,7 +96,7 @@ class SignalSafeWorkProcessorTest
      * @depends testUninitializedInstance
      */
     public function testInitializedInstance () {
-        $wp = wp();
+        $wp = sswp();
         $this->assertTrue($wp->isAlive(),
             "New SignalSafeWorkProcessor's isAlive() test was false!");
 
