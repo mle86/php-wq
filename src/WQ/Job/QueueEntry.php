@@ -3,7 +3,6 @@ namespace mle86\WQ\Job;
 
 use mle86\WQ\Exception\UnserializationException;
 
-
 /**
  * This class wraps a {@see Job} instance
  * recently fetched and unserialized from some Work Queue.
@@ -29,13 +28,15 @@ final class QueueEntry
     private $handle;
     private $workQueue;
 
-    public function __construct (Job $job, string $workQueue, $handle) {
+    public function __construct(Job $job, string $workQueue, $handle)
+    {
         $this->job       = $job;
         $this->handle    = $handle;
         $this->workQueue = $workQueue;
     }
 
-    public function getJob () : Job {
+    public function getJob(): Job
+    {
         return $this->job;
     }
 
@@ -44,11 +45,13 @@ final class QueueEntry
      *           which belongs to the originating {@see WorkServerAdapter}.
      *           Don't use this value unless you know exactly what you're doing.
      */
-    public function getHandle () {
+    public function getHandle()
+    {
         return $this->handle;
     }
 
-    public function getWorkQueue () : string {
+    public function getWorkQueue(): string
+    {
         return $this->workQueue;
     }
 
@@ -65,7 +68,12 @@ final class QueueEntry
      * @return self
      * @throws UnserializationException  if $serializedData corresponded to a non-object or to a non-{@see Job} object
      */
-    public static function fromSerializedJob (string $serializedData, string $originWorkQueue, $handle, string $jobId) : self {
+    public static function fromSerializedJob(
+        string $serializedData,
+        string $originWorkQueue,
+        $handle,
+        string $jobId
+    ): self {
         /** @var Job $job */
         $job = unserialize($serializedData);
 
@@ -83,4 +91,3 @@ final class QueueEntry
     }
 
 }
-

@@ -15,39 +15,45 @@ class LoggingWorkProcessor
     public $log = [];
 
 
-    protected function onNoJobAvailable (array $workQueues) {
+    protected function onNoJobAvailable(array $workQueues): void
+    {
         $this->log[] = ["NOJOBS", join("|", $workQueues)];
     }
 
-    protected function onJobAvailable (QueueEntry $qe) {
+    protected function onJobAvailable(QueueEntry $qe): void
+    {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["JOB", $job->getMarker()];
     }
 
-    protected function onSuccessfulJob (QueueEntry $qe) {
+    protected function onSuccessfulJob(QueueEntry $qe): void
+    {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["SUCCESS", $job->getMarker()];
     }
 
-    protected function onJobRequeue (QueueEntry $qe, int $delay, \Throwable $e = null) {
+    protected function onJobRequeue(QueueEntry $qe, int $delay, \Throwable $e = null): void
+    {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["REQUEUE", $job->getMarker(), $delay, (($e) ? $e->getMessage() : null)];
     }
 
-    protected function onFailedJob (QueueEntry $qe, \Throwable $e = null) {
+    protected function onFailedJob(QueueEntry $qe, \Throwable $e = null): void
+    {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["FAILED", $job->getMarker(), (($e) ? $e->getMessage() : null)];
     }
 
-    protected function onExpiredJob (QueueEntry $qe) {
+    protected function onExpiredJob(QueueEntry $qe): void
+    {
         /** @var Job|SimpleJob $job */
         $job = $qe->getJob();
 

@@ -1,7 +1,6 @@
 <?php
 namespace mle86\WQ\Exception;
 
-
 /**
  * Thrown by {@see QueueEntry::fromSerializedJob()}
  * in case of invalid job data:
@@ -15,4 +14,3 @@ class UnserializationException
     implements WQException
 {
 }
-

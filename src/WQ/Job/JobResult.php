@@ -1,7 +1,6 @@
 <?php
 namespace mle86\WQ\Job;
 
-
 /**
  * This class exists only to hold the JOB_ return status constants.
  *
@@ -13,7 +12,8 @@ namespace mle86\WQ\Job;
  * returns one of these constants
  * (or NULL/no value, in which case {@see JobResult::DEFAULT_STATUS} will be used).
  */
-class JobResult {
+class JobResult
+{
 
     /**
      * This status indicates that the job has been processed correctly
@@ -43,6 +43,8 @@ class JobResult {
     const DEFAULT = self::SUCCESS;
 
 
-    private function __construct () { }
+    private function __construct()
+    {
+    }
 
 }

@@ -1,7 +1,6 @@
 <?php
 namespace mle86\WQ\Job;
 
-
 /**
  * A Job is a representation of some task do to.
  * It can be stored in a Work Queue with {@see WorkServerAdapter::storeJob()}.
@@ -31,7 +30,7 @@ interface Job
      * to be re-executed after {@see jobRetryDelay()} seconds;
      * if it returns false, the job will be buried for later inspection.
      */
-    public function jobCanRetry () : bool;
+    public function jobCanRetry(): bool;
 
     /**
      * How many seconds the job should be delayed in the Work Quere
@@ -40,14 +39,14 @@ interface Job
      * this must return a positive integer
      * (or zero, if the job should be re-tried as soon as possible).
      */
-    public function jobRetryDelay () : ?int;
+    public function jobRetryDelay(): ?int;
 
     /**
      * On the first try, this must return 1,
      * on the first retry, this must return 2,
      * and so on.
      */
-    public function jobTryIndex () : int;
+    public function jobTryIndex(): int;
 
     /**
      * Return `true` here if the instance should be considered expired.
@@ -56,7 +55,6 @@ interface Job
      * they will be deleted as soon as they are encountered.
      * Always return `false` here if your job class cannot expire.
      */
-    public function jobIsExpired () : bool;
+    public function jobIsExpired(): bool;
 
 }
-

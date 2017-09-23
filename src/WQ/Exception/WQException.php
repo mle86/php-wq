@@ -1,7 +1,6 @@
 <?php
 namespace mle86\WQ\Exception;
 
-
 /**
  * All WQ Exceptions implement this interface.
  *
@@ -11,4 +10,3 @@ namespace mle86\WQ\Exception;
 interface WQException
 {
 }
-

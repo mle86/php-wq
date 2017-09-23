@@ -3,9 +3,10 @@ namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\AbstractJob;
 
-require_once 'helper/SimpleJob.php';
+require_once __DIR__ . '/helper/SimpleJob.php';
 
-function payload (AbstractJob $j) {
+function payload(AbstractJob $j)
+{
     if ($j instanceof SimpleJob) {
         return $j->getMarker();
     } else {
@@ -17,8 +18,9 @@ class AbstractJobTest
     extends \PHPUnit_Framework_TestCase
 {
 
-    public function testInstance () {
-        $marker = mt_rand(1000, 4000);
+    public function testInstance()
+    {
+        $marker = random_int(1000, 4000);
 
         $j = new SimpleJob ($marker);
 
@@ -40,12 +42,13 @@ class AbstractJobTest
      * @param AbstractJob $j
      * @return string
      */
-    public function testSerialization (AbstractJob $j) {
+    public function testSerialization(AbstractJob $j): string
+    {
         $copy = clone $j;
         $s    = serialize($j);
         $this->assertTrue(is_string($s));
 
-        $this->assertTrue(($copy == $j && $copy->jobTryIndex() == $j->jobTryIndex() && payload($copy) == payload($j)),
+        $this->assertTrue(($copy == $j && $copy->jobTryIndex() === $j->jobTryIndex() && payload($copy) === payload($j)),
             "Serializing an AbstractJob instance changed it!");
 
         return $s;
@@ -59,7 +62,8 @@ class AbstractJobTest
      * @param int $index The unserialization count.
      * @return AbstractJob
      */
-    public function testUnserialization (string $s, AbstractJob $original, int $index = 1) {
+    public function testUnserialization(string $s, AbstractJob $original, int $index = 1): AbstractJob
+    {
         $j = unserialize($s);
 
         $this->assertInstanceOf(AbstractJob::class, $j,
@@ -82,7 +86,8 @@ class AbstractJobTest
      * @param AbstractJob $j
      * @param AbstractJob $original
      */
-    public function testRepeatedUnserialization (AbstractJob $j, AbstractJob $original) {
+    public function testRepeatedUnserialization(AbstractJob $j, AbstractJob $original)
+    {
         $this->testUnserialization(
             $this->testSerialization($j),
             $original,
@@ -91,4 +96,3 @@ class AbstractJobTest
     }
 
 }
-

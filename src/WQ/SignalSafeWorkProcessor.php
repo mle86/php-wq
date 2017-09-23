@@ -29,9 +29,10 @@ class SignalSafeWorkProcessor
     private static $last_signal = null;
 
 
-    public function processNextJob ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) {
+    public function processNextJob($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT): void
+    {
         try {
-            return parent::processNextJob($workQueue, $callback, $timeout);
+            parent::processNextJob($workQueue, $callback, $timeout);
         } finally {
             pcntl_signal_dispatch();
         }
@@ -53,11 +54,12 @@ class SignalSafeWorkProcessor
      *                        for <tt>SIGTERM</tt> and <tt>SIGINT</tt>,
      *                        two signals commonly used to cleanly stop running processes.
      */
-    public static function installSignalHandler (array $signals = [\SIGTERM, \SIGINT]) {
+    public static function installSignalHandler(array $signals = [\SIGTERM, \SIGINT])
+    {
         $last_signal =& self::$last_signal;
         $alive       =& self::$alive;
 
-        $fn_handler = function (int $signo) use(&$last_signal, &$alive) {
+        $fn_handler = function (int $signo) use (&$last_signal, &$alive) {
             $last_signal = $signo;
             $alive       = false;
         };
@@ -71,7 +73,8 @@ class SignalSafeWorkProcessor
      * @return bool
      *   Returns TRUE as long as no registered signal was received.
      */
-    public static function isAlive () : bool {
+    public static function isAlive(): bool
+    {
         return self::$alive;
     }
 
@@ -80,7 +83,8 @@ class SignalSafeWorkProcessor
      *   Returns the number of the last signal received,
      *   or NULL if no signal has been received since the signal handler was set up.
      */
-    public static function lastSignal () : ?int {
+    public static function lastSignal(): ?int
+    {
         return self::$last_signal;
     }
 

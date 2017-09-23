@@ -1,7 +1,6 @@
 <?php
 namespace mle86\WQ\Job;
 
-
 /**
  * This base class implements some of the {@see Job} interface's requirements.
  *
@@ -60,7 +59,8 @@ abstract class AbstractJob
      * Override this method if that's not enough or if you want to do some additional pre-serialize processing,
      * but don't forget to include <tt>{@see $_try_index}+1</tt> in the serialization!
      */
-    public function serialize () {
+    public function serialize()
+    {
         $raw = [];
         foreach ($this->listProperties() as $propName) {
             $raw[$propName] = $this->{$propName};
@@ -77,7 +77,8 @@ abstract class AbstractJob
      *
      * @param string $serialized
      */
-    public function unserialize ($serialized) {
+    public function unserialize($serialized)
+    {
         $raw = unserialize($serialized);
         foreach ($this->listProperties() as $propName) {
             if (array_key_exists($propName, $raw)) {
@@ -87,15 +88,18 @@ abstract class AbstractJob
     }
 
 
-    public function jobCanRetry () : bool {
+    public function jobCanRetry(): bool
+    {
         return ($this->jobTryIndex() <= static::MAX_RETRY);
     }
 
-    public function jobRetryDelay () : ?int {
+    public function jobRetryDelay(): ?int
+    {
         return self::DEFAULT_RETRY_DELAY;
     }
 
-    public function jobTryIndex () : int {
+    public function jobTryIndex(): int
+    {
         /* Before first serialization, _try_index is zero.
          * On every serialization, this value will be increased by 1.
          * Still, someone could try to execute a never-serialized job
@@ -104,7 +108,8 @@ abstract class AbstractJob
         return $this->_try_index ?: 1;
     }
 
-    public function jobIsExpired () : bool {
+    public function jobIsExpired(): bool
+    {
         return false;
     }
 
@@ -112,15 +117,17 @@ abstract class AbstractJob
     /**
      * @return string[]  An array of public and protected object properties.
      */
-    private function listProperties () : array {
-        $rc = new \ReflectionClass ($this);
+    private function listProperties(): array
+    {
+        $rc = new \ReflectionClass($this);
 
         $filter = \ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED;
 
         $list = [];
         foreach ($rc->getProperties($filter) as $prop) {
-            if ($prop->isStatic())
+            if ($prop->isStatic()) {
                 continue;
+            }
             $list[] = $prop->getName();
         }
 
@@ -128,4 +135,3 @@ abstract class AbstractJob
     }
 
 }
-

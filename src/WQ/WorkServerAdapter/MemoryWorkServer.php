@@ -27,13 +27,14 @@ class MemoryWorkServer
      */
     protected $storage = [];
 
-    protected static $index = 0;
+    private static $index = 0;
 
 
-    public function getNextQueueEntry ($workQueues, int $timeout = self::DEFAULT_TIMEOUT) : ?QueueEntry {
+    public function getNextQueueEntry($workQueues, int $timeout = self::DEFAULT_TIMEOUT): ?QueueEntry
+    {
         $all_empty = true;
         foreach ((array)$workQueues as $workQueue) {
-            if (!empty($this->storage[$workQueue])) {
+            if (!empty($this->storage[ $workQueue ])) {
                 $all_empty = false;
                 break;
             }
@@ -46,14 +47,14 @@ class MemoryWorkServer
         }
 
         foreach ((array)$workQueues as $workQueue) {
-            foreach (($this->storage[$workQueue] ?? []) as $idx => $jobInfo) {
+            foreach (($this->storage[ $workQueue ] ?? []) as $idx => $jobInfo) {
                 $activeTimestamp = $jobInfo[0];
                 $jobData         = $jobInfo[1];
 
                 if ($activeTimestamp <= time()) {
                     // reserve and return:
                     $activeTimestamp += self::RESERVE_SECONDS;
-                    $this->storage[$workQueue][$idx][0] = $activeTimestamp;
+                    $this->storage[ $workQueue ][ $idx ][0] = $activeTimestamp;
 
                     return QueueEntry::fromSerializedJob($jobData, $workQueue, $idx, $idx);
                 } else {
@@ -70,29 +71,36 @@ class MemoryWorkServer
         return null;
     }
 
-    public function storeJob (string $workQueue, Job $job, int $delay = 0) {
-        $index                             = $this->nextIndex();
-        $this->storage[$workQueue][$index] = [time() + $delay, serialize($job)];
+    public function storeJob(string $workQueue, Job $job, int $delay = 0): void
+    {
+        $index = self::nextIndex();
+        $this->storage[ $workQueue ][ $index ] = [time() + $delay, serialize($job)];
     }
 
-    public function buryEntry (QueueEntry $entry) {
+    public function buryEntry(QueueEntry $entry): void
+    {
         // TODO?
         $this->deleteEntry($entry);
     }
 
-    public function requeueEntry (QueueEntry $entry, int $delay, string $workQueue = null) {
-        $index                                                       = $this->nextIndex();
-        $this->storage[$workQueue ?? $entry->getWorkQueue()][$index] = [time() + $delay, serialize($entry->getJob())];
+    public function requeueEntry(QueueEntry $entry, int $delay, string $workQueue = null): void
+    {
+        $index = self::nextIndex();
+        $this->storage[ $workQueue ?? $entry->getWorkQueue() ][ $index ] = [
+            time() + $delay,
+            serialize($entry->getJob()),
+        ];
         $this->deleteEntry($entry);
     }
 
-    public function deleteEntry (QueueEntry $entry) {
-        unset($this->storage[$entry->getWorkQueue()][$entry->getHandle()]);
+    public function deleteEntry(QueueEntry $entry): void
+    {
+        unset($this->storage[ $entry->getWorkQueue() ][ $entry->getHandle() ]);
     }
 
-    private static function nextIndex () {
+    private static function nextIndex()
+    {
         return "M" . self::$index++;
     }
 
 }
-

@@ -44,7 +44,7 @@ interface WorkServerAdapter
      * @return QueueEntry  Returns the next job in the work queue(s),
      *                     or NULL if no job was available after waiting for $timeout seconds.
      */
-    public function getNextQueueEntry ($workQueue, int $timeout = self::DEFAULT_TIMEOUT) : ?QueueEntry;
+    public function getNextQueueEntry($workQueue, int $timeout = self::DEFAULT_TIMEOUT): ?QueueEntry;
 
     /**
      * Stores a job in the work queue for later processing.
@@ -54,7 +54,7 @@ interface WorkServerAdapter
      * @param int $delay        The job delay in seconds after which it will become available to {@see getNextQueueEntry()}.
      *                          Set to zero (default) for jobs which should be processed as soon as possible.
      */
-    public function storeJob (string $workQueue, Job $job, int $delay = 0);
+    public function storeJob(string $workQueue, Job $job, int $delay = 0): void;
 
     /**
      * Buries an existing job
@@ -65,7 +65,7 @@ interface WorkServerAdapter
      *
      * @param QueueEntry $entry
      */
-    public function buryEntry (QueueEntry $entry);
+    public function buryEntry(QueueEntry $entry): void;
 
     /**
      * Re-queues an existing job
@@ -81,7 +81,7 @@ interface WorkServerAdapter
      * @param string|null $workQueue  By default, to job is re-queued into its original Work Queue ({@see QueueEntry::getWorkQueue}).
      *                                With this parameter, a different Work Queue can be chosen.
      */
-    public function requeueEntry (QueueEntry $entry, int $delay, string $workQueue = null);
+    public function requeueEntry(QueueEntry $entry, int $delay, string $workQueue = null): void;
 
     /**
      * Permanently deletes a job entry for its work queue.
@@ -90,7 +90,6 @@ interface WorkServerAdapter
      *
      * @param QueueEntry $entry The job to delete.
      */
-    public function deleteEntry (QueueEntry $entry);
+    public function deleteEntry(QueueEntry $entry): void;
 
 }
-

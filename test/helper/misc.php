@@ -1,18 +1,20 @@
 <?php
 namespace mle86\WQ\Tests;
 
-function wait_for_subsecond (float $required_remaining_subsecond = 0.3) {
+function wait_for_subsecond(float $required_remaining_subsecond = 0.3)
+{
     $mt        = microtime(true);
-    $subsecond = $mt - intval($mt);
+    $subsecond = $mt - (int)$mt;
     if ($subsecond > (1 - $required_remaining_subsecond)) {
         usleep(1000 * 1000 * (1.01 - $subsecond));
     }
 }
 
-function array_delete_one (array $input, $value_to_delete, bool $strict = true) {
+function array_delete_one(array $input, $value_to_delete, bool $strict = true)
+{
     foreach ($input as $idx => $value) {
         if ($value === $value_to_delete || (!$strict && $value == $value_to_delete)) {
-            unset($input[$idx]);
+            unset($input[ $idx ]);
             break;  // only delete one
         }
     }
@@ -26,7 +28,8 @@ $_xsj_called = false;
  * @return bool
  *   Returns true once after {@see xsj()} has been called at least once.
  */
-function xsj_called () : bool {
+function xsj_called(): bool
+{
     global $_xsj_called;
     if ($_xsj_called) {
         $_xsj_called = false;
@@ -43,9 +46,9 @@ function xsj_called () : bool {
  *
  * @param SimpleJob $job
  */
-function xsj (SimpleJob $job) {
+function xsj(SimpleJob $job)
+{
     global $_xsj_called;
     $_xsj_called = true;
     $job->execute();
 }
-

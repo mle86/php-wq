@@ -3,7 +3,6 @@ namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\AbstractJob;
 
-
 /**
  * This is a simple extension of the {@see AbstractJob} base class.
  *
@@ -29,23 +28,26 @@ class SimpleJob
 
     protected $marker = 0;
 
-    public function __construct (int $marker) {
-        if (!(is_int($marker) && $marker >= 1 && $marker <= 9999))
+    public function __construct(int $marker)
+    {
+        if (!(is_int($marker) && $marker >= 1 && $marker <= 9999)) {
             throw new \InvalidArgumentException ('$marker must be int between 1..9999');
+        }
 
         $this->marker = $marker;
 
         self::$log[] = "CONSTRUCT-{$this->getMarker()}";
     }
 
-    public function getMarker () {
+    public function getMarker()
+    {
         return $this->marker;
     }
 
-    public function execute () {
+    public function execute()
+    {
         self::$log[] = "EXECUTE-{$this->getMarker()}";
         return self::EXECUTE_RETURN_VALUE;
     }
 
 }
-

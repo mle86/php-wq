@@ -30,7 +30,8 @@ class ConfigurableJob
     protected $retry_delay;
     protected $succeed_on;
 
-    public function __construct (int $marker, int $max_retries = 0, int $succeed_on = 0, int $retry_delay = 1) {
+    public function __construct(int $marker, int $max_retries = 0, int $succeed_on = 0, int $retry_delay = 1)
+    {
         parent::__construct($marker);
 
         $this->max_retries = $max_retries;
@@ -38,20 +39,24 @@ class ConfigurableJob
         $this->succeed_on  = $succeed_on;
     }
 
-    public function jobCanRetry () : bool {
+    public function jobCanRetry(): bool
+    {
         return ($this->jobTryIndex() <= $this->max_retries);
     }
 
-    public function jobRetryDelay () : int {
+    public function jobRetryDelay(): int
+    {
         return $this->retry_delay;
     }
 
-    public function jobIsExpired () : bool {
+    public function jobIsExpired(): bool
+    {
         return ($this->marker === self::$expired_marker);
     }
 
-    public function execute () {
-        if ($this->jobTryIndex() == $this->succeed_on) {
+    public function execute()
+    {
+        if ($this->jobTryIndex() === $this->succeed_on) {
             return parent::execute();
         } else {
             $succeed_on = ($this->succeed_on > 0)
