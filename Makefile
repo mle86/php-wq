@@ -1,4 +1,5 @@
 #!/usr/bin/make -f
+.PHONY: all dep update test
 
 all:
 
