@@ -2,6 +2,7 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\AbstractJob;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/helper/SimpleJob.php';
 
@@ -15,7 +16,7 @@ function payload(AbstractJob $j)
 }
 
 class AbstractJobTest
-    extends \PHPUnit_Framework_TestCase
+    extends TestCase
 {
 
     public function testInstance()

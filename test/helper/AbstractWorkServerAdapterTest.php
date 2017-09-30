@@ -4,6 +4,7 @@ namespace mle86\WQ\Tests;
 use mle86\WQ\Job\Job;
 use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/misc.php';
 require_once __DIR__ . '/SimpleJob.php';
@@ -18,7 +19,7 @@ require_once __DIR__ . '/SimpleJob.php';
  * so they should be able to use this file.
  */
 abstract class AbstractWorkServerAdapterTest
-    extends \PHPUnit_Framework_TestCase
+    extends TestCase
 {
 
     /**

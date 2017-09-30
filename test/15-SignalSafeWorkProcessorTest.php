@@ -4,6 +4,7 @@ namespace mle86\WQ\Tests;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use mle86\WQ\SignalSafeWorkProcessor;
+use PHPUnit\Framework\TestCase;
 
 function sswp(): SignalSafeWorkProcessor {
     $wsa = new MemoryWorkServer ();
@@ -17,7 +18,7 @@ class NoSignalHandlerException
 }
 
 class SignalSafeWorkProcessorTest
-    extends \PHPUnit_Framework_TestCase
+    extends TestCase
 {
 
     public static function registeredSignals() { return [

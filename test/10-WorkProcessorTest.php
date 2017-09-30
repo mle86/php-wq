@@ -3,6 +3,7 @@ namespace mle86\WQ\Tests;
 
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/helper/misc.php';
 require_once __DIR__ . '/helper/SimpleJob.php';
@@ -17,7 +18,7 @@ function wp(): LoggingWorkProcessor
 }
 
 class WorkProcessorTest
-    extends \PHPUnit_Framework_TestCase
+    extends TestCase
 {
 
     public function testInstance()
