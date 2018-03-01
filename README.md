@@ -146,6 +146,7 @@ Class reference:
     * [AbstractJob] base class
     * [QueueEntry] wrapper class
 * [WorkServerAdapter] interface
+    * [AffixAdapter] wrapper class
 * [WorkProcessor] class
     * [SignalSafeWorkProcessor] class
 * [Exceptions](doc/Ref_Exceptions.md)
@@ -154,6 +155,7 @@ Class reference:
 [Job]: doc/Ref_Job_interface.md
 [AbstractJob]: doc/Ref_AbstractJob_base_class.md
 [WorkServerAdapter]: doc/Ref_WorkServerAdapter_interface.md
+[AffixAdapter]: doc/Ref_AffixAdapter_class.md
 [WorkProcessor]: doc/Ref_WorkProcessor_class.md
 [QueueEntry]: doc/Ref_QueueEntry_class.md
 

@@ -20,10 +20,10 @@ use mle86\WQ\Job\QueueEntry;
  * Example:
  * Instead of
  *   `$workServer->getNextQueueEntry("myapp-email-PROD")`,
- * you could build a new instance
- *   `$workServer = new AffixAdapter($workServer)->withPrefix("myapp")->withSuffix(ENVIRONMENT)`,
- * then use it with a simple
- *   `$workServer->getNextQueueEntry("email");
+ * you could wrap the existing WorkServerAdapter instance in an AffixAdapter...
+ *   `$workServer = new AffixAdapter($workServer)->withPrefix("myapp-")->withSuffix("-" . ENVIRONMENT);`,
+ * then use it with a simpler call:
+ *   `$workServer->getNextQueueEntry("email")`.
  */
 class AffixAdapter
     implements WorkServerAdapter
@@ -34,19 +34,35 @@ class AffixAdapter
     private $suffix;
 
     /**
-     * @param WorkServerAdapter $server  The actual WorkServerAdapter to use.
+     * @param WorkServerAdapter $server  The actual WorkServerAdapter to wrap.
      */
     public function __construct(WorkServerAdapter $server)
     {
         $this->server = $server;
     }
 
+    /**
+     * Sets the prefix to prepend to all work queue names.
+     *
+     * (The empty string has the same effect as `null`.)
+     *
+     * @param string|null $prefix
+     * @return self
+     */
     public function withPrefix(?string $prefix): self
     {
         $this->prefix = $prefix;
         return $this;
     }
 
+    /**
+     * Sets the suffix to append to all work queue names.
+     *
+     * (The empty string has the same effect as `null`.)
+     *
+     * @param string|null $suffix
+     * @return self
+     */
     public function withSuffix(?string $suffix): self
     {
         $this->suffix = $suffix;
