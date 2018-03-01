@@ -32,8 +32,8 @@ interface WorkServerAdapter
      * Keep in mind to check the {@see Job::jobIsExpired()} flag
      * before executing the job.
      *
-     * If you don't want to do all of this manually,
-     * use {@see WorkProcessor::processNextJob()} instead.
+     * **If you don't want to do all of this manually,
+     * use {@see WorkProcessor::processNextJob()} instead.**
      *
      * @param string|string[] $workQueue The name or names of the Work Queue(s) to poll.
      *                                   If it's an array of Work Queue names,

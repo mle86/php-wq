@@ -26,8 +26,8 @@ in case of Redis, Work Queues are Lists.
     use the `deleteEntry`/`buryEntry`/`requeueEntry` methods.
     Keep in mind to check the `Job::jobIsExpired()` flag
     before executing the job.  
-    If you don't want to do all of this manually,
-    use <code>[WorkProcessor]::processNextJob()</code> instead.  
+    **If you don't want to do all of this manually,
+    use <code>[WorkProcessor]::processNextJob()</code> instead.**  
     Returns `null` if no job was available after waiting for `$timeout` seconds.
     * `$workQueue`: The name of the Work Queue to poll (string) or an array of Work Queues to poll.
       In the latter case, the first job in any of these Work Queues will be returned.
