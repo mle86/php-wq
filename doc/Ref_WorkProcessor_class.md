@@ -106,31 +106,30 @@ by extending the `WorkProcessor` class.
 
 All of these hook methods are called by the `processNextJob()` method.
 In the provided base class, they are empty.
-Their return value is ignored.
 
 <a name="onNoJobAvailable"></a>
-* <code>protected function <b>onNoJobAvailable</b> (array $workQueues)</code>  
+* <code>protected function <b>onNoJobAvailable</b> (array $workQueues) : void</code>  
     This method is called if there is currently no job to be executed in any of the polled work queues.
 <a name="onJobAvailable"></a>
-* <code>protected function <b>onJobAvailable</b> (QueueEntry $qe)</code>  
+* <code>protected function <b>onJobAvailable</b> (QueueEntry $qe) : void</code>  
     This method is called if there is a job ready to be executed,
     right before it is actually executed.
 <a name="onSuccessfulJob"></a>
-* <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe)</code>  
+* <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe) : void</code>  
     This method is called after a job has been successfully executed,
     right before it is deleted from the work queue.
 <a name="onExpiredJob"></a>
-* <code>protected function <b>onExpiredJob</b> (QueueEntry $qe)</code>  
+* <code>protected function <b>onExpiredJob</b> (QueueEntry $qe) : void</code>  
     This method is called if an expired job is encountered,
     right before it gets deleted.
 <a name="onJobRequeue"></a>
-* <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay)</code>  
+* <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay) : void</code>  
     This method is called after a job that can be re-tried at least one more time
     has failed (thrown an exception),
     right before `processNextJob()` re-queues it
     and re-throws the exception.
 <a name="onFailedJob"></a>
-* <code>protected function <b>onFailedJob</b> (QueueEntry $qe, \Throwable $e)</code>  
+* <code>protected function <b>onFailedJob</b> (QueueEntry $qe, \Throwable $e) : void</code>  
     This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
     right before `processNextJob()` buries/deletes it
     and re-throws the exception.
