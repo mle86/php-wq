@@ -7,7 +7,7 @@ such as Beanstalkd or Redis
 to execute them at a later time.
 
 This is
-**version 0.10.0**.
+**version 0.10.1**.
 
 
 # Installation
