@@ -72,6 +72,7 @@ class WorkProcessor
      *                                   See {@see JobResult} for possible return values.
      * @param int $timeout               See {@see WorkServerAdapter::getNextJob()}.
      * @throws \Throwable  Will re-throw on any Exceptions/Throwables from the <tt>$callback</tt>.
+     * @throws \UnexpectedValueException  in case of an unexpected callback return value (should be a {@see JobResult} constant or NULL or void).
      */
     public function processNextJob($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT): void
     {
@@ -116,6 +117,10 @@ class WorkProcessor
                 // The job failed.
                 $this->handleFailedJob($qe);
                 break;
+            default:
+                // We'll assume the job went well.
+                $this->handleFinishedJob($qe);
+                throw new \UnexpectedValueException('unexpected job handler return value, should be JobResult::... or null or void');
         }
     }
 

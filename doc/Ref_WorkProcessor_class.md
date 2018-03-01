@@ -32,8 +32,9 @@ but will also try to re-queue it if it fails.
     no re-queueing will be attempted;
     the job will be buried immediately.  
     If the next job in the Work Queue is expired,
-    it will be silently deleted.
-    Will re-throw on any Exceptions/Throwables from the `$callback`.
+    it will be silently deleted.  
+    Will re-throw on any Exceptions/Throwables from the `$callback`.  
+    Throws an `\UnexpectedValueException` in case of an unexpected callback return value (should be a [JobResult] constant or `null` or `void`).
     * `$workQueue`: See `WorkServerAdapter::getNextJob()`.
     * `$callback`: The handler callback to execute each Job.  
       Expected signature:
