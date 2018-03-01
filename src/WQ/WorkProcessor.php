@@ -123,9 +123,11 @@ class WorkProcessor
     {
         $job = $qe->getJob();
 
-        $exception_class = get_class($e);
-        $do_retry        =
-            ($e instanceof \RuntimeException) &&
+        $reason = ($e)
+            ? get_class($e)
+            : 'JobResult::FAILED';
+        $do_retry =
+            ($e === null || $e instanceof \RuntimeException) &&
             $this->options[self::WP_ENABLE_RETRY] &&
             $job->jobCanRetry();
 
@@ -134,15 +136,15 @@ class WorkProcessor
             $delay = $job->jobRetryDelay();
             $this->onJobRequeue($qe, $delay, $e);
             $this->server->requeueEntry($qe, $delay);
-            $this->log(LogLevel::NOTICE, "failed, re-queued with {$delay}s delay ({$exception_class})", $qe);
+            $this->log(LogLevel::NOTICE, "failed, re-queued with {$delay}s delay ({$reason})", $qe);
         } elseif ($this->options[self::WP_ENABLE_BURY]) {
             $this->onFailedJob($qe, $e);
             $this->server->buryEntry($qe);
-            $this->log(LogLevel::WARNING, "failed, buried ({$exception_class})", $qe);
+            $this->log(LogLevel::WARNING, "failed, buried ({$reason})", $qe);
         } else {
             $this->onFailedJob($qe, $e);
             $this->server->deleteEntry($qe);
-            $this->log(LogLevel::WARNING, "failed, deleted ({$exception_class})", $qe);
+            $this->log(LogLevel::WARNING, "failed, deleted ({$reason})", $qe);
         }
     }
 
