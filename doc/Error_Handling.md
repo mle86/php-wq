@@ -39,4 +39,5 @@ So what happens if the execution throws an Exception?
 [Job]: Ref_Job_interface.md
 [UnserializationException]: Ref_Exceptions.md
 [Usage Examples]: Usage_Examples.md
+[WorkProcessor]: Ref_WorkProcessor_class.md
 
