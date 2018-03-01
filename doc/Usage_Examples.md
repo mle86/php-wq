@@ -95,7 +95,7 @@ for the SIGTERM (15)
 and the SIGINT (2)
 signals.
 (SIGTERM is commonly sent to all processes on system shutdown
- and is the default signal for the `kill`(1) program.
+ and is the default signal for the `kill` program.
  SIGINT is raised when the user terminates a process with Ctrl-C.)
 
 Now if your running worker script
@@ -167,9 +167,9 @@ NB:
 This block does _not_ care about expired jobs
 and will happily try to execute them as well,
 and it does not attempt to re-queue failed jobs.
-Including all of those functions in that example
-would pretty much turn it into a copy
-of the `processNextJob()` method.
+Including all of those functions in this example
+would pretty much turn it into a verbatim copy
+of the actual `processNextJob()` method.
 
 
 [WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
