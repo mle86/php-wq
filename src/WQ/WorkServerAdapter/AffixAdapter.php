@@ -21,7 +21,7 @@ use mle86\WQ\Job\QueueEntry;
  * Instead of
  *   `$workServer->getNextQueueEntry("myapp-email-PROD")`,
  * you could wrap the existing WorkServerAdapter instance in an AffixAdapter...
- *   `$workServer = new AffixAdapter($workServer)->withPrefix("myapp-")->withSuffix("-" . ENVIRONMENT);`,
+ *   `$workServer = (new AffixAdapter($workServer))->withPrefix("myapp-")->withSuffix("-" . ENVIRONMENT);`,
  * then use it with a simpler call:
  *   `$workServer->getNextQueueEntry("email")`.
  */

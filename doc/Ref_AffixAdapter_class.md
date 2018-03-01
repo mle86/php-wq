@@ -21,7 +21,7 @@ Instead of
 <code>$workServer->getNextQueueEntry("myapp-<b>email</b>-PROD")</code>,
 
 you could wrap the existing WorkServerAdapter instance in an AffixAdapter...  
-`$workServer = new AffixAdapter($workServer)->withPrefix("myapp-")->withSuffix("-" . ENVIRONMENT);`,
+`$workServer = (new AffixAdapter($workServer))->withPrefix("myapp-")->withSuffix("-" . ENVIRONMENT);`,
 
 then use it with a simpler call:  
 <code>$workServer->getNextQueueEntry("<b>email</b>")</code>.
