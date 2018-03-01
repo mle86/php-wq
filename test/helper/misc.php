@@ -40,11 +40,11 @@ function xsj_called(): bool
 }
 
 /**
- * This function executes any {@see SimpleJob}'s built-in {@see execute()} method,
- * returning its return value.
+ * This function executes any {@see SimpleJob}'s built-in {@see execute()} method.
  * It's only here to shorten our test {@see WorkProcessor::processNextJob()} calls.
  *
  * @param SimpleJob $job
+ * @return void  No return value. This should trigger the {@see JobResult::DEFAULT} behavior.
  */
 function xsj(SimpleJob $job)
 {
