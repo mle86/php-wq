@@ -269,10 +269,12 @@ class WorkProcessor
      * @param mixed $value The option's new value. The required type depends on the option.
      *
      * @see setOptions()  to change multiple options at once.
+     * @return self
      */
-    public function setOption(int $option, $value)
+    public function setOption(int $option, $value): self
     {
         $this->options[ $option ] = $value;
+        return $this;
     }
 
     /**
@@ -291,10 +293,12 @@ class WorkProcessor
      *
      * @see setOption()  to change just one option.
      * @see __construct()  to set options on class instantiation.
+     * @return self
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options): self
     {
         $this->options += $options;
+        return $this;
     }
 
     protected function log($logLevel, $message, $context = null): void

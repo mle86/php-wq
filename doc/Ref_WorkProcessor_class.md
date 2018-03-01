@@ -40,13 +40,13 @@ but will also try to re-queue it if it fails.
     * `$timeout`: See `WorkServerAdapter::getNextJob()`.
 
 <a name="setOption"></a>
-* <code>public function <b>setOption</b> (int $option, $value)</code>  
+* <code>public function <b>setOption</b> (int $option, $value) : self</code>  
     Sets one of the configuration options.
     * `$option`: One of the [`WP_` constants](#option-keys).
     * `$value`: The option's new value. The required type depends on the option.
 
 <a name="setOptions"></a>
-* <code>public function <b>setOptions</b> (array $options)</code>  
+* <code>public function <b>setOptions</b> (array $options) : self</code>  
     Sets one or more of the configuration options.
 
 
