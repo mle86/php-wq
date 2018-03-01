@@ -1,6 +1,6 @@
 # `AbstractJob` base class
 
-Declaration: <code>abstract class mle86\WQ\Job\\<b>AbstractJob</b> implements Job</code>  
+Declaration: <code>abstract class mle86\WQ\Job\\<b>AbstractJob</b> implements [Job]</code>  
 Source file: [src/WQ/Job/AbstractJob.php](/src/WQ/Job/AbstractJob.php)
 
 To build a working Job class,

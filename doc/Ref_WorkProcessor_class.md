@@ -4,7 +4,7 @@ Declaration: <code>class mle86\WQ\\<b>WorkProcessor</b></code>
 Source file: [src/WQ/WorkProcessor.php](/src/WQ/WorkProcessor.php)
 
 This class implements a wrapper around
-`WorkServerAdapter::getNextJob()`
+<code>[WorkServerAdapter]::getNextJob()</code>
 called `processNextJob()`
 that does not only execute the next job immediately
 but will also try to re-queue it if it fails.
@@ -36,7 +36,8 @@ but will also try to re-queue it if it fails.
     Will re-throw on any Exceptions/Throwables from the `$callback`.
     * `$workQueue`: See `WorkServerAdapter::getNextJob()`.
     * `$callback`: The handler callback to execute each Job.  
-      Expected signature: `function(Job)`.
+      Expected signature:
+      <code>function([Job])</code>.
     * `$timeout`: See `WorkServerAdapter::getNextJob()`.
 
 <a name="setOption"></a>
@@ -134,3 +135,5 @@ In the provided base class, they are empty.
     right before `processNextJob()` buries/deletes it
     and re-throws the exception.
 
+[WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
+[Job]: Ref_Job_interface.md
