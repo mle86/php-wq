@@ -1,6 +1,7 @@
 <?php
 namespace mle86\WQ\Tests;
 
+use mle86\WQ\Job\JobResult;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
@@ -51,9 +52,11 @@ class WorkProcessorTest
     /**
      * @depends testInstance
      */
-    public function testInsertOneSimpleJob()
+    public function testInsertOneSimpleJob(LoggingWorkProcessor $wp = null): LoggingWorkProcessor
     {
-        $wp = wp();
+        if (!$wp) {
+            $wp = wp();
+        }
 
         $wp->getWorkServerAdapter()->storeJob(
             self::QUEUE,
@@ -323,6 +326,79 @@ class WorkProcessorTest
         $this->expectEmptyWQ($wp, $expect_log, "expired-on-retry");
     }
 
+    /**
+     * The previous test methods have already established that the default behavior on a void return works,
+     * because our {@see xsj()} helper function is of void type.
+     * But let's make sure with an explicit NULL return, then try all other possible values.
+     *
+     * @depends testExecuteOneSimpleJob
+     * @depends testExecuteFailingJob
+     */
+    public function testCallbackReturnValue()
+    {
+        $marker = false;
+        $make_callback_with_return_value = function ($return_value) use(&$marker) : callable {
+            return function (SimpleJob $job) use($return_value, &$marker) {
+                $marker = true;
+                return $return_value;  // !
+            };
+        };
+        $assert_job_state = function (LoggingWorkProcessor $wp, string $state) {
+            $this->assertSame(
+                $state,
+                (end($wp->log))[0]);
+        };
+
+        // return NULL:
+        $marker = false;
+        $wp = $this->testInsertOneSimpleJob();
+        $wp->processNextJob(
+            self::QUEUE,
+            $make_callback_with_return_value(null),
+            WorkServerAdapter::NOBLOCK);
+        $this->assertTrue($marker);
+        $assert_job_state($wp, 'SUCCESS');
+
+        // return JobResult::SUCCESS:
+        $marker = false;
+        $wp = $this->testInsertOneSimpleJob();
+        $wp->processNextJob(
+            self::QUEUE,
+            $make_callback_with_return_value(JobResult::SUCCESS),
+            WorkServerAdapter::NOBLOCK);
+        $this->assertTrue($marker);
+        $assert_job_state($wp, 'SUCCESS');
+
+        // return JobResult::FAILED:
+        $marker = false;
+        $wp = $this->testInsertOneSimpleJob();
+        $wp->processNextJob(
+            self::QUEUE,
+            $make_callback_with_return_value(JobResult::FAILED),
+            WorkServerAdapter::NOBLOCK);
+        $this->assertTrue($marker);
+        // We used FAILED, so the job should now be buried:
+        $assert_job_state($wp, 'FAILED');
+
+        // return something invalid:
+        $marker = false;
+        $wp = $this->testInsertOneSimpleJob();
+        $exception = null;
+        try {
+            $wp->processNextJob(
+                self::QUEUE,
+                $make_callback_with_return_value("99324879387584 ~ invalid!"),
+                WorkServerAdapter::NOBLOCK);
+        } catch (\Throwable $exception) {
+            // continue
+        }
+        // The handler should have been run:
+        $this->assertTrue($marker);
+        // The WorkProcessor should have noticed the invalid return value:
+        $this->assertInstanceOf(\UnexpectedValueException::class, $exception);
+        // And the job should still have been deleted!
+        $assert_job_state($wp, 'SUCCESS');
+    }
 
     private function expectSuccess(LoggingWorkProcessor $wp, int $marker, array &$expect_log)
     {
