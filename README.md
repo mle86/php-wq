@@ -149,6 +149,7 @@ Class reference:
     * [AffixAdapter] wrapper class
 * [WorkProcessor] class
     * [SignalSafeWorkProcessor] class
+    * [JobResult] enum class
 * [Exceptions](doc/Ref_Exceptions.md)
 
 
@@ -158,6 +159,7 @@ Class reference:
 [AffixAdapter]: doc/Ref_AffixAdapter_class.md
 [WorkProcessor]: doc/Ref_WorkProcessor_class.md
 [QueueEntry]: doc/Ref_QueueEntry_class.md
+[JobResult]: doc/Ref_JobResult_class.md
 
 [Implementing a Job class]: doc/Implementing_a_Job_class.md
 [Execute or Queue]: doc/Execute_or_Queue.md

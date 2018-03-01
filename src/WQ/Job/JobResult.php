@@ -2,15 +2,22 @@
 namespace mle86\WQ\Job;
 
 /**
- * This class exists only to hold the JOB_ return status constants.
+ * This class exists only to hold the job callback return status constants.
  *
- * - {@see JobResult::JOB_SUCCESS}
- * - {@see JobResult::JOB_FAILED}
+ * - {@see JobResult::SUCCESS}
+ * - {@see JobResult::FAILED}
  *
  * The {@see WorkProcessor} class
  * assumes that the job handler function
  * returns one of these constants
- * (or NULL/no value, in which case {@see JobResult::DEFAULT_STATUS} will be used).
+ * (or NULL/no value, in which case {@see JobResult::DEFAULT} will be used).
+ *
+ * If you don't use the {@see WorkProcessor} class,
+ * you won't need this class either.
+ * If you do use the {@see WorkProcessor} class
+ * but your job handlers always either succeed or throw some {@see \RuntimeException},
+ * you won't need this class either –
+ * it's useful only if you want additional control over the re-try mechanism without throwing exceptions.
  */
 class JobResult
 {
@@ -19,7 +26,7 @@ class JobResult
      * This status indicates that the job has been processed correctly
      * and that it should now be deleted from the work queue.
      *
-     * (It triggers the behavior set through the {@see WorkProcessor::WP_DELETE} setting.)
+     * (It triggers the behavior set through the {@see WorkProcessor::WP_DELETE} option.)
      */
     const SUCCESS = 0;
 
@@ -30,7 +37,7 @@ class JobResult
      * If not, it will be *buried*.
      *
      * (That behavior may be changed through the {@see WorkProcessor::WP_ENABLE_RETRY} and
-     *  {@see WorkProcessor::WP_ENABLE_BURY} settings.)
+     *  {@see WorkProcessor::WP_ENABLE_BURY} options.)
      */
     const FAILED = 1;
 
