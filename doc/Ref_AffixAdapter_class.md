@@ -1,6 +1,6 @@
 # `AffixAdapter` wrapper class
 
-Declaration: <code>interface mle86\WQ\WorkServerAdapter\\<b>AffixAdapter</b> implements [WorkServerAdapter]</code>
+Declaration: <code>interface mle86\WQ\WorkServerAdapter\\<b>AffixAdapter</b> implements [WorkServerAdapter]</code>  
 Source file: [src/WQ/WorkServerAdapter/WorkServerAdapter.php](/src/WQ/WorkServerAdapter/WorkServerAdapter.php)
 
 This adapter serves to manipulate the work queue names
