@@ -116,6 +116,7 @@ for queuing jobs:
 
 ```php
 $workServerAdapter->storeJob("work-queue-name", $job);
+$workServerAdapter->storeJob("work-queue-name", $job, $delayInSeconds);
 ```
 
 Because you'll probably need different handler callbacks
