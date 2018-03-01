@@ -11,7 +11,7 @@ because all Jobs have to be serializable
 in order to be stored in a Work Queue.
 
 For your own Job classes,
-see the [`AbstractJob`](AbstractJob) base class instead;
+see the [`AbstractJob`][AbstractJob] base class instead;
 it is easier to work with
 as it provides default implementations
 for the required methods.
