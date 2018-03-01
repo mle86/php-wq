@@ -31,6 +31,8 @@ abstract class AbstractJob
      * @var int  How often a job of this type can be retried if it fails.
      *           Override this as necessary in subclasses.
      *           Zero or negative values mean that this job can only be tried once, never re-tried.
+     * @see jobCanRetry()  This constant is used in the jobCanRetry() default implementation only,
+     *                     so if you override that method in your class the constant is unused.
      */
     const MAX_RETRY = 0;
 

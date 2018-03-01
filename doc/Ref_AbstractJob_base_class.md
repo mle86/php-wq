@@ -76,7 +76,7 @@ It fully implements the [`Job`][Job] interface.
     How often a job of this type can be retried if it fails.
     Override this as necessary in subclasses.
     Zero or negative values mean that this job can only be tried once, never re-tried.  
-    (This is used in the `jobCanRetry()` default implementation,
+    (This is used in the `jobCanRetry()` default implementation only,
      so if you override that method in your Job class
      the constant is unused.)
 
