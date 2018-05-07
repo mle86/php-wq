@@ -12,4 +12,9 @@
             <directory suffix=".php">./src/WQ/</directory>
         </whitelist>
     </filter>
+
+    <logging>
+	    <log type="coverage-clover" target="build/logs/clover.xml"/>
+	    <log type="coverage-html" target="build/logs/coverage.html"/>
+    </logging>
 </phpunit>
