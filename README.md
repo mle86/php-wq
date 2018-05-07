@@ -18,7 +18,7 @@ $ composer require mle86/wq
 
 It requires PHP 7.1
 and has no other dependencies
-(apart from PHPUnit for development
+(apart from PHPUnit/Coveralls for development
  and the PSR-3 interfaces).
 
 You'll also want to install at least one other package
