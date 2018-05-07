@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/mle86/php-wq.svg?branch=master)](https://travis-ci.org/mle86/php-wq)
 [![Coverage Status](https://coveralls.io/repos/github/mle86/php-wq/badge.svg?branch=master)](https://coveralls.io/github/mle86/php-wq?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/mle86/wq/version)](https://packagist.org/packages/mle86/wq)
+[![License](https://poser.pugx.org/mle86/wq/license)](https://packagist.org/packages/mle86/wq)
 
 This package provides an easy way
 to put PHP tasks of any kind
