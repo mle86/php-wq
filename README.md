@@ -26,6 +26,8 @@ and has no other dependencies
 (apart from PHPUnit/Coveralls for development
  and the PSR-3 interfaces).
 
+## Adapter Implementations
+
 You'll also want to install at least one other package
 which contains a `WorkServerAdapter` implementation,
 such as:

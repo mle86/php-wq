@@ -8,6 +8,7 @@ A Work Server stores jobs inside one or more Work Queues.
 A `WorkServerAdapter` implementation
 uses a connection handle to an existing Work Server:
 for example, the `RedisWorkServer` implementation
+(from the [mle86/wq-redis](https://github.com/mle86/php-wq-redis) package)
 takes a `\Redis` instance from the [phpredis extension](https://github.com/phpredis/phpredis).
 
 A Beanstalkd server or a Redis server might be such a Work Server.
@@ -80,5 +81,18 @@ in case of Redis, Work Queues are Lists.
     Causes `getNextQueueEntry()` to block indefinitely, until a job becomes available.
 
 
-[WorkProcessor]: Ref_WorkProcessor_class.md
+## Implementations:
 
+This package also includes a few implementations of the `WorkServerAdapter` interface:
+
+* the [AffixAdapter] which serves as a queue name changer for other `WorkServerAdapter` implementations,
+* the [BlackHoleWorkServer] which doesn't actually store anything,
+* and the MemoryWorkServer which uses a class member array for persistence.
+
+Other, more interesting implementations
+are provided in different packages –
+see “[Adapter Implementations](../README.md#adapter-implementations)” in the readme document.
+
+[WorkProcessor]: Ref_WorkProcessor_class.md
+[BlackHoleWorkServer]: Ref_BlackHoleWorkServer_class.md
+[AffixAdapter]: Ref_AffixAdapter_class.md
