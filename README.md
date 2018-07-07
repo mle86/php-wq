@@ -15,7 +15,7 @@ This is
 **version 0.11.0**.
 
 
-# Installation
+# Installation and Dependencies
 
 ```
 $ composer require mle86/wq
