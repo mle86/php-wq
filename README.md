@@ -152,6 +152,7 @@ Class reference:
     * [QueueEntry] wrapper class
 * [WorkServerAdapter] interface
     * [AffixAdapter] wrapper class
+    * [BlackHoleWorkServer] dummy class
 * [WorkProcessor] class
     * [SignalSafeWorkProcessor] class
     * [JobResult] enum class
@@ -162,6 +163,7 @@ Class reference:
 [AbstractJob]: doc/Ref_AbstractJob_base_class.md
 [WorkServerAdapter]: doc/Ref_WorkServerAdapter_interface.md
 [AffixAdapter]: doc/Ref_AffixAdapter_class.md
+[BlackHoleWorkServer]: doc/Ref_BlackHoleWorkServer_class.md
 [WorkProcessor]: doc/Ref_WorkProcessor_class.md
 [QueueEntry]: doc/Ref_QueueEntry_class.md
 [JobResult]: doc/Ref_JobResult_class.md
