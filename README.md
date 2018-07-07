@@ -33,7 +33,9 @@ such as:
 * [mle86/wq-beanstalkd](https://github.com/mle86/php-wq-beanstalkd)
     (Beanstalkd server adapter),
 * [mle86/wq-redis](https://github.com/mle86/php-wq-redis)
-    (Redis server adapter).
+    (Redis server adapter),
+* [mle86/wq-amqp](https://github.com/mle86/php-wq-amqp)
+    (RabbitMQ server adapter).
 
 
 # Basic Concepts
