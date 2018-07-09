@@ -17,6 +17,12 @@ class BlackHoleWorkServer
 
     public function getNextQueueEntry($workQueue, int $timeout = self::DEFAULT_TIMEOUT): ?QueueEntry
     {
+        if ($timeout === self::FOREVER) {
+            // you asked for it...
+            while (true) {
+                sleep(600);
+            }
+        }
         if ($timeout > 0) {
             sleep($timeout);
         }
