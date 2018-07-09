@@ -69,6 +69,17 @@ in case of Redis, Work Queues are Lists.
     Permanently deletes a job entry for its work queue.  
     This is what happens to finished jobs.
 
+<a name="disconnect"></a>
+* <code>public function <b>disconnect</b> ()</code>  
+    Explicitly closes the connection to the work server.  
+    The instance should not be used anymore after calling this method;
+    calling other methods afterwards is likely to lead to unexpected behaviour
+    such as connection-related exceptions.
+    Repeated calls to this method have no effect.
+    The class destructor should also call this,
+    so there's rarely a good reason for calling this method
+    outside of testing.
+
 
 ## Constants:
 

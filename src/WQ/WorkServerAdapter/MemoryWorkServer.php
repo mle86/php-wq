@@ -103,4 +103,9 @@ class MemoryWorkServer
         return "M" . self::$index++;
     }
 
+    public function disconnect(): void
+    {
+        $this->storage = [];
+    }
+
 }

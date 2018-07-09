@@ -92,4 +92,19 @@ interface WorkServerAdapter
      */
     public function deleteEntry(QueueEntry $entry): void;
 
+    /**
+     * Explicitly closes the connection to the work server.
+     *
+     * The instance should not be used anymore after calling this method;
+     * calling other methods afterwards is likely to lead to unexpected behaviour
+     * such as connection-related exceptions.
+     *
+     * Repeated calls to this method have no effect.
+     *
+     * The class destructor should also call this,
+     * so there's rarely a good reason for calling this method
+     * outside of testing.
+     */
+    public function disconnect(): void;
+
 }

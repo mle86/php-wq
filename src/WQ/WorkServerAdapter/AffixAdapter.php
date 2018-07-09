@@ -110,4 +110,13 @@ class AffixAdapter
         $this->server->deleteEntry($entry);
     }
 
+    /**
+     * In this class, the method does absolutely nothing.
+     *
+     * The call is _not_ forwarded to the wrapped adapter instance,
+     * as that instance might still be in use in other contexts.
+     */
+    public function disconnect(): void
+    {
+    }
 }

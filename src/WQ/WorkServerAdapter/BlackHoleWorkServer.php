@@ -39,4 +39,8 @@ class BlackHoleWorkServer
     {
     }
 
+    public function disconnect(): void
+    {
+    }
+
 }
