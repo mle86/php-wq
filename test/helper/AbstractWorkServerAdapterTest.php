@@ -591,12 +591,89 @@ abstract class AbstractWorkServerAdapterTest
     }
 
     /**
-     * LAST TEST METHOD IN THIS BASE CLASS!
+     * Repeat all tests but with separate connections.
+     *
+     * All tests so far have used the same {@see WorkServerAdapter} instance over and over.
+     * Now we'll repeat all test methods at least once
+     * but give them all separate {@see WorkServerAdapter} instances where possible.
      *
      * @depends testGetServerInstance
      * @depends testRequeueJob
      * @depends testPollMultipleQueues
      * @depends testExecuteAndDeleteJobs
+     */
+    public function testIsolation(WorkServerAdapter $original_ws)
+    {
+        // Make sure SimpleJob::$log is cleaned up:
+        self::setUpBeforeClass();
+
+        /* PHPUnit still has a copy of the very first WorkServerAdapter,
+         * so the actual TCP connection is still open as well.
+         * This means that some of our tests with new connections might fail --
+         * the work server might decide to send incoming jobs only to some of the active clients.
+         * To avoid this problem, we'll manually close that original connection:  */
+        $original_ws->disconnect();
+        unset($original_ws);
+
+        /**
+         * This helper function runs a callback
+         * and supplies it with a newly-created WorkServerAdapter connection,
+         * taking care to manually disconnect() that instance afterwards.
+         *
+         * @param callable $callback  The callback to execute. Expected signature:  function({@see WorkServerAdapter}).
+         */
+        $withSeparateConnection = function (callable $callback): void {
+            $ws = $this->getWorkServerAdapter();
+            $callback($ws);
+            $ws->disconnect();
+        };
+
+
+        foreach ($this->jobData() as $jobData) {
+            $withSeparateConnection(function(WorkServerAdapter $ws) use($jobData) {
+                $this->testQueuesEmpty($jobData[0], $jobData[1], $ws);
+            });
+        }
+
+        $withSeparateConnection(function(WorkServerAdapter $ws) {
+            foreach ($this->jobData() as $jobData) {
+                $this->testQueueJobs($jobData[0], $jobData[1], $ws);
+            }
+
+            $queues = $this->testGetQueuedJobs($ws);
+            $this->testStoredQueueNames($queues);
+            $this->testStoredJobs($queues);
+            $this->testExecuteAndDeleteJobs($queues, $ws);
+        });
+
+        $withSeparateConnection(function(WorkServerAdapter $ws) {
+            $this->testDelayedJob($ws);
+        });
+
+        $withSeparateConnection(function(WorkServerAdapter $ws) {
+            $this->testRequeueJob($ws);
+        });
+
+        $withSeparateConnection(function(WorkServerAdapter $ws) {
+            $this->testMultipleEmptyQueues($ws);
+        });
+
+        $withSeparateConnection(function(WorkServerAdapter $ws) {
+            $this->testPollMultipleQueues($ws);
+        });
+
+        $withSeparateConnection(function(WorkServerAdapter $ws) {
+            $this->testQueueInterference($ws);
+        });
+    }
+
+    /**
+     * LAST TEST METHOD IN THIS BASE CLASS!
+     *
+     * @depends testRequeueJob
+     * @depends testPollMultipleQueues
+     * @depends testExecuteAndDeleteJobs
+     * @depends testIsolation
      * @see     additionalTests
      */
     final public function testSpecificImplementation()
