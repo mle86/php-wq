@@ -49,6 +49,11 @@ abstract class AbstractWorkServerAdapterTest
     // Helper methods and data providers:  ////////////////////////////////////////
 
 
+    public static function setUpBeforeClass()
+    {
+        SimpleJob::$log = [];
+    }
+
     /**
      * This method ensures that we're running in some kind of Docker container.
      * You may call it in your {@see checkEnvironment()} implementation.
@@ -119,6 +124,10 @@ abstract class AbstractWorkServerAdapterTest
     /**
      * This is the second test to run.
      * It ensures that we have a working instance of the target implementation.
+     *
+     * After the tests in this class have been run,
+     * that instance will be disconnected
+     * so you should NOT use it in your custom test methods.
      *
      * @depends testEnvironment
      * @return WorkServerAdapter
@@ -589,11 +598,10 @@ abstract class AbstractWorkServerAdapterTest
      * @depends testPollMultipleQueues
      * @depends testExecuteAndDeleteJobs
      * @see     additionalTests
-     * @param WorkServerAdapter $ws
      */
-    final public function testSpecificImplementation(WorkServerAdapter $ws)
+    final public function testSpecificImplementation()
     {
-        $this->additionalTests($ws);
+        $this->additionalTests($this->getWorkServerAdapter());
     }
 
     /**
@@ -608,7 +616,7 @@ abstract class AbstractWorkServerAdapterTest
      *
      * This default implementation is empty.
      *
-     * @param WorkServerAdapter $ws
+     * @param WorkServerAdapter $ws  A newly-created connection instance
      * @see testSpecificImplementation  last-called test method, calls this method in turn
      * @return void
      */
