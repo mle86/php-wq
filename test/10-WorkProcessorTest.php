@@ -10,8 +10,6 @@ use mle86\WQ\WorkProcessor;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
-use function mle86\WQ\Testing\wait_for_subsecond;
-use function mle86\WQ\Testing\xsj_called;
 
 function wp(): LoggingWorkProcessor
 {
@@ -36,10 +34,10 @@ class WorkProcessorTest extends TestCase
         $wp = wp();
         $q  = "some-queue-name";
 
-        xsj_called();  // clear the flag
-        $wp->processNextJob($q, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
+        self::xsj_called();  // clear the flag
+        $wp->processNextJob($q, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
 
-        $this->assertFalse(xsj_called(),
+        $this->assertFalse(self::xsj_called(),
             "We got a job from a non-existent work queue?!?");
         $this->assertSame(
             [["NOJOBS", $q]],
@@ -76,9 +74,9 @@ class WorkProcessorTest extends TestCase
         $expect_log = [];
         $this->expectSuccess($wp, self::SIMPLE_JOB_MARKER, $expect_log);
 
-        xsj_called();  // clear the flag
-        $wp->processNextJob(self::QUEUE, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
-        $this->assertFalse(xsj_called(),
+        self::xsj_called();
+        $wp->processNextJob(self::QUEUE, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
+        $this->assertFalse(self::xsj_called(),
             "Finished job was not removed from the queue!");
     }
 
@@ -121,7 +119,7 @@ class WorkProcessorTest extends TestCase
         $this->expectFailAndRequeue($wp, $m, 1, $expect_log, "first try");
         $this->expectEmptyWQ($wp, $expect_log, "first try");
 
-        wait_for_subsecond(0.98);  // wait until the current second is over...
+        sleep(1);  // wait until the current second is over...
         $this->expectFailAndEnd($wp, $m, $expect_log, "second and last try");
         $this->expectEmptyWQ($wp, $expect_log, "second and last try");
     }
@@ -166,10 +164,10 @@ class WorkProcessorTest extends TestCase
 
         $queues = ["emptymq1", "emptymq1", "emptymq5"];
 
-        xsj_called();  // clear the flag
-        $wp->processNextJob($queues, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
+        self::xsj_called();  // clear the flag
+        $wp->processNextJob($queues, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
 
-        $this->assertFalse(xsj_called(),
+        $this->assertFalse(self::xsj_called(),
             "Polling multiple queues at once returned some result when they should all have been empty!");
         $this->assertSame([["NOJOBS", join("|", $queues)]], $wp->log,
             "Polling multiple empty WQs did not result in the correct hook call!");
@@ -204,7 +202,7 @@ class WorkProcessorTest extends TestCase
             $expected_log = [];
 
             for ($n = 0; $n < $n_expected; $n++) {
-                $wp->processNextJob($pollQueues, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
+                $wp->processNextJob($pollQueues, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
 
                 $expected_log[] = ["JOB", $job->getMarker()];
                 $expected_log[] = ["SUCCESS", $job->getMarker()];
@@ -215,9 +213,9 @@ class WorkProcessorTest extends TestCase
             }
 
             $expected_log[] = ["NOJOBS", join("|", $pollQueues)];
-            xsj_called();  // clear the flag
-            $wp->processNextJob($pollQueues, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
-            $this->assertFalse(xsj_called(),
+            self::xsj_called();  // clear the flag
+            $wp->processNextJob($pollQueues, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
+            $this->assertFalse(self::xsj_called(),
                 "Polling multiple queues after retrieving {$n_expected} jobs from them " .
                 "still returned something!");
             $this->assertSame($expected_log, $wp->log,
@@ -225,9 +223,9 @@ class WorkProcessorTest extends TestCase
                 "did not clear all those queues!");
             $expected_log[] = ["NOJOBS", join("|", $pollQueues)];
 
-            xsj_called();  // clear the flag
-            $wp->processNextJob($pollQueues, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
-            $this->assertFalse(xsj_called(),
+            self::xsj_called();  // clear the flag
+            $wp->processNextJob($pollQueues, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
+            $this->assertFalse(self::xsj_called(),
                 "Polling multiple empty queues A SECOND TIME " .
                 "after retrieving {$n_expected} jobs from them " .
                 "still returned something!");
@@ -265,9 +263,9 @@ class WorkProcessorTest extends TestCase
 
         ConfigurableTestJob::$expired_marker = $marker;  // this job is expired already!
 
-        xsj_called();
-        $wp->processNextJob(self::QUEUE, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
-        $this->assertFalse(xsj_called(),
+        self::xsj_called();
+        $wp->processNextJob(self::QUEUE, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
+        $this->assertFalse(self::xsj_called(),
             "An expired job was executed (or processNextJob() returned something for some other reason)!");
         $this->assertNotContains("EXECUTE-" . $marker, SimpleTestJob::$log,
             "Expired job was executed!");
@@ -308,9 +306,9 @@ class WorkProcessorTest extends TestCase
         // first retry would succeed, but it's expired now:
         ConfigurableTestJob::$expired_marker = $marker;
 
-        xsj_called();  // clear the flag
-        $wp->processNextJob(self::QUEUE, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
-        $this->assertFalse(xsj_called(),
+        self::xsj_called();  // clear the flag
+        $wp->processNextJob(self::QUEUE, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
+        $this->assertFalse(self::xsj_called(),
             "An expired-on-retry job was executed (or processNextJob() returned something for some other reason)!");
         $this->assertNotContains("EXECUTE-" . $marker, SimpleTestJob::$log,
             "Expired-on-retry job was executed!");
@@ -403,7 +401,7 @@ class WorkProcessorTest extends TestCase
 
     private function expectSuccess(LoggingWorkProcessor $wp, int $marker, array &$expect_log): void
     {
-        $wp->processNextJob(self::QUEUE, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob(self::QUEUE, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
 
         $this->assertContains("EXECUTE-" . $marker, SimpleTestJob::$log,
             "Job was not executed!");
@@ -421,7 +419,7 @@ class WorkProcessorTest extends TestCase
     {
         $e = null;
         try {
-            $wp->processNextJob(self::QUEUE, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
+            $wp->processNextJob(self::QUEUE, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
         } catch (\Throwable $e) {
             // ok!
         }
@@ -461,13 +459,45 @@ class WorkProcessorTest extends TestCase
 
     private function expectEmptyWQ(LoggingWorkProcessor $wp, array &$expect_log, string $desc): void
     {
-        xsj_called();  // clear the flag
-        $wp->processNextJob(self::QUEUE, 'mle86\\WQ\\Testing\\xsj', WorkServerAdapter::NOBLOCK);
+        self::xsj_called();  // clear the flag
+        $wp->processNextJob(self::QUEUE, [$this, 'xsj'], WorkServerAdapter::NOBLOCK);
         $expect_log[] = ["NOJOBS", self::QUEUE];
-        $this->assertFalse(xsj_called(),
+        $this->assertFalse(self::xsj_called(),
             "There still was a job in the wq! Previous job ({$desc}) not removed or re-queued without delay?");
         $this->assertSame($expect_log, $wp->log,
             "Empty WQ did not result in the correct hook call!");
     }
+
+
+    private static $_xsj_called = false;
+
+    /**
+     * @return bool
+     *   Returns true once after {@see xsj()} has been called at least once.
+     */
+    public static function xsj_called(): bool
+    {
+        if (self::$_xsj_called) {
+            self::$_xsj_called = false;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This function executes any {@see SimpleTestJob}'s built-in {@see execute()} method.
+     * It's only here to shorten our test {@see WorkProcessor::processNextJob()} calls.
+     *
+     * @param SimpleTestJob $job
+     * @return void  No return value -- this should trigger the {@see JobResult::DEFAULT} behavior.
+     */
+    public static function xsj(SimpleTestJob $job): void
+    {
+        global $_xsj_called;
+        $_xsj_called = true;
+        $job->execute();
+    }
+
 
 }

@@ -7,8 +7,6 @@ use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/misc.php';
-
 /**
  * This base class contains a series of tests
  * for the abstract WorkServerAdapter interface.
@@ -329,7 +327,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             "There already is something in the test queue!");
 
         // We want at least 0.5s remaining in the current second:
-        wait_for_subsecond();
+        self::wait_for_subsecond();
 
         $ws->storeJob($queue, $j, $delay);
 
@@ -374,7 +372,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         $delay          = 0;
         $requeued_delay = 1;
 
-        wait_for_subsecond();
+        self::wait_for_subsecond();
 
         $ws->storeJob($queue, $j, $delay);
 
@@ -474,7 +472,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
                 if (isset($check_origins)) {
                     $this->assertContains($ret->getWorkQueue(), $check_origins,
                         "Job's origin reference (qe->getWorkQueue) is not in the list of expected origin queues!");
-                    $check_origins = array_delete_one($check_origins, $ret->getWorkQueue());
+                    $check_origins = self::array_delete_one($check_origins, $ret->getWorkQueue());
                 }
             }
 
@@ -697,6 +695,27 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function additionalTests(WorkServerAdapter $ws): void
     {
+    }
+
+
+    private static function wait_for_subsecond(float $required_remaining_subsecond = 0.3): void
+    {
+        $mt        = microtime(true);
+        $subsecond = $mt - (int)$mt;
+        if ($subsecond > (1 - $required_remaining_subsecond)) {
+            usleep(1000 * 1000 * (1.01 - $subsecond));
+        }
+    }
+
+    private static function array_delete_one(array $input, $value_to_delete, bool $strict = true): array
+    {
+        foreach ($input as $idx => $value) {
+            if ($value === $value_to_delete || (!$strict && $value == $value_to_delete)) {
+                unset($input[$idx]);
+                break;  // only delete one
+            }
+        }
+        return $input;
     }
 
 }
