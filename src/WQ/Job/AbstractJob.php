@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Job;
 
 /**
@@ -23,8 +24,7 @@ namespace mle86\WQ\Job;
  *   if the expiry condition is reached. You may need to
  *   add a job creation timestamp property for that.
  */
-abstract class AbstractJob
-    implements Job
+abstract class AbstractJob implements Job
 {
 
     /**
@@ -34,7 +34,7 @@ abstract class AbstractJob
      * @see jobCanRetry()  This constant is used in the jobCanRetry() default implementation only,
      *                     so if you override that method in your class the constant is unused.
      */
-    const MAX_RETRY = 0;
+    public const MAX_RETRY = 0;
 
     /**
      * @var int  Job classes who override {@see MAX_RETRY} or {@see jobCanRetry()} to allow retrying

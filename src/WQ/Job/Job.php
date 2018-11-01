@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Job;
 
 /**
@@ -19,8 +20,7 @@ namespace mle86\WQ\Job;
  * or how the responsible method(s) should be named,
  * if they are part of the Job implementation at all.
  */
-interface Job
-    extends \Serializable
+interface Job extends \Serializable
 {
 
     /**

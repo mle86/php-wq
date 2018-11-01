@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\WorkServerAdapter;
 
 use mle86\WQ\Job\Job;
@@ -15,12 +16,12 @@ interface WorkServerAdapter
 {
 
     /** @var int  The default timeout for {@see getNextQueueEntry()}, in seconds. */
-    const DEFAULT_TIMEOUT = 5;
+    public const DEFAULT_TIMEOUT = 5;
 
     /** Causes {@see getNextQueueEntry()} to return immediately. */
-    const NOBLOCK = 0;
+    public const NOBLOCK = 0;
     /** Causes {@see getNextQueueEntry()} to block indefinitely, until a job becomes available. */
-    const FOREVER = -1;
+    public const FOREVER = -1;
 
     /**
      * This takes the next job from the named work queue

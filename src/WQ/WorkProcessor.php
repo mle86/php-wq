@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ;
 
 use mle86\WQ\Job\JobResult;
@@ -74,8 +75,11 @@ class WorkProcessor
      * @throws \Throwable  Will re-throw on any Exceptions/Throwables from the <tt>$callback</tt>.
      * @throws \UnexpectedValueException  in case of an unexpected callback return value (should be a {@see JobResult} constant or NULL or void).
      */
-    public function processNextJob($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT): void
-    {
+    public function processNextJob(
+        $workQueue,
+        callable $callback,
+        int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT
+    ): void {
         $qe = $this->server->getNextQueueEntry($workQueue, $timeout);
         if (!$qe) {
             $this->onNoJobAvailable((array)$workQueue);
@@ -128,7 +132,7 @@ class WorkProcessor
     {
         $job = $qe->getJob();
 
-        $reason = ($e)
+        $reason   = ($e)
             ? get_class($e)
             : 'JobResult::FAILED';
         $do_retry =
@@ -176,12 +180,12 @@ class WorkProcessor
         if ($this->options[self::WP_EXPIRED] === self::DELETE_EXPIRED) {
             $this->server->deleteEntry($qe);
             $this->log(LogLevel::NOTICE, "expired, deleted", $qe);
-        } elseif ($this->options[ self::WP_EXPIRED ] === self::BURY_EXPIRED) {
+        } elseif ($this->options[self::WP_EXPIRED] === self::BURY_EXPIRED) {
             $this->server->buryEntry($qe);
             $this->log(LogLevel::NOTICE, "expired, buried", $qe);
         } else {
             // move it to a different wq
-            $this->server->requeueEntry($qe, 0, $this->options[ self::WP_EXPIRED ]);
+            $this->server->requeueEntry($qe, 0, $this->options[self::WP_EXPIRED]);
             $this->log(LogLevel::NOTICE, "expired, moved to {$this->options[self::WP_EXPIRED]}", $qe);
         }
     }
@@ -281,7 +285,7 @@ class WorkProcessor
      */
     public function setOption(int $option, $value): self
     {
-        $this->options[ $option ] = $value;
+        $this->options[$option] = $value;
         return $this;
     }
 

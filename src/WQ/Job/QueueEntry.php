@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Job;
 
 use mle86\WQ\Exception\UnserializationException;
@@ -78,16 +79,16 @@ final class QueueEntry
         $job = unserialize($serializedData);
 
         if ($job === false) {
-            throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained an invalid serialization!");
+            throw new UnserializationException("job {$jobId} (wq {$originWorkQueue}) contained an invalid serialization!");
         }
         if (!is_object($job)) {
-            throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained a non-object serialization!");
+            throw new UnserializationException("job {$jobId} (wq {$originWorkQueue}) contained a non-object serialization!");
         }
         if (!($job instanceof Job)) {
-            throw new UnserializationException ("job {$jobId} (wq {$originWorkQueue}) contained a non-Job object serialization!");
+            throw new UnserializationException("job {$jobId} (wq {$originWorkQueue}) contained a non-Job object serialization!");
         }
 
-        return new self ($job, $originWorkQueue, $handle);
+        return new self($job, $originWorkQueue, $handle);
     }
 
 }

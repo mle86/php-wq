@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\Job;
@@ -8,8 +9,7 @@ use mle86\WQ\WorkProcessor;
 /**
  * @internal This is part of the unit tests.
  */
-class LoggingWorkProcessor
-    extends WorkProcessor
+class LoggingWorkProcessor extends WorkProcessor
 {
 
     public $log = [];
@@ -61,4 +61,3 @@ class LoggingWorkProcessor
     }
 
 }
-

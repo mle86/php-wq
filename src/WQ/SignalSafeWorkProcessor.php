@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ;
 
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
@@ -21,13 +22,11 @@ use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
  * If your worker script has a loop around the {@see processNextJob()} call,
  * check {@see isAlive()} in the loop condition.
  */
-class SignalSafeWorkProcessor
-    extends WorkProcessor
+class SignalSafeWorkProcessor extends WorkProcessor
 {
 
-    private static $alive       = true;
-    private static $last_signal = null;
-
+    private static $alive      = true;
+    private static $lastSignal = null;
 
     public function processNextJob($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT): void
     {
@@ -56,16 +55,16 @@ class SignalSafeWorkProcessor
      */
     public static function installSignalHandler(array $signals = [\SIGTERM, \SIGINT])
     {
-        $last_signal =& self::$last_signal;
-        $alive       =& self::$alive;
+        $lastSignal =& self::$lastSignal;
+        $alive      =& self::$alive;
 
-        $fn_handler = function (int $signo) use (&$last_signal, &$alive) {
-            $last_signal = $signo;
-            $alive       = false;
+        $fnHandler = function (int $signo) use (&$lastSignal, &$alive) {
+            $lastSignal = $signo;
+            $alive      = false;
         };
 
         foreach ($signals as $signo) {
-            pcntl_signal($signo, $fn_handler);
+            pcntl_signal($signo, $fnHandler);
         }
     }
 
@@ -85,7 +84,7 @@ class SignalSafeWorkProcessor
      */
     public static function lastSignal(): ?int
     {
-        return self::$last_signal;
+        return self::$lastSignal;
     }
 
 }

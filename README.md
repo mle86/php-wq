@@ -73,22 +73,24 @@ It represents an e-mail that can be sent.
 
 ```php
 <?php
+
 use mle86\WQ\Job\AbstractJob;
 
-class EMail
-    extends AbstractJob
+class EMail extends AbstractJob
 {
     protected $recipient;
     protected $subject;
     protected $message;
     
-    public function __construct (string $recipient, string $subject, string $message) {
+    public function __construct(string $recipient, string $subject, string $message)
+    {
         $this->recipient = $recipient;
         $this->subject   = $subject;
         $this->message   = $message;
     }
     
-    public function send () {
+    public function send()
+    {
         if (mail($this->recipient, $this->subject, $this->message)) {
             // ok, has been sent!
         } else {
@@ -103,9 +105,10 @@ We have some code using that e-mail class.
 
 ```php
 <?php
+
 use mle86\WQ\WorkServerAdapter\BeanstalkdWorkServer;
 
-$mailJob = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
+$mailJob = new EMail("test@myproject.xyz", "Hello?", "This is a test mail.");
 
 $workServer = BeanstalkdWorkServer::connect("localhost");
 $workServer->storeJob("mail", $mailJob);
@@ -119,14 +122,15 @@ for new e-mail jobs.
 
 ```php
 <?php
+
 use mle86\WQ\WorkServerAdapter\BeanstalkdWorkServer;
 use mle86\WQ\WorkProcessor;
 
 $queue = "mail";
 printf("%s worker %d starting.\n", $queue, getmypid());
 
-$processor  = new WorkProcessor (BeanstalkdWorkServer::connect("localhost"));
-$fn_handler = function (EMail $mailJob) {
+$processor  = new WorkProcessor(BeanstalkdWorkServer::connect("localhost"));
+$fn_handler = function(EMail $mailJob) {
     $mailJob->send();
     // don't catch exceptions here, or the WorkProcessor won't see them.
 };

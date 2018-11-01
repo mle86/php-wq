@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Job;
 
 /**
@@ -28,7 +29,7 @@ class JobResult
      *
      * (It triggers the behavior set through the {@see WorkProcessor::WP_DELETE} option.)
      */
-    const SUCCESS = 0;
+    public const SUCCESS = 0;
 
     /**
      * This status indicates that the job has failed.
@@ -39,7 +40,7 @@ class JobResult
      * (That behavior may be changed through the {@see WorkProcessor::WP_ENABLE_RETRY} and
      *  {@see WorkProcessor::WP_ENABLE_BURY} options.)
      */
-    const FAILED = 1;
+    public const FAILED = 1;
 
 
     /**
@@ -47,7 +48,7 @@ class JobResult
      * the {@see WorkProcessor} will use the default behavior
      * set by this constant.
      */
-    const DEFAULT = self::SUCCESS;
+    public const DEFAULT = self::SUCCESS;
 
 
     private function __construct()

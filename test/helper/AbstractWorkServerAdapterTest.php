@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\Job;
@@ -18,8 +19,7 @@ require_once __DIR__ . '/SimpleJob.php';
  * Implementation need to require this package anyway,
  * so they should be able to use this file.
  */
-abstract class AbstractWorkServerAdapterTest
-    extends TestCase
+abstract class AbstractWorkServerAdapterTest extends TestCase
 {
 
     /**
@@ -58,13 +58,13 @@ abstract class AbstractWorkServerAdapterTest
      * This method ensures that we're running in some kind of Docker container.
      * You may call it in your {@see checkEnvironment()} implementation.
      */
-    final protected function checkInDocker()
+    final protected function checkInDocker(): void
     {
         $this->assertFileExists("/.dockerenv",
             "This test script needs to be run inside a Docker container!");
     }
 
-    final protected function checkWQEmpty(WorkServerAdapter $ws, $queues, string $message = '')
+    final protected function checkWQEmpty(WorkServerAdapter $ws, $queues, string $message = ''): void
     {
         if ($message !== '') {
             $message = " ({$message})";
@@ -84,7 +84,7 @@ abstract class AbstractWorkServerAdapterTest
         return static::$ws_classname;
     }
 
-    final private function jobQueueData()
+    final private function jobQueueData(): array
     {
         $queues = [];
         foreach ($this->jobData() as $jd) {
@@ -95,7 +95,7 @@ abstract class AbstractWorkServerAdapterTest
         return $queues;
     }
 
-    public function jobData()
+    public function jobData(): array
     {
         return [
             // [ queue_name, marker_id ]
@@ -116,7 +116,7 @@ abstract class AbstractWorkServerAdapterTest
     /**
      * This is the very first test to run.
      */
-    final public function testEnvironment()
+    final public function testEnvironment(): void
     {
         $this->checkEnvironment();
     }
@@ -156,7 +156,7 @@ abstract class AbstractWorkServerAdapterTest
      * @param int $job_marker
      * @param WorkServerAdapter $ws
      */
-    public function testQueuesEmpty(string $queue_name, int $job_marker, WorkServerAdapter $ws)
+    public function testQueuesEmpty(string $queue_name, int $job_marker, WorkServerAdapter $ws): void
     {
         $this->checkWQEmpty($ws, $queue_name);
 
@@ -171,9 +171,9 @@ abstract class AbstractWorkServerAdapterTest
      * @param int $job_marker
      * @param WorkServerAdapter $ws
      */
-    public function testQueueJobs(string $queue_name, int $job_marker, WorkServerAdapter $ws)
+    public function testQueueJobs(string $queue_name, int $job_marker, WorkServerAdapter $ws): void
     {
-        $j = new SimpleJob ($job_marker);
+        $j = new SimpleJob($job_marker);
 
         $this->assertSame($job_marker, $j->getMarker(),
             "job constructor broken, wrong marker saved");
@@ -225,7 +225,7 @@ abstract class AbstractWorkServerAdapterTest
      * @depends testGetQueuedJobs
      * @param array $queues
      */
-    public function testStoredQueueNames(array $queues)
+    public function testStoredQueueNames(array $queues): void
     {
         $known_queue_names  = array_keys($this->jobQueueData());
         $stored_queue_names = array_keys($queues);
@@ -246,7 +246,7 @@ abstract class AbstractWorkServerAdapterTest
      * @depends testStoredQueueNames
      * @param array $queues
      */
-    public function testStoredJobs(array $queues)
+    public function testStoredJobs(array $queues): void
     {
         $known = $this->jobQueueData();
 
@@ -259,7 +259,7 @@ abstract class AbstractWorkServerAdapterTest
 
             $known_markers  = $known[ $queue_name ];
             $stored_markers = array_map(
-                function (QueueEntry $qe) {
+                function(QueueEntry $qe) {
                     /** @var Job|SimpleJob $job */
                     $job = $qe->getJob();
                     return $job->getMarker();
@@ -281,7 +281,7 @@ abstract class AbstractWorkServerAdapterTest
      * @param array $queues
      * @param WorkServerAdapter $ws
      */
-    public function testExecuteAndDeleteJobs(array $queues, WorkServerAdapter $ws)
+    public function testExecuteAndDeleteJobs(array $queues, WorkServerAdapter $ws): void
     {
         $markers = [];
 
@@ -301,10 +301,10 @@ abstract class AbstractWorkServerAdapterTest
 
         // Okay, we should now have one log entry for every known marker id:
         foreach ($markers as $marker => $n_entries) {
-            $fn_matching_marker = function ($log) use ($marker) {
+            $fn_matching_marker = function($log) use($marker): bool {
                 return ($log === "EXECUTE-{$marker}");
             };
-            $n_executions       = count(array_filter(SimpleJob::$log, $fn_matching_marker));
+            $n_executions = count(array_filter(SimpleJob::$log, $fn_matching_marker));
 
             $this->assertGreaterThanOrEqual($n_entries, $n_executions,
                 "Job with marker '{$marker}' was not executed as often as it should have been!");
@@ -320,9 +320,9 @@ abstract class AbstractWorkServerAdapterTest
      *   this way the WorkServerAdapter is empty again
      * @param WorkServerAdapter $ws
      */
-    public function testDelayedJob(WorkServerAdapter $ws)
+    public function testDelayedJob(WorkServerAdapter $ws): void
     {
-        $j     = new SimpleJob (555);
+        $j     = new SimpleJob(555);
         $queue = "test";
         $delay = 1;
 
@@ -368,9 +368,9 @@ abstract class AbstractWorkServerAdapterTest
      *   this way the WorkServerAdapter is empty again
      * @param WorkServerAdapter $ws
      */
-    public function testRequeueJob(WorkServerAdapter $ws)
+    public function testRequeueJob(WorkServerAdapter $ws): void
     {
-        $j              = new SimpleJob (566);
+        $j              = new SimpleJob(566);
         $queue          = "test2";
         $delay          = 0;
         $requeued_delay = 1;
@@ -421,7 +421,7 @@ abstract class AbstractWorkServerAdapterTest
      * @depends testQueuesEmpty
      * @param WorkServerAdapter $ws
      */
-    public function testMultipleEmptyQueues(WorkServerAdapter $ws)
+    public function testMultipleEmptyQueues(WorkServerAdapter $ws): void
     {
         $queues = array_keys($this->jobQueueData());
 
@@ -439,19 +439,19 @@ abstract class AbstractWorkServerAdapterTest
      * @depends testMultipleEmptyQueues
      * @param WorkServerAdapter $ws
      */
-    public function testPollMultipleQueues(WorkServerAdapter $ws)
+    public function testPollMultipleQueues(WorkServerAdapter $ws): void
     {
-        $job = new SimpleJob (4711);
+        $job = new SimpleJob(4711);
 
-        $fn_store = function (string $into_queue = "multi1", Job $store_job = null) use ($ws, $job) {
-            $ws->storeJob($into_queue, ($store_job ?? (clone $job)));
+        $fn_store = function(string $into_queue = "multi1", Job $store_job = null) use($ws, $job): void {
+            $ws->storeJob($into_queue, ($store_job ?? clone $job));
         };
-        $fn_clear = function (string $from_queue = "multi1") use ($ws) {
+        $fn_clear = function(string $from_queue = "multi1") use($ws): void {
             while (($qe = $ws->getNextQueueEntry($from_queue, $ws::NOBLOCK))) {
                 $ws->deleteEntry($qe);
             }
         };
-        $fn_check = function (array $poll_queues, int $n_expected = 1, $check_origins = null) use ($ws, $job) {
+        $fn_check = function(array $poll_queues, int $n_expected = 1, $check_origins = null) use($ws, $job): void {
             if (is_string($check_origins)) {
                 $check_origins = [$check_origins];
             }
@@ -542,13 +542,12 @@ abstract class AbstractWorkServerAdapterTest
     /**
      * @depends testGetServerInstance
      * @depends testStoredJobs
-     * @param WorkServerAdapter $ws
      */
-    public function testQueueInterference(WorkServerAdapter $ws)
+    public function testQueueInterference(WorkServerAdapter $ws): void
     {
-        $j1a = new SimpleJob (5011);
-        $j1b = new SimpleJob (5022);
-        $j2  = new SimpleJob (7011);
+        $j1a = new SimpleJob(5011);
+        $j1b = new SimpleJob(5022);
+        $j2  = new SimpleJob(7011);
 
         $ws->storeJob("qi1", $j1a);
         $ws->storeJob("qi2", $j2);
@@ -602,7 +601,7 @@ abstract class AbstractWorkServerAdapterTest
      * @depends testPollMultipleQueues
      * @depends testExecuteAndDeleteJobs
      */
-    public function testIsolation(WorkServerAdapter $original_ws)
+    public function testIsolation(WorkServerAdapter $original_ws): void
     {
         // Make sure SimpleJob::$log is cleaned up:
         self::setUpBeforeClass();
@@ -622,7 +621,7 @@ abstract class AbstractWorkServerAdapterTest
          *
          * @param callable $callback  The callback to execute. Expected signature:  function({@see WorkServerAdapter}).
          */
-        $withSeparateConnection = function (callable $callback): void {
+        $withSeparateConnection = function(callable $callback): void {
             $ws = $this->getWorkServerAdapter();
             $callback($ws);
             $ws->disconnect();
@@ -676,7 +675,7 @@ abstract class AbstractWorkServerAdapterTest
      * @depends testIsolation
      * @see     additionalTests
      */
-    final public function testSpecificImplementation()
+    final public function testSpecificImplementation(): void
     {
         $this->additionalTests($this->getWorkServerAdapter());
     }
@@ -702,4 +701,3 @@ abstract class AbstractWorkServerAdapterTest
     }
 
 }
-

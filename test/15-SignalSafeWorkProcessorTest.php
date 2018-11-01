@@ -1,27 +1,28 @@
 <?php
+
 namespace mle86\WQ\Tests;
 
+use mle86\WQ\WorkProcessor;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use mle86\WQ\SignalSafeWorkProcessor;
 use PHPUnit\Framework\TestCase;
 
-function sswp(): SignalSafeWorkProcessor {
-    $wsa = new MemoryWorkServer ();
-    $wp  = new SignalSafeWorkProcessor ($wsa);
+function sswp(): SignalSafeWorkProcessor
+{
+    $wsa = new MemoryWorkServer();
+    $wp  = new SignalSafeWorkProcessor($wsa);
     return $wp;
 }
 
-class NoSignalHandlerException
-    extends \RuntimeException
+class NoSignalHandlerException extends \RuntimeException
 {
 }
 
-class SignalSafeWorkProcessorTest
-    extends TestCase
+class SignalSafeWorkProcessorTest extends TestCase
 {
 
-    public static function registeredSignals() { return [
+    public static function registeredSignals(): array { return [
         [\SIGTERM],
         [\SIGINT],
     ]; }
@@ -38,18 +39,18 @@ class SignalSafeWorkProcessorTest
     }
 
 
-    protected static function installFallbackSignalHandlers()
+    protected static function installFallbackSignalHandlers(): void
     {
         foreach (self::registeredSignals() as $signo) {
             $signo   = $signo[0];
             $signame = self::signame($signo);
-            pcntl_signal($signo, function () use ($signame) {
-                throw new NoSignalHandlerException ("SSWP did not install {$signame} a handler!");
+            pcntl_signal($signo, function() use($signame) {
+                throw new NoSignalHandlerException("SSWP did not install {$signame} a handler!");
             });
         }
     }
 
-    protected static function restoreOriginalSignalHandlers()
+    protected static function restoreOriginalSignalHandlers(): void
     {
         foreach (self::registeredSignals() as $signo) {
             $signo = $signo[0];
@@ -69,9 +70,9 @@ class SignalSafeWorkProcessorTest
     }
 
 
-    public function testInstance()
+    public function testInstance(): WorkProcessor
     {
-        sswp();
+        return sswp();
     }
 
     /**
@@ -126,8 +127,8 @@ class SignalSafeWorkProcessorTest
 
         posix_kill(getmypid(), $signo);
 
-        $fn_job = function () {
-            throw new \RuntimeException ("Empty queue, but the job handler got called anyway!");
+        $fn_job = function() {
+            throw new \RuntimeException("Empty queue, but the job handler got called anyway!");
         };
         $wp->processNextJob("test-queue", $fn_job, WorkServerAdapter::NOBLOCK);  // this should call pcntl_signal_dispatch.
 

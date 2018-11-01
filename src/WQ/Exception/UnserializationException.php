@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Exception;
 
 /**
@@ -9,8 +10,6 @@ namespace mle86\WQ\Exception;
  *  - non-object
  *  - object, but not a Job implementation
  */
-class UnserializationException
-    extends \UnexpectedValueException
-    implements WQException
+class UnserializationException extends \UnexpectedValueException implements WQException
 {
 }

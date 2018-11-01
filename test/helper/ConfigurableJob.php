@@ -1,6 +1,6 @@
 <?php
-namespace mle86\WQ\Tests;
 
+namespace mle86\WQ\Tests;
 
 /**
  * This is a simple extension of the {@see AbstractJob} base class.
@@ -13,16 +13,10 @@ namespace mle86\WQ\Tests;
  *
  * @internal This is part of the unit tests.
  */
-class ConfigurableJob
-    extends SimpleJob
+class ConfigurableJob extends SimpleJob
 {
 
-
-    const EXECUTE_RETURN_VALUE = 12;
-
-
     public static $log = [];
-
     public static $expired_marker = null;
 
     protected $marker = 0;
@@ -54,7 +48,7 @@ class ConfigurableJob
         return ($this->marker === self::$expired_marker);
     }
 
-    public function execute()
+    public function execute(): int
     {
         if ($this->jobTryIndex() === $this->succeed_on) {
             return parent::execute();
@@ -63,7 +57,7 @@ class ConfigurableJob
                 ? "will succeed on try #{$this->succeed_on}"
                 : "will never succeed";
 
-            throw new \RuntimeException ("*** failed on try #{$this->jobTryIndex()} ({$succeed_on})");
+            throw new \RuntimeException("*** failed on try #{$this->jobTryIndex()} ({$succeed_on})");
         }
     }
 

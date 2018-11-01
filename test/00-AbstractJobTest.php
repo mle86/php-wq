@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\AbstractJob;
@@ -6,24 +7,22 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/helper/SimpleJob.php';
 
-function payload(AbstractJob $j)
+function payload(AbstractJob $j): int
 {
-    if ($j instanceof SimpleJob) {
-        return $j->getMarker();
-    } else {
-        throw new \UnexpectedValueException ("cannot get payload from job class " . get_class($j));
+    if (!($j instanceof SimpleJob)) {
+        throw new \UnexpectedValueException("cannot get payload from job class " . get_class($j));
     }
+    return $j->getMarker();
 }
 
-class AbstractJobTest
-    extends TestCase
+class AbstractJobTest extends TestCase
 {
 
-    public function testInstance()
+    public function testInstance(): AbstractJob
     {
         $marker = random_int(1000, 4000);
 
-        $j = new SimpleJob ($marker);
+        $j = new SimpleJob($marker);
 
         $this->assertInstanceOf(AbstractJob::class, $j);
         $this->assertSame($marker, $j->getMarker());
@@ -84,10 +83,8 @@ class AbstractJobTest
     /**
      * @depends testUnserialization
      * @depends testInstance
-     * @param AbstractJob $j
-     * @param AbstractJob $original
      */
-    public function testRepeatedUnserialization(AbstractJob $j, AbstractJob $original)
+    public function testRepeatedUnserialization(AbstractJob $j, AbstractJob $original): void
     {
         $this->testUnserialization(
             $this->testSerialization($j),

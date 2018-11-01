@@ -1,9 +1,9 @@
 <?php
+
 namespace mle86\WQ\WorkServerAdapter;
 
 use mle86\WQ\Job\Job;
 use mle86\WQ\Job\QueueEntry;
-
 
 /**
  * This adapter serves to manipulate the work queue names
@@ -25,8 +25,7 @@ use mle86\WQ\Job\QueueEntry;
  * then use it with a simpler call:
  *   `$workServer->getNextQueueEntry("email")`.
  */
-class AffixAdapter
-    implements WorkServerAdapter
+class AffixAdapter implements WorkServerAdapter
 {
 
     private $server;
@@ -45,9 +44,6 @@ class AffixAdapter
      * Sets the prefix to prepend to all work queue names.
      *
      * (The empty string has the same effect as `null`.)
-     *
-     * @param string|null $prefix
-     * @return self
      */
     public function withPrefix(?string $prefix): self
     {
@@ -59,9 +55,6 @@ class AffixAdapter
      * Sets the suffix to append to all work queue names.
      *
      * (The empty string has the same effect as `null`.)
-     *
-     * @param string|null $suffix
-     * @return self
      */
     public function withSuffix(?string $suffix): self
     {
@@ -78,6 +71,8 @@ class AffixAdapter
         return $this->prefix . $wq . $this->suffix;
     }
 
+
+    // Proxy methods:  /////////////////////////////////////////////////////////
 
     public function getNextQueueEntry($workQueue, int $timeout = self::DEFAULT_TIMEOUT): ?QueueEntry
     {
@@ -119,4 +114,5 @@ class AffixAdapter
     public function disconnect(): void
     {
     }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Exception;
 
 /**

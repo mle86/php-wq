@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\WorkServerAdapter;
 
 use mle86\WQ\Job\Job;
@@ -10,11 +11,10 @@ use mle86\WQ\Job\QueueEntry;
  *
  * @internal  This is here for testing purposes.
  */
-class MemoryWorkServer
-    implements WorkServerAdapter
+class MemoryWorkServer implements WorkServerAdapter
 {
 
-    const RESERVE_SECONDS = 60;
+    private const RESERVE_SECONDS = 60;
 
     /**
      * @var array  <pre>[ workQueueName => [
@@ -32,14 +32,14 @@ class MemoryWorkServer
 
     public function getNextQueueEntry($workQueues, int $timeout = self::DEFAULT_TIMEOUT): ?QueueEntry
     {
-        $all_empty = true;
+        $areAllEmpty = true;
         foreach ((array)$workQueues as $workQueue) {
             if (!empty($this->storage[ $workQueue ])) {
-                $all_empty = false;
+                $areAllEmpty = false;
                 break;
             }
         }
-        if ($all_empty) {
+        if ($areAllEmpty) {
             if ($timeout > 0) {
                 sleep($timeout);
             }
@@ -98,7 +98,7 @@ class MemoryWorkServer
         unset($this->storage[ $entry->getWorkQueue() ][ $entry->getHandle() ]);
     }
 
-    private static function nextIndex()
+    private static function nextIndex(): string
     {
         return "M" . self::$index++;
     }

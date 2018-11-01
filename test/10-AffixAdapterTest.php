@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\QueueEntry;
@@ -10,8 +11,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 
 require_once __DIR__ . '/helper/SimpleJob.php';
 
-class AffixAdapterTest
-    extends TestCase
+class AffixAdapterTest extends TestCase
 {
 
     /** @return WorkServerAdapter|PHPUnit_Framework_MockObject_MockObject */
@@ -20,9 +20,9 @@ class AffixAdapterTest
         return $this->createMock(MemoryWorkServer::class);
     }
 
-    public function testBuildInstance(): void
+    public function testBuildInstance(): AffixAdapter
     {
-        new AffixAdapter($this->mockws());
+        return new AffixAdapter($this->mockws());
     }
 
     /**
@@ -59,7 +59,7 @@ class AffixAdapterTest
     }
 
 
-    private function checkAffix(array $options)
+    private function checkAffix(array $options): void
     {
         $this->checkAffixForSingleGet($options);
         $this->checkAffixForMultiGet($options);
@@ -68,7 +68,7 @@ class AffixAdapterTest
         $this->checkAffixForRequeueOther($options);
     }
 
-    private function checkAffixForSingleGet(array $options)
+    private function checkAffixForSingleGet(array $options): void
     {
         $ws            = $this->mockws();
         $aa            = $this->prepareAdapter($ws, $options);
@@ -77,7 +77,7 @@ class AffixAdapterTest
 
         $ws->expects($this->once())
             ->method('getNextQueueEntry')
-            ->with($this->callback(function ($q) use($correct_queue) {
+            ->with($this->callback(function($q) use($correct_queue): bool {
                 // Should pass the correct queue name to the actual wsa.
                 // String or array doesn't matter.
                 return ($q === $correct_queue || $q === [$correct_queue]);
@@ -86,7 +86,7 @@ class AffixAdapterTest
         $aa->getNextQueueEntry($queue);
     }
 
-    private function checkAffixForMultiGet(array $options)
+    private function checkAffixForMultiGet(array $options): void
     {
         $ws         = $this->mockws();
         $aa         = $this->prepareAdapter($ws, $options);
@@ -103,7 +103,7 @@ class AffixAdapterTest
         $aa->getNextQueueEntry([$q1, $q2]);
     }
 
-    private function checkAffixForStoreJob(array $options)
+    private function checkAffixForStoreJob(array $options): void
     {
         $ws            = $this->mockws();
         $aa            = $this->prepareAdapter($ws, $options);
@@ -117,7 +117,7 @@ class AffixAdapterTest
         $aa->storeJob($queue, new SimpleJob(111));
     }
 
-    private function checkAffixForRequeueDefault(array $options)
+    private function checkAffixForRequeueDefault(array $options): void
     {
         $ws = $this->mockws();
         $aa = $this->prepareAdapter($ws, $options);
@@ -131,7 +131,7 @@ class AffixAdapterTest
         $aa->requeueEntry($qe, 0, null);
     }
 
-    private function checkAffixForRequeueOther(array $options)
+    private function checkAffixForRequeueOther(array $options): void
     {
         $ws            = $this->mockws();
         $aa            = $this->prepareAdapter($ws, $options);

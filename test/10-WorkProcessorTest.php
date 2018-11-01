@@ -1,7 +1,9 @@
 <?php
+
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\JobResult;
+use mle86\WQ\WorkProcessor;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
@@ -13,24 +15,23 @@ require_once __DIR__ . '/helper/LoggingWorkProcessor.php';
 
 function wp(): LoggingWorkProcessor
 {
-    $wsa = new MemoryWorkServer ();
-    $wp  = new LoggingWorkProcessor ($wsa);
+    $wsa = new MemoryWorkServer();
+    $wp  = new LoggingWorkProcessor($wsa);
     return $wp;
 }
 
-class WorkProcessorTest
-    extends TestCase
+class WorkProcessorTest extends TestCase
 {
 
-    public function testInstance()
+    public function testInstance(): WorkProcessor
     {
-        wp();
+        return wp();
     }
 
     /**
      * @depends testInstance
      */
-    public function testPollWithoutJobs()
+    public function testPollWithoutJobs(): void
     {
         $wp = wp();
         $q  = "some-queue-name";
@@ -60,7 +61,7 @@ class WorkProcessorTest
 
         $wp->getWorkServerAdapter()->storeJob(
             self::QUEUE,
-            new SimpleJob (self::SIMPLE_JOB_MARKER));
+            new SimpleJob(self::SIMPLE_JOB_MARKER));
 
         return $wp;
     }
@@ -69,7 +70,7 @@ class WorkProcessorTest
      * @depends testInsertOneSimpleJob
      * @param LoggingWorkProcessor $wp
      */
-    public function testExecuteOneSimpleJob(LoggingWorkProcessor $wp)
+    public function testExecuteOneSimpleJob(LoggingWorkProcessor $wp): void
     {
         // Now there is one ready job. It should be executed right away:
         $expect_log = [];
@@ -81,14 +82,14 @@ class WorkProcessorTest
             "Finished job was not removed from the queue!");
     }
 
-    public function testExecuteFailingJob()
+    public function testExecuteFailingJob(): void
     {
         $expect_log = [];
         $wp         = wp();
         $m          = 2608;
 
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE,
-            new ConfigurableJob (
+            new ConfigurableJob(
                 $m,
                 0,  // no retries
                 0   // never succeeds
@@ -103,14 +104,14 @@ class WorkProcessorTest
      *
      * @depends testExecuteFailingJob
      */
-    public function testExecuteUnrecoverableJob()
+    public function testExecuteUnrecoverableJob(): void
     {
         $expect_log = [];
         $wp         = wp();
         $m          = 2604;
 
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE,
-            new ConfigurableJob (
+            new ConfigurableJob(
                 $m,
                 1,  // up to one retry
                 0,  // never succeeds
@@ -130,14 +131,14 @@ class WorkProcessorTest
      *
      * @depends testExecuteUnrecoverableJob
      */
-    public function testRecoverableJob()
+    public function testRecoverableJob(): void
     {
         $expect_log = [];
         $wp         = wp();
         $m          = 2601;
 
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE,
-            new ConfigurableJob (
+            new ConfigurableJob(
                 $m,
                 5,  // up to five retries!
                 3,  // succeeds on the third try!
@@ -159,7 +160,7 @@ class WorkProcessorTest
     /**
      * @depends testPollWithoutJobs
      */
-    public function testMultipleEmptyQueues()
+    public function testMultipleEmptyQueues(): void
     {
         $wp = wp();
 
@@ -178,12 +179,12 @@ class WorkProcessorTest
      * @depends testMultipleEmptyQueues
      * @depends testInsertOneSimpleJob
      */
-    public function testRetrieveJobFromMultipleQueues()
+    public function testRetrieveJobFromMultipleQueues(): void
     {
-        $job = new SimpleJob (3355);
+        $job = new SimpleJob(3355);
 
         /** Returns a new LoggingWorkProcessor instance that contains one job in mq1, nothing else. */
-        $fn_store = function () use ($job) : LoggingWorkProcessor {
+        $fn_store = function() use($job): LoggingWorkProcessor {
             $wp = wp();
             $wp->getWorkServerAdapter()->storeJob(
                 "mq1",
@@ -199,7 +200,7 @@ class WorkProcessorTest
          * @param array $pollQueues
          * @param int $n_expected
          */
-        $fn_check = function (LoggingWorkProcessor $wp, array $pollQueues, int $n_expected = 1) use ($job) {
+        $fn_check = function(LoggingWorkProcessor $wp, array $pollQueues, int $n_expected = 1) use($job) {
             $expected_log = [];
 
             for ($n = 0; $n < $n_expected; $n++) {
@@ -249,10 +250,10 @@ class WorkProcessorTest
     /**
      * @depends testRecoverableJob
      */
-    public function testExpiredJob()
+    public function testExpiredJob(): void
     {
         $marker = 9102;
-        $job    = new ConfigurableJob (
+        $job    = new ConfigurableJob(
             $marker,
             1,  // one retry
             2,  // succeeds on retry
@@ -287,10 +288,10 @@ class WorkProcessorTest
      * @depends testExpiredJob
      * @depends testExecuteUnrecoverableJob
      */
-    public function testRetryExpiredJob()
+    public function testRetryExpiredJob(): void
     {
         $marker = 9103;
-        $job    = new ConfigurableJob (
+        $job    = new ConfigurableJob(
             $marker,
             1,  // one retry
             2,  // succeeds on retry
@@ -334,16 +335,16 @@ class WorkProcessorTest
      * @depends testExecuteOneSimpleJob
      * @depends testExecuteFailingJob
      */
-    public function testCallbackReturnValue()
+    public function testCallbackReturnValue(): void
     {
         $marker = false;
-        $make_callback_with_return_value = function ($return_value) use(&$marker) : callable {
-            return function (SimpleJob $job) use($return_value, &$marker) {
+        $make_callback_with_return_value = function($return_value) use(&$marker): callable {
+            return function(SimpleJob $job) use($return_value, &$marker) {
                 $marker = true;
                 return $return_value;  // !
             };
         };
-        $assert_job_state = function (LoggingWorkProcessor $wp, string $state) {
+        $assert_job_state = function(LoggingWorkProcessor $wp, string $state) {
             $this->assertSame(
                 $state,
                 (end($wp->log))[0]);
@@ -400,7 +401,7 @@ class WorkProcessorTest
         $assert_job_state($wp, 'SUCCESS');
     }
 
-    private function expectSuccess(LoggingWorkProcessor $wp, int $marker, array &$expect_log)
+    private function expectSuccess(LoggingWorkProcessor $wp, int $marker, array &$expect_log): void
     {
         $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
 
@@ -416,7 +417,7 @@ class WorkProcessorTest
         );
     }
 
-    private function expectFail(LoggingWorkProcessor $wp, string $desc)
+    private function expectFail(LoggingWorkProcessor $wp, string $desc): \Throwable
     {
         $e = null;
         try {
@@ -435,7 +436,7 @@ class WorkProcessorTest
         int $requeue_delay,
         array &$expect_log,
         string $desc
-    ) {
+    ): void {
         $e = $this->expectFail($wp, $desc);
         $this->assertSame(
             ($expect_log = array_merge($expect_log, [
@@ -446,7 +447,7 @@ class WorkProcessorTest
             "Failing job ({$desc}) did not cause the correct hook calls!");
     }
 
-    private function expectFailAndEnd(LoggingWorkProcessor $wp, int $marker, array &$expect_log, string $desc)
+    private function expectFailAndEnd(LoggingWorkProcessor $wp, int $marker, array &$expect_log, string $desc): void
     {
         $e = $this->expectFail($wp, $desc);
         $this->assertSame(
@@ -458,7 +459,7 @@ class WorkProcessorTest
             "Failing job ({$desc}) did not cause the correct hook calls!");
     }
 
-    private function expectEmptyWQ(LoggingWorkProcessor $wp, array &$expect_log, string $desc)
+    private function expectEmptyWQ(LoggingWorkProcessor $wp, array &$expect_log, string $desc): void
     {
         xsj_called();  // clear the flag
         $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);

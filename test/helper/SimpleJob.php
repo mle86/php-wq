@@ -1,4 +1,5 @@
 <?php
+
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\AbstractJob;
@@ -14,15 +15,11 @@ use mle86\WQ\Job\AbstractJob;
  *
  * @internal This is part of the unit tests.
  */
-class SimpleJob
-    extends AbstractJob
+class SimpleJob extends AbstractJob
 {
 
-
-    const MAX_RETRY = 0;  // explicit
-
-    const EXECUTE_RETURN_VALUE = 12;
-
+    public const MAX_RETRY = 0;  // explicit
+    public const EXECUTE_RETURN_VALUE = 12;
 
     public static $log = [];
 
@@ -31,7 +28,7 @@ class SimpleJob
     public function __construct(int $marker)
     {
         if (!(is_int($marker) && $marker >= 1 && $marker <= 9999)) {
-            throw new \InvalidArgumentException ('$marker must be int between 1..9999');
+            throw new \InvalidArgumentException('$marker must be int between 1..9999');
         }
 
         $this->marker = $marker;
@@ -39,12 +36,12 @@ class SimpleJob
         self::$log[] = "CONSTRUCT-{$this->getMarker()}";
     }
 
-    public function getMarker()
+    public function getMarker(): int
     {
         return $this->marker;
     }
 
-    public function execute()
+    public function execute(): int
     {
         self::$log[] = "EXECUTE-{$this->getMarker()}";
         return self::EXECUTE_RETURN_VALUE;
