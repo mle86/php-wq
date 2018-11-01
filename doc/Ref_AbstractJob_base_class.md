@@ -1,4 +1,4 @@
-# `AbstractJob` base class
+# `AbstractJob` Base Class
 
 Declaration: <code>abstract class mle86\WQ\Job\\<b>AbstractJob</b> implements [Job]</code>  
 Source file: [src/WQ/Job/AbstractJob.php](/src/WQ/Job/AbstractJob.php)
@@ -25,7 +25,7 @@ simply extend this class.
 It fully implements the [`Job`][Job] interface.
 
 
-## Methods:
+## Methods
 
 <a name="jobRetryDelay"></a>
 * <code>public function <b>jobRetryDelay</b> (): ?int { … }</code>  
@@ -69,7 +69,7 @@ It fully implements the [`Job`][Job] interface.
     never expire by default.
 
 
-## Constants:
+## Constants
 
 <a name="MAX_RETRY"></a>
 * <code>const int <b>MAX_RETRY</b> = 0</code>  
@@ -81,7 +81,7 @@ It fully implements the [`Job`][Job] interface.
      the constant is unused.)
 
 
-## Internals:
+## Internals
 
 * <code>protected <b>$_try_index</b> = 0</code>  
     The current try index.  
@@ -95,4 +95,3 @@ It fully implements the [`Job`][Job] interface.
 
 
 [Job]: Ref_Job_interface.md
-

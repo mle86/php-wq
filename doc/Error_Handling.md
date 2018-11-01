@@ -1,4 +1,4 @@
-## Error handling
+# Error Handling
 
 So what happens if the execution throws an Exception?
 

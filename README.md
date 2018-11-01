@@ -42,7 +42,7 @@ such as:
 
 # Basic Concepts
 
-A *Job* is something which should be done exactly once.
+- A *Job* is something which should be done exactly once.
 Maybe it's sending an e-mail,
 maybe it's an external API call like a webhook,
 maybe it's some slow clean-up process.
@@ -51,7 +51,7 @@ that could be executed right away
 but it would be better for the application's performance
 to put it in a *Work Queue* instead, so it can be done asynchronously.
 
-A *Work Queue* is a list of jobs that should be executed at some other time.
+- A *Work Queue* is a list of jobs that should be executed at some other time.
 They are stored in some kind of *Work Server*.
 One work server well-known in the PHP world is [Beanstalkd](http://kr.github.io/beanstalkd/).
 It can store any number of work queues, although it calls them “tubes”.
@@ -101,7 +101,7 @@ class EMail extends AbstractJob
 ```
 
 
-We have some code using that e-mail class.
+We have some code using that e-mail class:
 
 ```php
 <?php
@@ -118,7 +118,7 @@ $workServer->storeJob("mail", $mailJob);
 And finally,
 we have our background worker script
 which regularly checks the work server
-for new e-mail jobs.
+for new e-mail jobs:
 
 ```php
 <?php

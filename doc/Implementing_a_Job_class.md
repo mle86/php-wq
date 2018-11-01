@@ -11,22 +11,25 @@ It's easier to extend the provided [`AbstractJob`][AbstractJob] class,
 which has no required methods:
 
 ```php
+<?php
+
 use mle86\WQ\Job\AbstractJob;
 
-class EMail
-    extends AbstractJob
+class EMail extends AbstractJob
 {
     protected $recipient;
     protected $subject;
     protected $message;
     
-    public function __construct (string $recipient, string $subject, string $message) {
+    public function __construct(string $recipient, string $subject, string $message)
+    {
         $this->recipient = $recipient;
         $this->subject   = $subject;
         $this->message   = $message;
     }
     
-    public function send () {
+    public function send()
+    {
         if (mail($this->recipient, $this->subject, $this->message)) {
             // ok, has been sent!
         } else {

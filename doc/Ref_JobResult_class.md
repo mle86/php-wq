@@ -1,4 +1,4 @@
-# `JobResult` enum class
+# `JobResult` Enum Class
 
 Declaration: <code>mle86\Job\\<b>JobResult</b></code>  
 Source file: [src/WQ/Job/JobResult.php](/src/WQ/Job/JobResult.php)
@@ -19,7 +19,7 @@ you won't need this class either –
 it's useful only if you want additional control over the re-try mechanism without throwing exceptions.
 
 
-## Constants:
+## Constants
 
 * <code>const int <b>SUCCESS</b></code>  
     This status indicates that the job has been processed correctly

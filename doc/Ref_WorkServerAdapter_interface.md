@@ -1,4 +1,4 @@
-# `WorkServerAdapter` interface
+# `WorkServerAdapter` Interface
 
 Declaration: <code>interface mle86\WQ\WorkServerAdapter\\<b>WorkServerAdapter</b></code>  
 Source file: [src/WQ/WorkServerAdapter/WorkServerAdapter.php](/src/WQ/WorkServerAdapter/WorkServerAdapter.php)
@@ -16,7 +16,7 @@ In case of Beanstalkd, Work Queues are Tubes;
 in case of Redis, Work Queues are Lists.
 
 
-## Methods:
+## Methods
 
 <a name="getNextQueueEntry"></a>
 * <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry</code>  
@@ -81,7 +81,7 @@ in case of Redis, Work Queues are Lists.
     outside of testing.
 
 
-## Constants:
+## Constants
 
 <a name="DEFAULT_TIMEOUT"></a>
 * <code>const int <b>DEFAULT_TIMEOUT</b> = 5</code>  
@@ -92,7 +92,7 @@ in case of Redis, Work Queues are Lists.
     Causes `getNextQueueEntry()` to block indefinitely, until a job becomes available.
 
 
-## Implementations:
+## Implementations
 
 This package also includes a few implementations of the `WorkServerAdapter` interface:
 

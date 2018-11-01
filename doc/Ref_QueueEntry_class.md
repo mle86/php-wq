@@ -1,4 +1,4 @@
-# `QueueEntry` wrapper class
+# `QueueEntry` Wrapper Class
 
 This class wraps a [Job] instance
 recently fetched and unserialized from some Work Queue.
@@ -19,7 +19,7 @@ Unless you process your jobs manually using `getNextQueueEntry()`,
 you won't need to use this class in any way.
 
 
-## Constructors:
+## Constructors
 
 * <code>public function <b>__construct</b> (Job $job, string $workQueue, $handle)</code>
 * <code>public static function <b>fromSerializedJob</b> (string $serializedData, string $originWorkQueue, $handle, string $jobId) : self</code>  
@@ -32,7 +32,7 @@ you won't need to use this class in any way.
     * `$jobId`: A unique ID for this job. Only used for logging. Not every [WorkServerAdapter] implementation provides this!
 
 
-## Methods:
+## Methods
 
 * <code>public function <b>getJob</b> () : Job</code>
 * <code>public function <b>getWorkQueue</b> () : string</code>
@@ -47,4 +47,3 @@ you won't need to use this class in any way.
 [WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
 [WorkProcessor]: Ref_WorkProcessor_class.md
 [UnserializationException]: Ref_Exceptions.php
-

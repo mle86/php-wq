@@ -1,4 +1,4 @@
-# `WorkProcessor` class
+# `WorkProcessor` Class
 
 Declaration: <code>class mle86\WQ\\<b>WorkProcessor</b></code>  
 Source file: [src/WQ/WorkProcessor.php](/src/WQ/WorkProcessor.php)
@@ -10,7 +10,7 @@ that does not only execute the next job immediately
 but will also try to re-queue it if it fails.
 
 
-## Methods:
+## Methods
 
 * <code>public function <b>__construct</b> (WorkServerAdapter $workServer, LoggerInterface $logger = null, array $options = [])</code>  
     Instantiates a new WorkProcessor.
@@ -53,7 +53,7 @@ but will also try to re-queue it if it fails.
     Sets one or more of the configuration options.
 
 
-## Option keys:
+## Option Keys
 
 <a name="WP_ENABLE_RETRY"></a>
 * <code>const <b>WP_ENABLE_RETRY</b></code>  
@@ -100,7 +100,7 @@ but will also try to re-queue it if it fails.
     `processNextJob()` will silently return instead.
 
 
-## Hook methods:
+## Hook Methods
 
 Usually, tasks like logging or stats collection should be done in the custom worker script.
 If multiple worker scripts share the same logging/stats code,

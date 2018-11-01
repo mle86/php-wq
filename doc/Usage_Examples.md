@@ -1,7 +1,7 @@
 # Usage Examples
 
 
-## Processing jobs
+## Processing Jobs
 
 The easiest way to process your jobs
 is to use the [WorkProcessor] helper class.
@@ -177,4 +177,3 @@ of the actual `processNextJob()` method.
 [WorkProcessor]: Ref_WorkProcessor_class.md
 [SignalSafeWorkProcessor]: Ref_SignalSafeWorkProcessor_class.md
 [Job]: Ref_Job_interface.md
-

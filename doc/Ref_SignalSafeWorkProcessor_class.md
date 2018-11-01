@@ -1,4 +1,4 @@
-# `SignalSafeWorkProcessor` class
+# `SignalSafeWorkProcessor` Class
 
 This class is an extension of the original [WorkProcessor].
 
@@ -16,7 +16,7 @@ If your worker script has a loop around the `processNextJob()` call,
 check `isAlive()` in the loop condition.
 
 
-## Additional methods:
+## Additional Methods
 
 * <code>public static function <b>installSignalHandler</b> (array $signals = [\SIGTERM, \SIGINT])</code>  
 Installs a signal handler that will clear the `isAlive()` flag.  
@@ -38,4 +38,3 @@ you should `exit` the program.
 
 
 [WorkProcessor]: Ref_WorkProcessor_class.md
-

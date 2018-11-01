@@ -1,4 +1,4 @@
-# `AffixAdapter` wrapper class
+# `AffixAdapter` Wrapper Class
 
 Declaration: <code>interface mle86\WQ\WorkServerAdapter\\<b>AffixAdapter</b> implements [WorkServerAdapter]</code>  
 Source file: [src/WQ/WorkServerAdapter/WorkServerAdapter.php](/src/WQ/WorkServerAdapter/WorkServerAdapter.php)
@@ -15,7 +15,7 @@ All other methods of this class are just proxy methods to the "real" instance's 
 which prepend/append something to the work queue name(s).
 
 
-## Example:
+## Example
 
 Instead of
 <code>$workServer->getNextQueueEntry("myapp-<b>email</b>-PROD")</code>,
@@ -27,7 +27,7 @@ then use it with a simpler call:
 <code>$workServer->getNextQueueEntry("<b>email</b>")</code>.
 
 
-## Methods:
+## Methods
 
 * <code>public function <b>__construct</b> ([WorkServerAdapter] $server)</code>  
     Instantiates a new AffixAdapter.
@@ -42,7 +42,7 @@ then use it with a simpler call:
     (The empty string has the same effect as `null`.)
 
 
-## Proxy methods:
+## Proxy Methods
 
 * <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry</code>  
 * <code>public function <b>storeJob</b> (string $workQueue, Job $job, int $delay = 0)</code>  
@@ -58,4 +58,3 @@ according to the `withPrefix`/`withSuffix` settings.
 
 [WorkProcessor]: Ref_WorkProcessor_class.md
 [WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
-

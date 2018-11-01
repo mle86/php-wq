@@ -1,4 +1,4 @@
-# `Job` interface
+# `Job` Interface
 
 Declaration: <code>interface mle86\WQ\Job\\<b>Job</b> implements \Serializable</code>  
 Source file: [src/WQ/Job/Job.php](/src/WQ/Job/Job.php)
@@ -21,7 +21,7 @@ or how the responsible method(s) should be named,
 if they are part of the Job implementation at all.
 
 
-## Methods:
+## Methods
 
 <a name="jobCanRetry"></a>
 * <code>public function <b>jobCanRetry</b> () : bool</code>  
@@ -56,4 +56,3 @@ if they are part of the Job implementation at all.
 [AbstractJob]: Ref_AbstractJob_base_class.md
 [WorkProcessor]: Ref_WorkProcessor_class.md
 [WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
-

@@ -1,4 +1,4 @@
-# `BlackHoleWorkServer` dummy class
+# `BlackHoleWorkServer` Dummy Class
 
 Declaration: <code>interface mle86\WQ\WorkServerAdapter\\<b>BlackHoleWorkServer</b> implements [WorkServerAdapter]</code>  
 Source file: [src/WQ/WorkServerAdapter/BlackHoleWorkServer.php](/src/WQ/WorkServerAdapter/WorkServerAdapter.php)

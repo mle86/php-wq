@@ -35,4 +35,3 @@ and be done.
 
 [Error Handling]: Error_Handling.md
 [WorkProcessor]: Ref_WorkProcessor_class.md
-

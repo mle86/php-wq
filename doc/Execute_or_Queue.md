@@ -1,4 +1,4 @@
-## Execute or Queue
+# Execute or Queue
 
 Now if our application wants to send an e-mail...
 
