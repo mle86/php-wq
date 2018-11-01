@@ -18,7 +18,7 @@
 
   "autoload-dev": {
     "psr-4": { "mle86\\WQ\\Tests\\": "test/" },
-    "files": [ "test/Helper/misc.php" ]
+    "files": [ "src/WQ/Testing/misc.php" ]
   },
 
   "require-dev": {

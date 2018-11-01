@@ -2,6 +2,8 @@
 
 namespace mle86\WQ\Tests\Helper;
 
+use mle86\WQ\Testing\SimpleTestJob;
+
 /**
  * This is a simple extension of the {@see AbstractJob} base class.
  *
@@ -13,7 +15,7 @@ namespace mle86\WQ\Tests\Helper;
  *
  * @internal This is part of the unit tests.
  */
-class ConfigurableJob extends SimpleJob
+class ConfigurableTestJob extends SimpleTestJob
 {
 
     public static $log = [];

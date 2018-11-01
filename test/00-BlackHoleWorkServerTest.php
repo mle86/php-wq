@@ -3,7 +3,7 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\Job;
-use mle86\WQ\Tests\Helper\SimpleJob;
+use mle86\WQ\Testing\SimpleTestJob;
 use mle86\WQ\WorkServerAdapter\BlackHoleWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
@@ -46,7 +46,7 @@ class BlackHoleWorkServerTest extends TestCase
         $createJob = function(): Job {
             static $index = 1;
             $marker = 800 + $index++;
-            return new SimpleJob($marker);
+            return new SimpleTestJob($marker);
         };
 
         $ws->storeJob(self::QUEUE, $createJob());

@@ -4,6 +4,7 @@ namespace mle86\WQ\Tests\Helper;
 
 use mle86\WQ\Job\Job;
 use mle86\WQ\Job\QueueEntry;
+use mle86\WQ\Testing\Helper\SimpleTestJob;
 use mle86\WQ\WorkProcessor;
 
 /**
@@ -22,7 +23,7 @@ class LoggingWorkProcessor extends WorkProcessor
 
     protected function onJobAvailable(QueueEntry $qe): void
     {
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["JOB", $job->getMarker()];
@@ -30,7 +31,7 @@ class LoggingWorkProcessor extends WorkProcessor
 
     protected function onSuccessfulJob(QueueEntry $qe): void
     {
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["SUCCESS", $job->getMarker()];
@@ -38,7 +39,7 @@ class LoggingWorkProcessor extends WorkProcessor
 
     protected function onJobRequeue(QueueEntry $qe, int $delay, \Throwable $e = null): void
     {
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["REQUEUE", $job->getMarker(), $delay, (($e) ? $e->getMessage() : null)];
@@ -46,7 +47,7 @@ class LoggingWorkProcessor extends WorkProcessor
 
     protected function onFailedJob(QueueEntry $qe, \Throwable $e = null): void
     {
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["FAILED", $job->getMarker(), (($e) ? $e->getMessage() : null)];
@@ -54,7 +55,7 @@ class LoggingWorkProcessor extends WorkProcessor
 
     protected function onExpiredJob(QueueEntry $qe): void
     {
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $job = $qe->getJob();
 
         $this->log[] = ["EXPIRED", $job->getMarker()];

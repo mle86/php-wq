@@ -1,6 +1,6 @@
 <?php
 
-namespace mle86\WQ\Tests\Helper;
+namespace mle86\WQ\Testing;
 
 use mle86\WQ\Job\Job;
 use mle86\WQ\Job\QueueEntry;
@@ -8,7 +8,6 @@ use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/misc.php';
-require_once __DIR__ . '/SimpleJob.php';
 
 /**
  * This base class contains a series of tests
@@ -51,7 +50,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
 
     public static function setUpBeforeClass()
     {
-        SimpleJob::$log = [];
+        SimpleTestJob::$log = [];
     }
 
     /**
@@ -173,7 +172,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testQueueJobs(string $queue_name, int $job_marker, WorkServerAdapter $ws): void
     {
-        $j = new SimpleJob($job_marker);
+        $j = new SimpleTestJob($job_marker);
 
         $this->assertSame($job_marker, $j->getMarker(),
             "job constructor broken, wrong marker saved");
@@ -260,7 +259,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             $known_markers  = $known[ $queue_name ];
             $stored_markers = array_map(
                 function(QueueEntry $qe) {
-                    /** @var Job|SimpleJob $job */
+                    /** @var Job|SimpleTestJob $job */
                     $job = $qe->getJob();
                     return $job->getMarker();
                 },
@@ -288,7 +287,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         /** @var QueueEntry[] $qelist */
         foreach ($queues as $qelist) {
             foreach ($qelist as $qe) {
-                /** @var Job|SimpleJob $job */
+                /** @var Job|SimpleTestJob $job */
                 $job    = $qe->getJob();
                 $marker = $job->getMarker();
 
@@ -304,7 +303,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             $fn_matching_marker = function($log) use($marker): bool {
                 return ($log === "EXECUTE-{$marker}");
             };
-            $n_executions = count(array_filter(SimpleJob::$log, $fn_matching_marker));
+            $n_executions = count(array_filter(SimpleTestJob::$log, $fn_matching_marker));
 
             $this->assertGreaterThanOrEqual($n_entries, $n_executions,
                 "Job with marker '{$marker}' was not executed as often as it should have been!");
@@ -322,7 +321,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testDelayedJob(WorkServerAdapter $ws): void
     {
-        $j     = new SimpleJob(555);
+        $j     = new SimpleTestJob(555);
         $queue = "test";
         $delay = 1;
 
@@ -353,7 +352,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         $this->assertSame($queue, $qe->getWorkQueue(),
             "Delayed job could be retrieved, but has incorrect origin reference!");
 
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $job = $qe->getJob();
         $this->assertSame($j->getMarker(), $job->getMarker(),
             "Delayed job did not match the original job object!");
@@ -370,7 +369,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testRequeueJob(WorkServerAdapter $ws): void
     {
-        $j              = new SimpleJob(566);
+        $j              = new SimpleTestJob(566);
         $queue          = "test2";
         $delay          = 0;
         $requeued_delay = 1;
@@ -380,7 +379,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         $ws->storeJob($queue, $j, $delay);
 
         // take it out again:
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $qe  = $ws->getNextQueueEntry($queue, $ws::NOBLOCK);
         $job = $qe->getJob();
         $this->assertSame($j->getMarker(), $job->getMarker());
@@ -399,7 +398,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             "Re-queued job with delay became available too soon!");
 
         // take it out again:
-        /** @var Job|SimpleJob $job */
+        /** @var Job|SimpleTestJob $job */
         $qe = $ws->getNextQueueEntry($queue, 1);
         $this->assertNotNull($qe,
             "Re-queued job could not be retrieved with getNextQueueEntry()!");
@@ -441,7 +440,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testPollMultipleQueues(WorkServerAdapter $ws): void
     {
-        $job = new SimpleJob(4711);
+        $job = new SimpleTestJob(4711);
 
         $fn_store = function(string $into_queue = "multi1", Job $store_job = null) use($ws, $job): void {
             $ws->storeJob($into_queue, ($store_job ?? clone $job));
@@ -463,7 +462,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
                 $this->assertInstanceOf(QueueEntry::class, $ret,
                     "Could not retrieve job by polling multiple queues! ({$n}/{$n_expected})");
 
-                /** @var Job|SimpleJob $qjob */
+                /** @var Job|SimpleTestJob $qjob */
                 $qjob = $ret->getJob();
 
                 $this->assertSame($job->getMarker(), $qjob->getMarker(),
@@ -545,9 +544,9 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testQueueInterference(WorkServerAdapter $ws): void
     {
-        $j1a = new SimpleJob(5011);
-        $j1b = new SimpleJob(5022);
-        $j2  = new SimpleJob(7011);
+        $j1a = new SimpleTestJob(5011);
+        $j1b = new SimpleTestJob(5022);
+        $j2  = new SimpleTestJob(7011);
 
         $ws->storeJob("qi1", $j1a);
         $ws->storeJob("qi2", $j2);
@@ -558,7 +557,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         $qe1a = $ws->getNextQueueEntry("qi1", $ws::NOBLOCK);
         $this->assertInstanceOf(QueueEntry::class, $qe1a);
 
-        /** @var Job|SimpleJob $qj1a */
+        /** @var Job|SimpleTestJob $qj1a */
         $qj1a = $qe1a->getJob();
         $this->assertSame($j1a->getMarker(), $qj1a->getMarker());
 
@@ -572,9 +571,9 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         $this->assertInstanceOf(QueueEntry::class, $qe1b,
             "Queue interference: unable to get second queued job from qi1 after polling qi2 first!");
 
-        /** @var Job|SimpleJob $qj1b */
+        /** @var Job|SimpleTestJob $qj1b */
         $qj1b = $qe1b->getJob();
-        /** @var Job|SimpleJob $qj2 */
+        /** @var Job|SimpleTestJob $qj2 */
         $qj2 = $qe2->getJob();
 
         $this->assertNotEquals($j2->getMarker(), $qj1b->getMarker(),

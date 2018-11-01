@@ -1,6 +1,6 @@
 <?php
 
-namespace mle86\WQ\Tests\Helper;
+namespace mle86\WQ\Testing;
 
 use mle86\WQ\Job\AbstractJob;
 
@@ -15,7 +15,7 @@ use mle86\WQ\Job\AbstractJob;
  *
  * @internal This is part of the unit tests.
  */
-class SimpleJob extends AbstractJob
+class SimpleTestJob extends AbstractJob
 {
 
     public const MAX_RETRY = 0;  // explicit

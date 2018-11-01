@@ -3,7 +3,7 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\QueueEntry;
-use mle86\WQ\Tests\Helper\SimpleJob;
+use mle86\WQ\Testing\SimpleTestJob;
 use mle86\WQ\WorkServerAdapter\AffixAdapter;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
@@ -113,14 +113,14 @@ class AffixAdapterTest extends TestCase
             ->method('storeJob')
             ->with($correct_queue);
 
-        $aa->storeJob($queue, new SimpleJob(111));
+        $aa->storeJob($queue, new SimpleTestJob(111));
     }
 
     private function checkAffixForRequeueDefault(array $options): void
     {
         $ws = $this->mockws();
         $aa = $this->prepareAdapter($ws, $options);
-        $qe = new QueueEntry(new SimpleJob(222), "q000000000", null);
+        $qe = new QueueEntry(new SimpleTestJob(222), "q000000000", null);
 
         $ws->expects($this->once())
             ->method('requeueEntry')
@@ -136,7 +136,7 @@ class AffixAdapterTest extends TestCase
         $aa            = $this->prepareAdapter($ws, $options);
         $queue         = "q004505026";
         $correct_queue = ($options['prefix'] ?? '') . $queue . ($options['suffix'] ?? '');
-        $qe            = new QueueEntry(new SimpleJob(333), $correct_queue, null);
+        $qe            = new QueueEntry(new SimpleTestJob(333), $correct_queue, null);
 
         $ws->expects($this->once())
             ->method('requeueEntry')

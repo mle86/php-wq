@@ -1,6 +1,6 @@
 <?php
 
-namespace mle86\WQ\Tests\Helper;
+namespace mle86\WQ\Testing;
 
 function wait_for_subsecond(float $required_remaining_subsecond = 0.3)
 {
@@ -41,13 +41,13 @@ function xsj_called(): bool
 }
 
 /**
- * This function executes any {@see SimpleJob}'s built-in {@see execute()} method.
+ * This function executes any {@see SimpleTestJob}'s built-in {@see execute()} method.
  * It's only here to shorten our test {@see WorkProcessor::processNextJob()} calls.
  *
- * @param SimpleJob $job
+ * @param SimpleTestJob $job
  * @return void  No return value. This should trigger the {@see JobResult::DEFAULT} behavior.
  */
-function xsj(SimpleJob $job)
+function xsj(SimpleTestJob $job)
 {
     global $_xsj_called;
     $_xsj_called = true;

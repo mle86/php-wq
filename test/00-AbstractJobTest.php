@@ -3,12 +3,12 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\AbstractJob;
-use mle86\WQ\Tests\Helper\SimpleJob;
+use mle86\WQ\Testing\SimpleTestJob;
 use PHPUnit\Framework\TestCase;
 
 function payload(AbstractJob $j): int
 {
-    if (!($j instanceof SimpleJob)) {
+    if (!($j instanceof SimpleTestJob)) {
         throw new \UnexpectedValueException("cannot get payload from job class " . get_class($j));
     }
     return $j->getMarker();
@@ -21,7 +21,7 @@ class AbstractJobTest extends TestCase
     {
         $marker = random_int(1000, 4000);
 
-        $j = new SimpleJob($marker);
+        $j = new SimpleTestJob($marker);
 
         $this->assertInstanceOf(AbstractJob::class, $j);
         $this->assertSame($marker, $j->getMarker());
