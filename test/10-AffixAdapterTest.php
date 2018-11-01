@@ -3,13 +3,12 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\QueueEntry;
+use mle86\WQ\Tests\Helper\SimpleJob;
 use mle86\WQ\WorkServerAdapter\AffixAdapter;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
-
-require_once __DIR__ . '/helper/SimpleJob.php';
 
 class AffixAdapterTest extends TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace mle86\WQ\Tests;
+namespace mle86\WQ\Tests\Helper;
 
 function wait_for_subsecond(float $required_remaining_subsecond = 0.3)
 {

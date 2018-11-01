@@ -1,6 +1,6 @@
 <?php
 
-namespace mle86\WQ\Tests;
+namespace mle86\WQ\Tests\Helper;
 
 use mle86\WQ\Job\Job;
 use mle86\WQ\Job\QueueEntry;

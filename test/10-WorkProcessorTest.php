@@ -3,15 +3,15 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\JobResult;
+use mle86\WQ\Tests\Helper\ConfigurableJob;
+use mle86\WQ\Tests\Helper\LoggingWorkProcessor;
+use mle86\WQ\Tests\Helper\SimpleJob;
 use mle86\WQ\WorkProcessor;
 use mle86\WQ\WorkServerAdapter\MemoryWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
-
-require_once __DIR__ . '/helper/misc.php';
-require_once __DIR__ . '/helper/SimpleJob.php';
-require_once __DIR__ . '/helper/ConfigurableJob.php';
-require_once __DIR__ . '/helper/LoggingWorkProcessor.php';
+use function mle86\WQ\Tests\Helper\wait_for_subsecond;
+use function mle86\WQ\Tests\Helper\xsj_called;
 
 function wp(): LoggingWorkProcessor
 {
@@ -37,7 +37,7 @@ class WorkProcessorTest extends TestCase
         $q  = "some-queue-name";
 
         xsj_called();  // clear the flag
-        $wp->processNextJob($q, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob($q, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
 
         $this->assertFalse(xsj_called(),
             "We got a job from a non-existent work queue?!?");
@@ -77,7 +77,7 @@ class WorkProcessorTest extends TestCase
         $this->expectSuccess($wp, self::SIMPLE_JOB_MARKER, $expect_log);
 
         xsj_called();  // clear the flag
-        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
         $this->assertFalse(xsj_called(),
             "Finished job was not removed from the queue!");
     }
@@ -167,7 +167,7 @@ class WorkProcessorTest extends TestCase
         $queues = ["emptymq1", "emptymq1", "emptymq5"];
 
         xsj_called();  // clear the flag
-        $wp->processNextJob($queues, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob($queues, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
 
         $this->assertFalse(xsj_called(),
             "Polling multiple queues at once returned some result when they should all have been empty!");
@@ -204,7 +204,7 @@ class WorkProcessorTest extends TestCase
             $expected_log = [];
 
             for ($n = 0; $n < $n_expected; $n++) {
-                $wp->processNextJob($pollQueues, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+                $wp->processNextJob($pollQueues, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
 
                 $expected_log[] = ["JOB", $job->getMarker()];
                 $expected_log[] = ["SUCCESS", $job->getMarker()];
@@ -216,7 +216,7 @@ class WorkProcessorTest extends TestCase
 
             $expected_log[] = ["NOJOBS", join("|", $pollQueues)];
             xsj_called();  // clear the flag
-            $wp->processNextJob($pollQueues, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+            $wp->processNextJob($pollQueues, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
             $this->assertFalse(xsj_called(),
                 "Polling multiple queues after retrieving {$n_expected} jobs from them " .
                 "still returned something!");
@@ -226,7 +226,7 @@ class WorkProcessorTest extends TestCase
             $expected_log[] = ["NOJOBS", join("|", $pollQueues)];
 
             xsj_called();  // clear the flag
-            $wp->processNextJob($pollQueues, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+            $wp->processNextJob($pollQueues, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
             $this->assertFalse(xsj_called(),
                 "Polling multiple empty queues A SECOND TIME " .
                 "after retrieving {$n_expected} jobs from them " .
@@ -266,7 +266,7 @@ class WorkProcessorTest extends TestCase
         ConfigurableJob::$expired_marker = $marker;  // this job is expired already!
 
         xsj_called();
-        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
         $this->assertFalse(xsj_called(),
             "An expired job was executed (or processNextJob() returned something for some other reason)!");
         $this->assertNotContains("EXECUTE-" . $marker, SimpleJob::$log,
@@ -309,7 +309,7 @@ class WorkProcessorTest extends TestCase
         ConfigurableJob::$expired_marker = $marker;
 
         xsj_called();  // clear the flag
-        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
         $this->assertFalse(xsj_called(),
             "An expired-on-retry job was executed (or processNextJob() returned something for some other reason)!");
         $this->assertNotContains("EXECUTE-" . $marker, SimpleJob::$log,
@@ -403,7 +403,7 @@ class WorkProcessorTest extends TestCase
 
     private function expectSuccess(LoggingWorkProcessor $wp, int $marker, array &$expect_log): void
     {
-        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
 
         $this->assertContains("EXECUTE-" . $marker, SimpleJob::$log,
             "Job was not executed!");
@@ -421,7 +421,7 @@ class WorkProcessorTest extends TestCase
     {
         $e = null;
         try {
-            $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+            $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
         } catch (\Throwable $e) {
             // ok!
         }
@@ -462,7 +462,7 @@ class WorkProcessorTest extends TestCase
     private function expectEmptyWQ(LoggingWorkProcessor $wp, array &$expect_log, string $desc): void
     {
         xsj_called();  // clear the flag
-        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\xsj', WorkServerAdapter::NOBLOCK);
+        $wp->processNextJob(self::QUEUE, __NAMESPACE__ . '\\Helper\\xsj', WorkServerAdapter::NOBLOCK);
         $expect_log[] = ["NOJOBS", self::QUEUE];
         $this->assertFalse(xsj_called(),
             "There still was a job in the wq! Previous job ({$desc}) not removed or re-queued without delay?");

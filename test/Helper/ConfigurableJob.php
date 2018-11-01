@@ -1,6 +1,6 @@
 <?php
 
-namespace mle86\WQ\Tests;
+namespace mle86\WQ\Tests\Helper;
 
 /**
  * This is a simple extension of the {@see AbstractJob} base class.

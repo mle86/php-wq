@@ -13,9 +13,12 @@
   ],
 
   "autoload": {
-    "psr-4": {
-      "mle86\\WQ\\": "src/WQ/"
-    }
+    "psr-4": { "mle86\\WQ\\": "src/WQ/" }
+  },
+
+  "autoload-dev": {
+    "psr-4": { "mle86\\WQ\\Tests\\": "test/" },
+    "files": [ "test/Helper/misc.php" ]
   },
 
   "require-dev": {

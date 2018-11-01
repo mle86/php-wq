@@ -3,9 +3,8 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\AbstractJob;
+use mle86\WQ\Tests\Helper\SimpleJob;
 use PHPUnit\Framework\TestCase;
-
-require_once __DIR__ . '/helper/SimpleJob.php';
 
 function payload(AbstractJob $j): int
 {

@@ -3,6 +3,7 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\Job;
+use mle86\WQ\Tests\Helper\SimpleJob;
 use mle86\WQ\WorkServerAdapter\BlackHoleWorkServer;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 use PHPUnit\Framework\TestCase;
