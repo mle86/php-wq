@@ -3,7 +3,7 @@
 Now if our application wants to send an e-mail...
 
 ```php
-$mailJob = new EMail ("test@myproject.xyz", "Hello?", "This is a test mail.");
+$mailJob = new EMail("test@myproject.xyz", "Hello?", "This is a test mail.");
 ```
 
 ...then it can either do that right away,

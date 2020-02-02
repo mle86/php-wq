@@ -135,12 +135,12 @@ class WorkProcessor
         $reason   = ($e)
             ? get_class($e)
             : 'JobResult::FAILED';
-        $do_retry =
+        $doRetry =
             ($e === null || $e instanceof \RuntimeException) &&
             $this->options[self::WP_ENABLE_RETRY] &&
             $job->jobCanRetry();
 
-        if ($do_retry) {
+        if ($doRetry) {
             // re-queue:
             $delay = $job->jobRetryDelay();
             $this->onJobRequeue($qe, $delay, $e);
@@ -201,7 +201,7 @@ class WorkProcessor
      *
      * @see setOptions()
      */
-    const WP_ENABLE_RETRY = 1;
+    public const WP_ENABLE_RETRY = 1;
 
     /**
      * If this option is TRUE (default), failed jobs will be buried;
@@ -209,7 +209,7 @@ class WorkProcessor
      *
      * @see setOptions()
      */
-    const WP_ENABLE_BURY = 2;
+    public const WP_ENABLE_BURY = 2;
 
     /**
      * If this option is set to {@see WorkProcessor::DELETE_FINISHED} (default),
@@ -224,7 +224,7 @@ class WorkProcessor
      *
      * @see setOptions()
      */
-    const WP_DELETE = 3;
+    public const WP_DELETE = 3;
 
     /**
      * If this option is set to {@see WorkProcessor::DELETE_EXPIRED} (default),
@@ -241,7 +241,7 @@ class WorkProcessor
      *
      * @see setOptions()
      */
-    const WP_EXPIRED = 4;
+    public const WP_EXPIRED = 4;
 
     /**
      * If this option is TRUE (default),
@@ -253,15 +253,15 @@ class WorkProcessor
      *
      * @see setOptions()
      */
-    const WP_RETHROW_EXCEPTIONS = 5;
+    public const WP_RETHROW_EXCEPTIONS = 5;
 
 
     /** @see WorkProcessor::WP_DELETE */
-    const DELETE_FINISHED = true;
+    public const DELETE_FINISHED = true;
     /** @see WorkProcessor::WP_EXPIRED */
-    const DELETE_EXPIRED = true;
+    public const DELETE_EXPIRED = true;
     /** @see WorkProcessor::WP_EXPIRED */
-    const BURY_EXPIRED = false;
+    public const BURY_EXPIRED = false;
 
 
     protected static $defaultOptions = [

@@ -87,21 +87,21 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         }
     }
 
-    protected static $ws_classname = null;
+    protected static $wsClassName = null;
 
-    final protected function getWSClass()
+    final protected function getWSClass(): ?string
     {
         // set by testGetServerInstance()
-        return static::$ws_classname;
+        return static::$wsClassName;
     }
 
     final private function jobQueueData(): array
     {
         $queues = [];
         foreach ($this->jobData() as $jd) {
-            $queue_name = $jd[0];
-            $job_marker = $jd[1];
-            $queues[ $queue_name ][] = $job_marker;
+            $queueName = $jd[0];
+            $jobMarker = $jd[1];
+            $queues[ $queueName ][] = $jobMarker;
         }
         return $queues;
     }
@@ -155,7 +155,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             // remove namespace prefix
             $name = substr($name, $p + 1);
         }
-        static::$ws_classname = $name;
+        static::$wsClassName = $name;
 
         return $ws;
     }
@@ -163,15 +163,15 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
     /**
      * @dataProvider jobData
      * @depends      testGetServerInstance
-     * @param string $queue_name
-     * @param int $job_marker
+     * @param string $queueName
+     * @param int $jobMarker
      * @param WorkServerAdapter $ws
      */
-    public function testQueuesEmpty(string $queue_name, int $job_marker, WorkServerAdapter $ws): void
+    public function testQueuesEmpty(string $queueName, int $jobMarker, WorkServerAdapter $ws): void
     {
-        $this->checkWQEmpty($ws, $queue_name);
+        $this->checkWQEmpty($ws, $queueName);
 
-        unset($job_marker);  // suppress "unused" warning
+        unset($jobMarker);  // suppress "unused" warning
     }
 
     /**
@@ -181,34 +181,34 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testQueueEmptyWithTimeout(WorkServerAdapter $ws): void
     {
-        $queue_name = $this->jobData()[0][0];
+        $queueName = $this->jobData()[0][0];
 
-        $this->assertNull($ws->getNextQueueEntry($queue_name, 1));
+        $this->assertNull($ws->getNextQueueEntry($queueName, 1));
     }
 
     /**
      * @dataProvider jobData
      * @depends      testGetServerInstance
      * @depends      testQueuesEmpty
-     * @param string $queue_name
-     * @param int $job_marker
+     * @param string $queueName
+     * @param int $jobMarker
      * @param WorkServerAdapter $ws
      */
-    public function testQueueJobs(string $queue_name, int $job_marker, WorkServerAdapter $ws): void
+    public function testQueueJobs(string $queueName, int $jobMarker, WorkServerAdapter $ws): void
     {
-        $j = new SimpleTestJob($job_marker);
+        $j = new SimpleTestJob($jobMarker);
 
-        $this->assertSame($job_marker, $j->getMarker(),
+        $this->assertSame($jobMarker, $j->getMarker(),
             "job constructor broken, wrong marker saved");
 
-        $ws->storeJob($queue_name, $j);
+        $ws->storeJob($queueName, $j);
     }
 
     /**
      * @depends testGetServerInstance
      * @depends testQueueJobs
      * @param WorkServerAdapter $ws
-     * @return array [ queue_name => [ QueueEntry, ... ], ... ]
+     * @return array [ queueName => [ QueueEntry, ... ], ... ]
      */
     public function testGetQueuedJobs(WorkServerAdapter $ws): array
     {
@@ -219,12 +219,12 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
 
         $queues = [];
 
-        foreach (array_keys($knownQueues) as $known_queue_name) {
-            while (($qe = $ws->getNextQueueEntry($known_queue_name, $ws::NOBLOCK)) !== null) {
-                $queue_name = $qe->getWorkQueue();
-                $this->assertEquals($known_queue_name, $queue_name,
+        foreach (array_keys($knownQueues) as $knownQueueName) {
+            while (($qe = $ws->getNextQueueEntry($knownQueueName, $ws::NOBLOCK)) !== null) {
+                $queueName = $qe->getWorkQueue();
+                $this->assertEquals($knownQueueName, $queueName,
                     "{$this->getWSClass()}::getNextQueueEntry() returned a Job from a different work queue than requested!");
-                $queues[ $queue_name ][] = $qe;
+                $queues[ $queueName ][] = $qe;
                 $n++;
             }
         }
@@ -250,12 +250,12 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testStoredQueueNames(array $queues): void
     {
-        $known_queue_names  = array_keys($this->jobQueueData());
-        $stored_queue_names = array_keys($queues);
-        sort($known_queue_names);
-        sort($stored_queue_names);
+        $knownQueueNames  = array_keys($this->jobQueueData());
+        $storedQueueNames = array_keys($queues);
+        sort($knownQueueNames);
+        sort($storedQueueNames);
 
-        $this->assertSame($known_queue_names, $stored_queue_names,
+        $this->assertSame($knownQueueNames, $storedQueueNames,
             "{$this->getWSClass()} did not store the correct queue names!");
     }
 
@@ -273,15 +273,15 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
     {
         $known = $this->jobQueueData();
 
-        foreach ($queues as $queue_name => $qelist) {
+        foreach ($queues as $queueName => $qelist) {
             $this->assertContainsOnlyInstancesOf(QueueEntry::class, $qelist,
                 "{$this->getWSClass()}::getNextQueueEntry() returned an unexpected object!");
 
-            $this->assertEquals(count($known[ $queue_name ]), count($qelist),
-                "{$this->getWSClass()}::getNextQueueEntry('{$queue_name}') returned the wrong number of jobs!");
+            $this->assertEquals(count($known[ $queueName ]), count($qelist),
+                "{$this->getWSClass()}::getNextQueueEntry('{$queueName}') returned the wrong number of jobs!");
 
-            $known_markers  = $known[ $queue_name ];
-            $stored_markers = array_map(
+            $knownMarkers  = $known[ $queueName ];
+            $storedMarkers = array_map(
                 function(QueueEntry $qe) {
                     /** @var Job|SimpleTestJob $job */
                     $job = $qe->getJob();
@@ -289,10 +289,10 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
                 },
                 $qelist);
 
-            sort($known_markers);
-            sort($stored_markers);
+            sort($knownMarkers);
+            sort($storedMarkers);
 
-            $this->assertSame($known_markers, $stored_markers,
+            $this->assertSame($knownMarkers, $storedMarkers,
                 "{$this->getWSClass()} did not store the correct Jobs! (The marker IDs don't match.)");
         }
     }
@@ -324,10 +324,10 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
 
         // Okay, we should now have one log entry for every known marker id:
         foreach ($markers as $marker => $n_entries) {
-            $fn_matching_marker = function($log) use($marker): bool {
+            $fnMatchingMarker = function($log) use($marker): bool {
                 return ($log === "EXECUTE-{$marker}");
             };
-            $n_executions = count(array_filter(SimpleTestJob::$log, $fn_matching_marker));
+            $n_executions = count(array_filter(SimpleTestJob::$log, $fnMatchingMarker));
 
             $this->assertGreaterThanOrEqual($n_entries, $n_executions,
                 "Job with marker '{$marker}' was not executed as often as it should have been!");
@@ -353,7 +353,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             "There already is something in the test queue!");
 
         // We want at least 0.5s remaining in the current second:
-        self::wait_for_subsecond();
+        self::waitForSubsecond();
 
         $ws->storeJob($queue, $j, $delay);
 
@@ -393,12 +393,12 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      */
     public function testRequeueJob(WorkServerAdapter $ws): void
     {
-        $j              = new SimpleTestJob(566);
-        $queue          = "test2";
-        $delay          = 0;
-        $requeued_delay = 1;
+        $j             = new SimpleTestJob(566);
+        $queue         = "test2";
+        $delay         = 0;
+        $requeuedDelay = 1;
 
-        self::wait_for_subsecond();
+        self::waitForSubsecond();
 
         $ws->storeJob($queue, $j, $delay);
 
@@ -413,7 +413,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             "Dequeued job has incorrect origin reference!");
 
         // requeue it:
-        $ws->requeueEntry($qe, $requeued_delay);
+        $ws->requeueEntry($qe, $requeuedDelay);
 
         $this->assertNull($ws->getNextQueueEntry($queue, $ws::NOBLOCK),
             "Re-queued job with delay was immediately available!");
@@ -466,23 +466,23 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
     {
         $job = new SimpleTestJob(4711);
 
-        $fn_store = function(string $into_queue = "multi1", Job $store_job = null) use($ws, $job): void {
-            $ws->storeJob($into_queue, ($store_job ?? clone $job));
+        $fnStore = static function(string $intoQueue = "multi1", Job $storeJob = null) use($ws, $job): void {
+            $ws->storeJob($intoQueue, ($storeJob ?? clone $job));
         };
-        $fn_clear = function(string $from_queue = "multi1") use($ws): void {
-            while (($qe = $ws->getNextQueueEntry($from_queue, $ws::NOBLOCK))) {
+        $fnClear = static function(string $fromQueue = "multi1") use($ws): void {
+            while (($qe = $ws->getNextQueueEntry($fromQueue, $ws::NOBLOCK))) {
                 $ws->deleteEntry($qe);
             }
         };
-        $fn_check = function(array $poll_queues, int $n_expected = 1, $check_origins = null) use($ws, $job): void {
-            if (is_string($check_origins)) {
-                $check_origins = [$check_origins];
+        $fnCheck = function(array $pollQueues, int $n_expected = 1, $checkOrigins = null) use($ws, $job): void {
+            if (is_string($checkOrigins)) {
+                $checkOrigins = [$checkOrigins];
             }
 
             $qes = [];
             $n   = 0;
             while ($n < $n_expected) {
-                $ret = $ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK);
+                $ret = $ws->getNextQueueEntry($pollQueues, $ws::NOBLOCK);
                 $this->assertInstanceOf(QueueEntry::class, $ret,
                     "Could not retrieve job by polling multiple queues! ({$n}/{$n_expected})");
 
@@ -495,16 +495,16 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
                 $qes[] = $ret;
                 $n++;
 
-                if (isset($check_origins)) {
-                    $this->assertContains($ret->getWorkQueue(), $check_origins,
+                if (isset($checkOrigins)) {
+                    $this->assertContains($ret->getWorkQueue(), $checkOrigins,
                         "Job's origin reference (qe->getWorkQueue) is not in the list of expected origin queues!");
-                    $check_origins = self::array_delete_one($check_origins, $ret->getWorkQueue());
+                    $checkOrigins = self::array_delete_one($checkOrigins, $ret->getWorkQueue());
                 }
             }
 
-            $this->assertNull($ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK),
+            $this->assertNull($ws->getNextQueueEntry($pollQueues, $ws::NOBLOCK),
                 "Polling multiple empty queues returned something!");
-            $this->assertNull($ws->getNextQueueEntry($poll_queues, $ws::NOBLOCK),
+            $this->assertNull($ws->getNextQueueEntry($pollQueues, $ws::NOBLOCK),
                 "Polling multiple empty queues A SECOND TIME returned something!?");
 
             foreach ($qes as $qe) {
@@ -512,54 +512,54 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             }
         };
 
-        $fn_store();
-        $fn_check(["multiX9", "multiX9"], 0);
-        $fn_clear();
+        $fnStore();
+        $fnCheck(["multiX9", "multiX9"], 0);
+        $fnClear();
 
-        $fn_store();
-        $fn_check(["multi1", "multi1"], 1);
-        $fn_clear();
+        $fnStore();
+        $fnCheck(["multi1", "multi1"], 1);
+        $fnClear();
 
-        $fn_store();
-        $fn_check(["multi1", "multiX3"], 1);
-        $fn_clear();
+        $fnStore();
+        $fnCheck(["multi1", "multiX3"], 1);
+        $fnClear();
 
-        $fn_store();
-        $fn_check(["multiX3", "multi1"], 1);
-        $fn_clear();
+        $fnStore();
+        $fnCheck(["multiX3", "multi1"], 1);
+        $fnClear();
 
-        $fn_store();
-        $fn_check(["multiX3", "multi1"], 1);
-        $fn_clear();
+        $fnStore();
+        $fnCheck(["multiX3", "multi1"], 1);
+        $fnClear();
 
-        $fn_store();
-        $fn_check(["multi1", "multiX4", "multi1", "multiX4"], 1);
-        $fn_clear();
+        $fnStore();
+        $fnCheck(["multi1", "multiX4", "multi1", "multiX4"], 1);
+        $fnClear();
 
-        $fn_store();
-        $fn_check(["multiX5", "multi5", "multiX3", "multi1"], 1, "multi1");
-        $fn_clear();
+        $fnStore();
+        $fnCheck(["multiX5", "multi5", "multiX3", "multi1"], 1, "multi1");
+        $fnClear();
 
 
         // Special cases:
         // What if there's really multiple identical jobs in one or more queues,
         // and we poll them at once?
 
-        $fn_store("mq1");
-        $fn_store("mq1");
-        $fn_check(["mq1", "mq1"], 2, ["mq1", "mq1"]);
-        $fn_clear("mq1");
+        $fnStore("mq1");
+        $fnStore("mq1");
+        $fnCheck(["mq1", "mq1"], 2, ["mq1", "mq1"]);
+        $fnClear("mq1");
 
-        $fn_store("mq1");
-        $fn_store("mq1");
-        $fn_check(["mq1", "mqX9"], 2, ["mq1", "mq1"]);
-        $fn_clear("mq1");
+        $fnStore("mq1");
+        $fnStore("mq1");
+        $fnCheck(["mq1", "mqX9"], 2, ["mq1", "mq1"]);
+        $fnClear("mq1");
 
-        $fn_store("mq1");
-        $fn_store("mq2");
-        $fn_check(["mqX6", "mq1", "mqX7", "mq2", "mqX8"], 2, ["mq1", "mq2"]);
-        $fn_clear("mq1");
-        $fn_clear("mq2");
+        $fnStore("mq1");
+        $fnStore("mq2");
+        $fnCheck(["mqX6", "mq1", "mqX7", "mq2", "mqX8"], 2, ["mq1", "mq2"]);
+        $fnClear("mq1");
+        $fnClear("mq2");
     }
 
     /**
@@ -624,7 +624,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      * @depends testPollMultipleQueues
      * @depends testExecuteAndDeleteJobs
      */
-    public function testIsolation(WorkServerAdapter $original_ws): void
+    public function testIsolation(WorkServerAdapter $originalWs): void
     {
         // Make sure SimpleJob::$log is cleaned up:
         self::setUpBeforeClass();
@@ -634,8 +634,8 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
          * This means that some of our tests with new connections might fail --
          * the work server might decide to send incoming jobs only to some of the active clients.
          * To avoid this problem, we'll manually close that original connection:  */
-        $original_ws->disconnect();
-        unset($original_ws);
+        $originalWs->disconnect();
+        unset($originalWs);
 
         /**
          * This helper function runs a callback
@@ -724,19 +724,19 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
     }
 
 
-    private static function wait_for_subsecond(float $required_remaining_subsecond = 0.3): void
+    private static function waitForSubsecond(float $requiredRemainingSubsecond = 0.3): void
     {
         $mt        = microtime(true);
         $subsecond = $mt - (int)$mt;
-        if ($subsecond > (1 - $required_remaining_subsecond)) {
+        if ($subsecond > (1 - $requiredRemainingSubsecond)) {
             usleep(1000 * 1000 * (1.01 - $subsecond));
         }
     }
 
-    private static function array_delete_one(array $input, $value_to_delete, bool $strict = true): array
+    private static function array_delete_one(array $input, $valueToDelete, bool $strict = true): array
     {
         foreach ($input as $idx => $value) {
-            if ($value === $value_to_delete || (!$strict && $value == $value_to_delete)) {
+            if ($value === $valueToDelete || (!$strict && $value == $valueToDelete)) {
                 unset($input[$idx]);
                 break;  // only delete one
             }

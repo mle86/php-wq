@@ -30,7 +30,7 @@ around your `processNextJob()` call:
 
 ```php
 try {
-    $workProcessor->processNextJob("queue-name", $fn_my_callback);
+    $workProcessor->processNextJob("queue-name", $myCallback);
 } catch (\Throwable $t) {
    // Log and continue?
    // Or abort the worker script?
@@ -47,7 +47,7 @@ or in the `WorkProcessor::onFailedJob()` hook.
 ```php
 $workProcessor->setOption(WorkProcessor::WP_RETHROW_EXCEPTIONS, false);
 while (true) {
-    $workProcessor->processNextJob("queue-name", $fn_my_callback);
+    $workProcessor->processNextJob("queue-name", $myCallback);
     // this will run forever!
 }
 ```
@@ -77,12 +77,12 @@ instead of the regular [WorkProcessor]
 to avoid those problems:
 
 ```php
-$workProcessor = new SignalSafeWorkProcessor ($workServerAdapter);
+$workProcessor = new SignalSafeWorkProcessor($workServerAdapter);
 
 $workProcessor->installSignalHandler();
 
 while ($workProcessor->isAlive()) {
-    $workProcessor->processNextJob("queue-name", $fn_my_callback);
+    $workProcessor->processNextJob("queue-name", $myCallback);
 }
 
 printf("Killed by signal %d.\n", $workProcessor->lastSignal());

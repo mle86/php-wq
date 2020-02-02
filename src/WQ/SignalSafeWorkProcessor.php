@@ -55,12 +55,12 @@ class SignalSafeWorkProcessor extends WorkProcessor
      *                        for <tt>SIGTERM</tt> and <tt>SIGINT</tt>,
      *                        two signals commonly used to cleanly stop running processes.
      */
-    public static function installSignalHandler(array $signals = [\SIGTERM, \SIGINT])
+    public static function installSignalHandler(array $signals = [\SIGTERM, \SIGINT]): void
     {
         $lastSignal =& self::$lastSignal;
         $alive      =& self::$alive;
 
-        $fnHandler = function (int $signo) use (&$lastSignal, &$alive) {
+        $fnHandler = static function(int $signo) use(&$lastSignal, &$alive): void {
             $lastSignal = $signo;
             $alive      = false;
         };

@@ -33,7 +33,7 @@ class EMail extends AbstractJob
         if (mail($this->recipient, $this->subject, $this->message)) {
             // ok, has been sent!
         } else {
-            throw new \RuntimeException ("mail() failed");
+            throw new \RuntimeException("mail() failed");
         }
     }
 }

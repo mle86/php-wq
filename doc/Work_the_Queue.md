@@ -13,8 +13,8 @@ There's a [`WorkProcessor`][WorkProcessor] class that already does all of that:
 ```php
 use mle86\WQ\WorkProcessor;
 
-$processor = new WorkProcessor ($workServer);
-$processor->processNextJob("mail", function (EMail $mailJob) {
+$processor = new WorkProcessor($workServer);
+$processor->processNextJob("mail", function(EMail $mailJob) {
     $mailJob->send();
 });
 ```
