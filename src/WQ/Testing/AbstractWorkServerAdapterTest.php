@@ -175,6 +175,18 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
     }
 
     /**
+     * @depends testGetServerInstance
+     * @depends testQueuesEmpty
+     * @param WorkServerAdapter $ws
+     */
+    public function testQueueEmptyWithTimeout(WorkServerAdapter $ws): void
+    {
+        $queue_name = $this->jobData()[0][0];
+
+        $this->assertNull($ws->getNextQueueEntry($queue_name, 1));
+    }
+
+    /**
      * @dataProvider jobData
      * @depends      testGetServerInstance
      * @depends      testQueuesEmpty
