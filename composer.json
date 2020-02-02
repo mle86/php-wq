@@ -32,5 +32,9 @@
 
   "scripts": {
     "test": "vendor/bin/phpunit"
+  },
+
+  "suggest": {
+    "ext-pcntl": "Needed if you want to use the SignalSafeWorkProcessor."
   }
 }

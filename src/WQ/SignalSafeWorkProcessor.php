@@ -21,6 +21,8 @@ use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
  * until one of the registered signals is sent to the process.
  * If your worker script has a loop around the {@see processNextJob()} call,
  * check {@see isAlive()} in the loop condition.
+ *
+ * This class requires the `pcntl` PHP extension.
  */
 class SignalSafeWorkProcessor extends WorkProcessor
 {
