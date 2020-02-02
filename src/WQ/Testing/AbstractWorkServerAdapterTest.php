@@ -61,6 +61,20 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             "This test script needs to be run inside a Docker container!");
     }
 
+    /**
+     * This method ensures that we're running in some kind of testing environment.
+     * You may call it in your {@see checkEnvironment()} implementation.
+     */
+    final protected function checkInDockerOrTravis(): void
+    {
+        if (getenv('TRAVIS') === 'true') {
+            return;  // ok
+        }
+
+        $this->assertFileExists("/.dockerenv",
+            "This test script needs to be run inside a Docker container or Travis CI environment!");
+    }
+
     final protected function checkWQEmpty(WorkServerAdapter $ws, $queues, string $message = ''): void
     {
         if ($message !== '') {
