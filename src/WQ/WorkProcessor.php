@@ -39,7 +39,7 @@ class WorkProcessor
     public function __construct(WorkServerAdapter $workServer, LoggerInterface $logger = null, array $options = [])
     {
         $this->server  = $workServer;
-        $this->logger  = $logger ?? new NullLogger;
+        $this->logger  = $logger ?? new NullLogger();
         $this->options = self::$defaultOptions + $options;
     }
 
@@ -132,7 +132,7 @@ class WorkProcessor
     {
         $job = $qe->getJob();
 
-        $reason   = ($e)
+        $reason = ($e)
             ? get_class($e)
             : 'JobResult::FAILED';
         $doRetry =
