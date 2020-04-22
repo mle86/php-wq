@@ -563,6 +563,81 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
     }
 
     /**
+     * Checks that when pulling a job from one or multiple queues,
+     * the caller gets the correct source queue reference.
+     *
+     * @depends testGetServerInstance
+     * @depends testPollMultipleQueues
+     */
+    public function testSourceQueue(WorkServerAdapter $ws): void
+    {
+        $jobs = [
+            // This creates a bunch of jobs with a known markerId => queueName mapping.
+            // Each retrieved job's source queue reference is then checked against this map.
+            8101 => 'sq1',
+            8300 => 'sq3',
+            8102 => 'sq1',
+            8500 => 'sq5',  // will be delayed by 1s
+            8103 => 'sq1',
+            8200 => 'sq2',
+            8402 => 'sq4',
+            8600 => 'sq6',  // will be delayed by 1s
+            8401 => 'sq4',
+        ];
+
+        $fnExpectJob = function(array $fetchFromQueues, int $fetchTimeout = WorkServerAdapter::NOBLOCK) use($ws, &$jobs) {
+            $_queueNames  = implode('|', $fetchFromQueues);
+            $_expectedIds = implode('|', array_keys($jobs));
+
+            $qe = $ws->getNextQueueEntry($fetchFromQueues, $fetchTimeout);
+            $this->assertNotNull($qe,
+                "Expected to find job {$_expectedIds} in {$_queueNames}, but got nothing!");
+
+            $qj = $qe->getJob();
+            $ws->deleteEntry($qe);
+
+            // We expect to fetch something! WorkServerAdapter makes no promises about job order,
+            // so it might be any of the remaining IDs.
+            $this->assertNotNull($qj,
+                "Expected to fetch a job from {$_queueNames}, but got nothing!");
+            $this->assertArrayHasKey($qj->getMarker(), $jobs,
+                "Found a job in {$_queueNames}, but it had marker {$qj->getMarker()} instead of expected {$_expectedIds}!");
+            $this->assertSame(
+                $jobs[$qj->getMarker()],
+                $qe->getWorkQueue(),
+                "Found job {$qj->getMarker()} in {$_queueNames}, but QueueEntry::getWorkQueue names an incorrect source queue!");
+            unset($jobs[$qj->getMarker()]);
+        };
+
+        foreach ($jobs as $marker => $toQueue) {
+            $delay = ($marker <= 8499) ? 0 : 1;
+            $ws->storeJob($toQueue, new SimpleTestJob($marker), $delay);
+        }
+
+ 
+        $fnExpectJob(['sq1']);
+        $fnExpectJob(['sq2', 'sq6', 'sq5', 'sq3']);
+        $fnExpectJob(['sq1', 'sq3', 'sq2']);
+        $fnExpectJob(['sq2', 'sq6', 'sq3', 'sq1', 'sq0'], 1);
+        $fnExpectJob(['sq2', 'sq6', 'sq3', 'sq1', 'sq0'], 1);
+
+        // After 5 calls, only the two jobs in sq4 (never queried before) should remain
+        $fnExpectJob(['sq4']);
+        $fnExpectJob(['sq6', 'sq4', 'sq1', 'sq5']);
+
+        // Now all queues should be empty:
+        $this->assertNull($ws->getNextQueueEntry(['sq6', 'sq4', 'sq1', 'sq0', 'sq5'], $ws::NOBLOCK));
+
+        usleep(1000 * 1000 * 0.3);
+        // By now, the two delayed jobs should be available!
+        $fnExpectJob(['sq6', 'sq5', 'sq1', 'sq0'], 1);
+        $fnExpectJob(['sq5', 'sq6'], 1);
+
+        // Now all queues should be empty again:
+        $this->assertNull($ws->getNextQueueEntry(['sq6', 'sq4', 'sq1', 'sq0', 'sq5'], $ws::NOBLOCK));
+    }
+
+    /**
      * @depends testGetServerInstance
      * @depends testStoredJobs
      */
@@ -608,8 +683,8 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
             "Queue interference: after polling both qi1 and qi2, we got something UNEXPECTED from polling qi2!");
 
         $ws->deleteEntry($qe1a);
-        $ws->deleteEntry($qe1b);
         $ws->deleteEntry($qe2);
+        $ws->deleteEntry($qe1b);
     }
 
     /**
@@ -623,6 +698,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      * @depends testRequeueJob
      * @depends testPollMultipleQueues
      * @depends testExecuteAndDeleteJobs
+     * @depends testSourceQueue
      */
     public function testIsolation(WorkServerAdapter $originalWs): void
     {
@@ -687,6 +763,10 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         $withSeparateConnection(function(WorkServerAdapter $ws) {
             $this->testQueueInterference($ws);
         });
+
+        $withSeparateConnection(function(WorkServerAdapter $ws) {
+            $this->testSourceQueue($ws);
+        });
     }
 
     /**
@@ -695,6 +775,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
      * @depends testRequeueJob
      * @depends testPollMultipleQueues
      * @depends testExecuteAndDeleteJobs
+     * @depends testSourceQueue
      * @depends testIsolation
      * @see     additionalTests
      */
