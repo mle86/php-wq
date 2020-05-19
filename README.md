@@ -13,7 +13,7 @@ such as Beanstalkd or Redis
 to execute them at a later time.
 
 This is
-**version 0.18.0**.
+**version 0.19.0**.
 
 
 # Installation and Dependencies
