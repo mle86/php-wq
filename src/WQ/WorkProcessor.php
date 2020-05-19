@@ -2,6 +2,7 @@
 
 namespace mle86\WQ;
 
+use mle86\WQ\Exception\JobCallbackReturnValueException;
 use mle86\WQ\Job\JobResult;
 use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
@@ -75,7 +76,7 @@ class WorkProcessor
      *                                   See {@see JobResult} for possible return values.
      * @param int $timeout               See {@see WorkServerAdapter::getNextJob()}.
      * @throws \Throwable  Will re-throw on any Exceptions/Throwables from the <tt>$callback</tt>.
-     * @throws \UnexpectedValueException  in case of an unexpected callback return value (should be a {@see JobResult} constant or NULL or void).
+     * @throws JobCallbackReturnValueException  in case of an unexpected callback return value (should be a {@see JobResult} constant or NULL or void).
      */
     public function processNextJob(
         $workQueue,
@@ -130,7 +131,7 @@ class WorkProcessor
             default:
                 // We'll assume the job went well.
                 $this->handleFinishedJob($qe);
-                throw new \UnexpectedValueException('unexpected job handler return value, should be JobResult::... or null or void');
+                throw new JobCallbackReturnValueException('unexpected job handler return value, should be JobResult::... or null or void');
         }
     }
 

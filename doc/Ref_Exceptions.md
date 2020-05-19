@@ -14,3 +14,7 @@
         - non-object
         - object, but not a Job implementation
 
+    * <code>class [mle86\WQ\Exception\\<b>UnserializationException</b>](/src/WQ/Exception/UnserializationException.php) extends \UnexpectedValueException</code>  
+        Thrown by `WorkProcessor::processNextJob`
+        if the job callback returns an unexpected value
+        (it should be a `JobResult` constant or `null` or void).
