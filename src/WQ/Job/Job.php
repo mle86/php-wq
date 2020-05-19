@@ -56,6 +56,8 @@ interface Job extends \Serializable
      * but the {@see WorkProcessor} class won't process them –
      * they will be deleted as soon as they are encountered.
      * Always return `false` here if your job class cannot expire.
+     *
+     * (Also see {@see JobResult::EXPIRED} which has the same effect as returning `true` here.)
      */
     public function jobIsExpired(): bool;
 

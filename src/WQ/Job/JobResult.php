@@ -2,6 +2,8 @@
 
 namespace mle86\WQ\Job;
 
+use mle86\WQ\WorkProcessor;
+
 /**
  * This class exists only to hold the job callback return status constants.
  *
@@ -56,6 +58,20 @@ class JobResult
      * (The same thing happens if the job handler callback throws some non-{@see RuntimeException Runtime} exception.)
      */
     public const ABORT = 2;
+
+    /**
+     * This status indicates that the job is actually expired
+     * and that it should be deleted
+     * (or whatever other action is indicated by the {@see WorkProcessor::WP_EXPIRED} setting).
+     *
+     * Usually, an expired job's {@see Job::jobIsExpired} method should return `true` right away
+     * which is the preferred way to indicate job expiration.
+     * But there might be situations in which the newly-unserialized {@see Job}
+     * cannot determine its own expiration without additional dependencies.
+     * The job handler callback however may be able to
+     * and that's why this constant exists.
+     */
+    public const EXPIRED = 3;
 
 
     /**

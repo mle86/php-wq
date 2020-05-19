@@ -50,9 +50,11 @@ if they are part of the Job implementation at all.
     The [WorkServerAdapter] implementations will still return expired instances,
     but the [WorkProcessor] class won't process them –
     they will be deleted as soon as they are encountered.
-    Always return `false` here if your job class cannot expire.
+    Always return `false` here if your job class cannot expire.  
+    (Also see <code>[JobResult]::EXPIRED</code> which has the same effect as returning `true` here.)
 
 
 [AbstractJob]: Ref_AbstractJob_base_class.md
 [WorkProcessor]: Ref_WorkProcessor_class.md
 [WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
+[JobResult]: Ref_JobResult_class.md

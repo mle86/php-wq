@@ -44,6 +44,17 @@ it's useful only if you want additional control over the re-try mechanism withou
     (according to the [WP_ENABLE_BURY][WP_ENABLE_BURY] setting).  
     (The same thing happens if the job handler callback throws some non-`RuntimeException` exception.)
 
+* <code>const int <b>EXPIRED</b></code>  
+    This status indicates that the job is actually expired
+    and that it should be deleted
+    (or whatever other action is indicated by the [WP_EXPIRED][WP_EXPIRED] setting).  
+    Usually, an expired job's [jobIsExpired()][jobIsExpired] method should return `true` right away
+    which is the preferred way to indicate job expiration.
+    But there might be situations in which the newly-unserialized [Job]
+    cannot determine its own expiration without additional dependencies.
+    The job handler callback however may be able to
+    and that's why this constant exists.
+
 * <code>const int <b>DEFAULT</b> = SUCCESS</code>  
     If the handler function returns `null` or no value at all,
     the WorkProcessor will use the default behavior
@@ -54,4 +65,7 @@ it's useful only if you want additional control over the re-try mechanism withou
 [WP_DELETE]: Ref_WorkProcessor_class.md#WP_DELETE
 [WP_ENABLE_RETRY]: Ref_WorkProcessor_class.md#WP_ENABLE_RETRY
 [WP_ENABLE_BURY]: Ref_WorkProcessor_class.md#WP_ENABLE_BURY
+[WP_EXPIRED]: Ref_WorkProcessor_class.md#WP_EXPIRED
+[Job]: Ref_Job_interface.md
 [jobCanRetry]: Ref_Job_interface.md#jobCanRetry
+[jobIsExpired]: Ref_Job_interface.md#jobIsExpired

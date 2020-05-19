@@ -416,6 +416,17 @@ class WorkProcessorTest extends TestCase
         // We used ABORT, so the job should now be buried instead of being requeued:
         $assert_job_state($wp, 'FAILED');
 
+        // return JobResult::EXPIRED:
+        $marker = false;
+        $wp = $this->testInsertOneSimpleJob();
+        $wp->processNextJob(
+            self::QUEUE,
+            $make_callback_with_return_value(JobResult::EXPIRED),
+            WorkServerAdapter::NOBLOCK);
+        $this->assertTrue($marker);
+        // We used EXPIRED, so the job should now be deleted:
+        $assert_job_state($wp, 'EXPIRED');
+
         // return something invalid:
         $marker = false;
         $wp = $this->testInsertOneSimpleJob();

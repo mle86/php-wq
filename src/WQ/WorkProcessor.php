@@ -128,6 +128,10 @@ class WorkProcessor
                 // The job failed and should not be retried.
                 $this->handleFailedJob($qe, null, true);
                 break;
+            case JobResult::EXPIRED:
+                // The job handler considers this job expired.
+                $this->handleExpiredJob($qe);
+                break;
             default:
                 // We'll assume the job went well.
                 $this->handleFinishedJob($qe);
