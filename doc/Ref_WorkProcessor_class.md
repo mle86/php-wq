@@ -12,7 +12,7 @@ but will also try to re-queue it if it fails.
 
 ## Methods
 
-* <code>public function <b>__construct</b> (WorkServerAdapter $workServer, LoggerInterface $logger = null, array $options = [])</code>  
+* <code>public function <b>__construct</b> ([WorkServerAdapter] $workServer, LoggerInterface $logger = null, array $options = [])</code>  
     Instantiates a new WorkProcessor.
     This causes no side effects yet.
     * `$workServer`: The work server adapter to work with.
@@ -38,12 +38,12 @@ but will also try to re-queue it if it fails.
     Will re-throw on any Exceptions/Throwables from the `$callback`.  
     Throws a `JobCallbackReturnValueException` in case of an unexpected callback return value
     (should be a [JobResult] constant or `null` or `void`).
-    * `$workQueue`: See `WorkServerAdapter::getNextJob()`.
+    * `$workQueue`: See <code>[WorkServerAdapter]::getNextJob()</code>.
     * `$callback`: The handler callback to execute each Job.  
       Expected signature:
       <code>function([Job], string $sourceQueueName): ?int|void</code>.
       See the [JobResult] enum class for possible return values.
-    * `$timeout`: See `WorkServerAdapter::getNextJob()`.
+    * `$timeout`: See <code>[WorkServerAdapter]::getNextJob()</code>.
 
 <a name="setOption"></a>
 * <code>public function <b>setOption</b> (int $option, $value): self</code>  
