@@ -22,7 +22,7 @@ you won't need to use this class in any way.
 ## Constructors
 
 * <code>public function <b>__construct</b> (Job $job, string $workQueue, $handle)</code>
-* <code>public static function <b>fromSerializedJob</b> (string $serializedData, string $originWorkQueue, $handle, string $jobId) : self</code>  
+* <code>public static function <b>fromSerializedJob</b> (string $serializedData, string $originWorkQueue, $handle, string $jobId): self</code>  
     Unserializes a stored [Job] instance
     from a Work Queue entry's raw data
     and wraps it in a `QueueEntry` instance.
@@ -34,9 +34,9 @@ you won't need to use this class in any way.
 
 ## Methods
 
-* <code>public function <b>getJob</b> () : Job</code>
-* <code>public function <b>getWorkQueue</b> () : string</code>
-* <code>public function <b>getHandle</b> () : mixed</code>  
+* <code>public function <b>getJob</b> (): Job</code>
+* <code>public function <b>getWorkQueue</b> (): string</code>
+* <code>public function <b>getHandle</b> (): mixed</code>  
     _Internal:_
     This is an opaque handle
     which belongs to the originating [WorkServerAdapter].

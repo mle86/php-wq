@@ -19,7 +19,7 @@ in case of Redis, Work Queues are Lists.
 ## Methods
 
 <a name="getNextQueueEntry"></a>
-* <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry</code>  
+* <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT): ?QueueEntry</code>  
     This takes the next job from the named work queue(s)
     and returns it.  
     This method will reserve the returned job for a short time.
@@ -37,7 +37,7 @@ in case of Redis, Work Queues are Lists.
       Set this to `FOREVER` if the call should block until a job becomes available, no matter how long it takes.
 
 <a name="storeJob"></a>
-* <code>public function <b>storeJob</b> (string $workQueue, Job $job, int $delay = 0)</code>  
+* <code>public function <b>storeJob</b> (string $workQueue, Job $job, int $delay = 0): void</code>  
     Stores a job in the work queue for later processing.
     * `$workQueue`: The name of the Work Queue to store the job in.
     * `$job`: The job to store.
@@ -45,14 +45,14 @@ in case of Redis, Work Queues are Lists.
       Set to zero (default) for jobs which should be processed as soon as possible.
 
 <a name="buryEntry"></a>
-* <code>public function <b>buryEntry</b> (QueueEntry $entry)</code>  
+* <code>public function <b>buryEntry</b> (QueueEntry $entry): void</code>  
     Buries an existing job
     so that it won't be returned by `getNextQueueEntry()` again
     but is still present in the system for manual inspection.  
     This is what happens to failed jobs.
 
 <a name="requeueEntry"></a>
-* <code>public function <b>requeueEntry</b> (QueueEntry $entry, int $delay, string $workQueue = null)</code>  
+* <code>public function <b>requeueEntry</b> (QueueEntry $entry, int $delay, string $workQueue = null): void</code>  
     Re-queues an existing job
     so that it can be returned by `getNextQueueEntry()`
     again at some later time.
@@ -65,12 +65,12 @@ in case of Redis, Work Queues are Lists.
       With this parameter, a different Work Queue can be chosen.
 
 <a name="deleteEntry"></a>
-* <code>public function <b>deleteEntry</b> (QueueEntry $entry)</code>  
+* <code>public function <b>deleteEntry</b> (QueueEntry $entry): void</code>  
     Permanently deletes a job entry for its work queue.  
     This is what happens to finished jobs.
 
 <a name="disconnect"></a>
-* <code>public function <b>disconnect</b> ()</code>  
+* <code>public function <b>disconnect</b> (): void</code>  
     Explicitly closes the connection to the work server.  
     The instance should not be used anymore after calling this method;
     calling other methods afterwards is likely to lead to unexpected behaviour

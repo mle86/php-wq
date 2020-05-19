@@ -30,9 +30,9 @@ you should `exit` the program.
       By default, the signal handler is installed
       for `SIGTERM` and `SIGINT`,
       two signals commonly used to cleanly stop running processes.
-* <code>public static function <b>isAlive</b> () : bool</code>  
+* <code>public static function <b>isAlive</b> (): bool</code>  
   Returns `true` as long as no registered signal was received.
-* <code>public static function <b>lastSignal</b> () : ?int</code>  
+* <code>public static function <b>lastSignal</b> (): ?int</code>  
   Returns the number of the last signal received,
   or `null` if no signal has been received since the signal handler was set up.
 

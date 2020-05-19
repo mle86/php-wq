@@ -22,7 +22,7 @@ but will also try to re-queue it if it fails.
       Works the same as a `setOptions()` call right after instantiation.
 
 <a name="processNextJob"></a>
-* <code>public function <b>processNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : void</code>  
+* <code>public function <b>processNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT): void</code>  
     Executes the next job in the Work Queue
     by passing it to the callback function.  
     If that results in a `\RuntimeException`
@@ -45,13 +45,13 @@ but will also try to re-queue it if it fails.
     * `$timeout`: See `WorkServerAdapter::getNextJob()`.
 
 <a name="setOption"></a>
-* <code>public function <b>setOption</b> (int $option, $value) : self</code>  
+* <code>public function <b>setOption</b> (int $option, $value): self</code>  
     Sets one of the configuration options.
     * `$option`: One of the [`WP_` constants](#option-keys).
     * `$value`: The option's new value. The required type depends on the option.
 
 <a name="setOptions"></a>
-* <code>public function <b>setOptions</b> (array $options) : self</code>  
+* <code>public function <b>setOptions</b> (array $options): self</code>  
     Sets one or more of the configuration options.
 
 
@@ -113,28 +113,28 @@ All of these hook methods are called by the `processNextJob()` method.
 In the provided base class, they are empty.
 
 <a name="onNoJobAvailable"></a>
-* <code>protected function <b>onNoJobAvailable</b> (array $workQueues) : void</code>  
+* <code>protected function <b>onNoJobAvailable</b> (array $workQueues): void</code>  
     This method is called if there is currently no job to be executed in any of the polled work queues.
 <a name="onJobAvailable"></a>
-* <code>protected function <b>onJobAvailable</b> (QueueEntry $qe) : void</code>  
+* <code>protected function <b>onJobAvailable</b> (QueueEntry $qe): void</code>  
     This method is called if there is a job ready to be executed,
     right before it is actually executed.
 <a name="onSuccessfulJob"></a>
-* <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe) : void</code>  
+* <code>protected function <b>onSuccessfulJob</b> (QueueEntry $qe): void</code>  
     This method is called after a job has been successfully executed,
     right before it is deleted from the work queue.
 <a name="onExpiredJob"></a>
-* <code>protected function <b>onExpiredJob</b> (QueueEntry $qe) : void</code>  
+* <code>protected function <b>onExpiredJob</b> (QueueEntry $qe): void</code>  
     This method is called if an expired job is encountered,
     right before it gets deleted.
 <a name="onJobRequeue"></a>
-* <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay) : void</code>  
+* <code>protected function <b>onJobRequeue</b> (QueueEntry $qe, \Throwable $e, int $delay): void</code>  
     This method is called after a job that can be re-tried at least one more time
     has failed (thrown an exception),
     right before `processNextJob()` re-queues it
     and re-throws the exception.
 <a name="onFailedJob"></a>
-* <code>protected function <b>onFailedJob</b> (QueueEntry $qe, \Throwable $e) : void</code>  
+* <code>protected function <b>onFailedJob</b> (QueueEntry $qe, \Throwable $e): void</code>  
     This method is called after a job has permanently failed (thrown an exception and cannot be re-tried),
     right before `processNextJob()` buries/deletes it
     and re-throws the exception.

@@ -44,7 +44,7 @@ then use it with a simpler call:
 
 ## Proxy Methods
 
-* <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT) : ?QueueEntry</code>  
+* <code>public function <b>getNextQueueEntry</b> ($workQueue, int $timeout = DEFAULT_TIMEOUT): ?QueueEntry</code>  
 * <code>public function <b>storeJob</b> (string $workQueue, Job $job, int $delay = 0)</code>  
 * <code>public function <b>buryEntry</b> (QueueEntry $entry)</code>  
 * <code>public function <b>requeueEntry</b> (QueueEntry $entry, int $delay, string $workQueue = null)</code>  

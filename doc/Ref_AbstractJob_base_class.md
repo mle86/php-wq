@@ -61,7 +61,7 @@ It fully implements the [`Job`][Job] interface.
     if `jobTryIndex() ≤ MAX_RETRY`.
 
 <a name="jobIsExpired"></a>
-* <code>public function <b>jobIsExpired</b> () : bool { … }</code>  
+* <code>public function <b>jobIsExpired</b> (): bool { … }</code>  
     See `Job::jobIsExpired()`.
     This default implementation
     always returns `false`,
