@@ -123,6 +123,32 @@ class WorkProcessorTest extends TestCase
     }
 
     /**
+     * This one looks like it allows retries --
+     * but then it throws a non-{@see \RuntimeException Runtime} exception
+     * which causes an abort.
+     *
+     * @depends testExecuteUnrecoverableJob
+     */
+    public function testExecuteAbortingJob(): void
+    {
+        $expect_log = [];
+        $wp         = wp();
+        $m          = 2609;
+
+        $wp->getWorkServerAdapter()->storeJob(self::QUEUE,
+            (new ConfigurableTestJob($m))
+                ->withMaxRetries(4)  // four retries -- maybe?
+                ->withRetryDelay(0)
+                ->abortOn(2)  // nope, aborts on first retry
+                ->succeedOn(0)  // ...and never succeeds
+        );
+
+        $this->expectFailAndRequeue($wp, $m, 0, $expect_log, "self-aborting job");
+        $this->expectFailAndEnd($wp, $m, $expect_log, "self-aborting job");
+        $this->expectEmptyWQ($wp, $expect_log, "self-aborting job");
+    }
+
+    /**
      * This one succeeds on the third try!
      *
      * @depends testExecuteUnrecoverableJob
@@ -423,8 +449,8 @@ class WorkProcessorTest extends TestCase
         } catch (\Throwable $e) {
             // ok!
         }
-        $this->assertInstanceOf(\RuntimeException::class, $e,
-            "Failing job's RuntimeException ({$desc}) was not re-thrown!");
+        $this->assertInstanceOf(\Exception::class, $e,
+            "Failing job's exception ({$desc}) was not re-thrown!");
         return $e;
     }
 

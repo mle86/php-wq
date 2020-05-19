@@ -25,6 +25,7 @@ class ConfigurableTestJob extends SimpleTestJob
     protected $max_retries;
     protected $retry_delay;
     protected $succeed_on;
+    protected $abort_on;
 
     public function __construct(int $marker, int $max_retries = 0, int $succeed_on = 0, int $retry_delay = 1)
     {
@@ -53,6 +54,12 @@ class ConfigurableTestJob extends SimpleTestJob
         return $this;
     }
 
+    public function abortOn(?int $nthTry): self
+    {
+        $this->abort_on = $nthTry ?? 0;
+        return $this;
+    }
+
 
     public function jobCanRetry(): bool
     {
@@ -73,12 +80,20 @@ class ConfigurableTestJob extends SimpleTestJob
     {
         if ($this->jobTryIndex() === $this->succeed_on) {
             return parent::execute();
-        } else {
-            $succeed_on = ($this->succeed_on > 0)
-                ? "will succeed on try #{$this->succeed_on}"
-                : "will never succeed";
 
-            throw new \RuntimeException("*** failed on try #{$this->jobTryIndex()} ({$succeed_on})");
+        } elseif ($this->jobTryIndex() === $this->abort_on) {
+            throw new \LogicException("*** aborted on try #{$this->jobTryIndex()}");
+
+        } else {
+            if ($this->succeed_on && (!$this->abort_on || $this->succeed_on < $this->abort_on)) {
+                $endCondition = "will succeed on try #{$this->succeed_on}";
+            } elseif ($this->abort_on && (!$this->succeed_on || $this->abort_on < $this->succeed_on)) {
+                $endCondition = "will abort on try #{$this->abort_on}";
+            } else {
+                $endCondition = "will never succeed";
+            }
+
+            throw new \RuntimeException("*** failed on try #{$this->jobTryIndex()} ({$endCondition})");
         }
     }
 
