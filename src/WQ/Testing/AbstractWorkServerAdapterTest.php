@@ -282,7 +282,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
 
             $knownMarkers  = $known[ $queueName ];
             $storedMarkers = array_map(
-                function(QueueEntry $qe) {
+                static function(QueueEntry $qe) {
                     /** @var Job|SimpleTestJob $job */
                     $job = $qe->getJob();
                     return $job->getMarker();
@@ -324,7 +324,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
 
         // Okay, we should now have one log entry for every known marker id:
         foreach ($markers as $marker => $n_entries) {
-            $fnMatchingMarker = function($log) use($marker): bool {
+            $fnMatchingMarker = static function($log) use($marker): bool {
                 return ($log === "EXECUTE-{$marker}");
             };
             $n_executions = count(array_filter(SimpleTestJob::$log, $fnMatchingMarker));

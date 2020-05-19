@@ -51,7 +51,7 @@ class WorkProcessorTest extends TestCase
     /**
      * @depends testInstance
      */
-    public function testInsertOneSimpleJob(LoggingWorkProcessor $wp = null): LoggingWorkProcessor
+    public function testInsertOneSimpleJob(LoggingWorkProcessor $wp = null, SimpleTestJob $job = null): LoggingWorkProcessor
     {
         if (!$wp) {
             $wp = wp();
@@ -59,7 +59,7 @@ class WorkProcessorTest extends TestCase
 
         $wp->getWorkServerAdapter()->storeJob(
             self::QUEUE,
-            new SimpleTestJob(self::SIMPLE_JOB_MARKER));
+            $job ?? new SimpleTestJob(self::SIMPLE_JOB_MARKER));
 
         return $wp;
     }
@@ -343,6 +343,11 @@ class WorkProcessorTest extends TestCase
                 (end($wp->log))[0]);
         };
 
+        $retryableJob = (new ConfigurableTestJob(self::SIMPLE_JOB_MARKER))
+            ->withRetryDelay(0)
+            ->withMaxRetries(99)
+            ->succeedOn(99);
+
         // return NULL:
         $marker = false;
         $wp = $this->testInsertOneSimpleJob();
@@ -365,14 +370,14 @@ class WorkProcessorTest extends TestCase
 
         // return JobResult::FAILED:
         $marker = false;
-        $wp = $this->testInsertOneSimpleJob();
+        $wp = $this->testInsertOneSimpleJob(wp(), clone $retryableJob);
         $wp->processNextJob(
             self::QUEUE,
             $make_callback_with_return_value(JobResult::FAILED),
             WorkServerAdapter::NOBLOCK);
         $this->assertTrue($marker);
-        // We used FAILED, so the job should now be buried:
-        $assert_job_state($wp, 'FAILED');
+        // We used FAILED, so the job should now be requeued:
+        $assert_job_state($wp, 'REQUEUE');
 
         // return something invalid:
         $marker = false;

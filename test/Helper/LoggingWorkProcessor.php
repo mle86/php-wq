@@ -4,7 +4,7 @@ namespace mle86\WQ\Tests\Helper;
 
 use mle86\WQ\Job\Job;
 use mle86\WQ\Job\QueueEntry;
-use mle86\WQ\Testing\Helper\SimpleTestJob;
+use mle86\WQ\Testing\SimpleTestJob;
 use mle86\WQ\WorkProcessor;
 
 /**
