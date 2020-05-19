@@ -145,15 +145,15 @@ class WorkProcessor
             $delay = $job->jobRetryDelay();
             $this->onJobRequeue($qe, $delay, $e);
             $this->server->requeueEntry($qe, $delay);
-            $this->log(LogLevel::NOTICE, "failed, re-queued with {$delay}s delay ({$reason})", $qe);
+            $this->log(LogLevel::NOTICE, "job failed, re-queued with {$delay}s delay ({$reason})", $qe);
         } elseif ($this->options[self::WP_ENABLE_BURY]) {
             $this->onFailedJob($qe, $e);
             $this->server->buryEntry($qe);
-            $this->log(LogLevel::WARNING, "failed, buried ({$reason})", $qe);
+            $this->log(LogLevel::WARNING, "job failed, buried ({$reason})", $qe);
         } else {
             $this->onFailedJob($qe, $e);
             $this->server->deleteEntry($qe);
-            $this->log(LogLevel::WARNING, "failed, deleted ({$reason})", $qe);
+            $this->log(LogLevel::WARNING, "job failed, deleted ({$reason})", $qe);
         }
     }
 
@@ -164,11 +164,11 @@ class WorkProcessor
         // Make sure the finished job is really gone before returning:
         if ($this->options[self::WP_DELETE] === self::DELETE_FINISHED) {
             $this->server->deleteEntry($qe);
-            $this->log(LogLevel::INFO, "success, deleted", $qe);
+            $this->log(LogLevel::INFO, "success, job deleted", $qe);
         } else {
             // move it to a different wq
             $this->server->requeueEntry($qe, 0, $this->options[self::WP_DELETE]);
-            $this->log(LogLevel::NOTICE, "success, moved to {$this->options[self::WP_DELETE]}", $qe);
+            $this->log(LogLevel::NOTICE, "success, job moved to {$this->options[self::WP_DELETE]}", $qe);
         }
     }
 
@@ -179,14 +179,14 @@ class WorkProcessor
         // We'll never execute expired jobs.
         if ($this->options[self::WP_EXPIRED] === self::DELETE_EXPIRED) {
             $this->server->deleteEntry($qe);
-            $this->log(LogLevel::NOTICE, "expired, deleted", $qe);
+            $this->log(LogLevel::NOTICE, "expired, job deleted", $qe);
         } elseif ($this->options[self::WP_EXPIRED] === self::BURY_EXPIRED) {
             $this->server->buryEntry($qe);
-            $this->log(LogLevel::NOTICE, "expired, buried", $qe);
+            $this->log(LogLevel::NOTICE, "expired, job buried", $qe);
         } else {
             // move it to a different wq
             $this->server->requeueEntry($qe, 0, $this->options[self::WP_EXPIRED]);
-            $this->log(LogLevel::NOTICE, "expired, moved to {$this->options[self::WP_EXPIRED]}", $qe);
+            $this->log(LogLevel::NOTICE, "expired, job moved to {$this->options[self::WP_EXPIRED]}", $qe);
         }
     }
 
@@ -317,7 +317,7 @@ class WorkProcessor
     {
         $prefix = null;
         if ($context instanceof QueueEntry) {
-            $prefix = "{$context->getWorkQueue()}: ";
+            $prefix = "wq {$context->getWorkQueue()}: ";
         } elseif (is_string($context)) {
             $prefix = "{$context}: ";
         }
