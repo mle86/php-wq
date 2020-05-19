@@ -35,6 +35,25 @@ class ConfigurableTestJob extends SimpleTestJob
         $this->succeed_on  = $succeed_on;
     }
 
+    public function withMaxRetries(int $maxRetries): self
+    {
+        $this->max_retries = $maxRetries;
+        return $this;
+    }
+
+    public function withRetryDelay(int $retryDelay): self
+    {
+        $this->retry_delay = $retryDelay;
+        return $this;
+    }
+
+    public function succeedOn(?int $nthTry): self
+    {
+        $this->succeed_on = $nthTry ?? 0;
+        return $this;
+    }
+
+
     public function jobCanRetry(): bool
     {
         return ($this->jobTryIndex() <= $this->max_retries);

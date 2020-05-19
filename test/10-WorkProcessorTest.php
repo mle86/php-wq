@@ -87,11 +87,10 @@ class WorkProcessorTest extends TestCase
         $m          = 2608;
 
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE,
-            new ConfigurableTestJob(
-                $m,
-                0,  // no retries
-                0   // never succeeds
-            ));
+            (new ConfigurableTestJob($m))
+                ->withMaxRetries(0)  // no retries
+                ->succeedOn(0)  // never succeeds
+        );
 
         $this->expectFailAndEnd($wp, $m, $expect_log, "non-requeueable");
         $this->expectEmptyWQ($wp, $expect_log, "non-requeueable");
@@ -109,12 +108,11 @@ class WorkProcessorTest extends TestCase
         $m          = 2604;
 
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE,
-            new ConfigurableTestJob(
-                $m,
-                1,  // up to one retry
-                0,  // never succeeds
-                1   // retry delay: 1s
-            ));
+            (new ConfigurableTestJob($m))
+                ->withMaxRetries(1)  // up to one retry
+                ->withRetryDelay(1)   // retry delay: 1s
+                ->succeedOn(0)  // never succeeds
+        );
 
         $this->expectFailAndRequeue($wp, $m, 1, $expect_log, "first try");
         $this->expectEmptyWQ($wp, $expect_log, "first try");
@@ -136,12 +134,11 @@ class WorkProcessorTest extends TestCase
         $m          = 2601;
 
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE,
-            new ConfigurableTestJob(
-                $m,
-                5,  // up to five retries!
-                3,  // succeeds on the third try!
-                1   // retry delay: 1s
-            ));
+            (new ConfigurableTestJob($m))
+                ->withMaxRetries(5)  // up to five retries!
+                ->withRetryDelay(1)   // retry delay: 1s
+                ->succeedOn(3)  // succeeds on the third try!
+        );
 
         $this->expectFailAndRequeue($wp, $m, 1, $expect_log, "first try");
         $this->expectEmptyWQ($wp, $expect_log, "first try");
@@ -251,12 +248,11 @@ class WorkProcessorTest extends TestCase
     public function testExpiredJob(): void
     {
         $marker = 9102;
-        $job    = new ConfigurableTestJob(
-            $marker,
-            1,  // one retry
-            2,  // succeeds on retry
-            0
-        );
+        $job    = (new ConfigurableTestJob($marker))
+            ->withMaxRetries(1)  // one retry
+            ->withRetryDelay(0)
+            ->succeedOn(2)  // succeeds on retry
+            ;
 
         $wp = wp();
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE, $job);
@@ -289,12 +285,11 @@ class WorkProcessorTest extends TestCase
     public function testRetryExpiredJob(): void
     {
         $marker = 9103;
-        $job    = new ConfigurableTestJob(
-            $marker,
-            1,  // one retry
-            2,  // succeeds on retry
-            0
-        );
+        $job    = (new ConfigurableTestJob($marker))
+            ->withMaxRetries(1)  // one retry
+            ->withRetryDelay(0)
+            ->succeedOn(2)  // succeeds on retry
+            ;
 
         $wp = wp();
         $wp->getWorkServerAdapter()->storeJob(self::QUEUE, $job);
