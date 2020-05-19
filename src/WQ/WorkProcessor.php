@@ -56,11 +56,13 @@ class WorkProcessor
      * Executes the next job in the Work Queue
      * by passing it to the callback function.
      *
-     * If that results in a {@see \RuntimeException},
+     * If that results in a {@see \RuntimeException}
+     * or the {@see JobResult::FAILED} return value,
      * the method will try to re-queue the job
      * and re-throw the exception.
      *
-     * If the execution results in any other {@see \Throwable},
+     * If the execution results in any other {@see \Throwable}
+     * or the {@see JobResult::ABORT} return value,
      * no re-queueing will be attempted;
      * the job will be buried immediately.
      *
@@ -121,6 +123,10 @@ class WorkProcessor
                 // The job failed.
                 $this->handleFailedJob($qe);
                 break;
+            case JobResult::ABORT:
+                // The job failed and should not be retried.
+                $this->handleFailedJob($qe, null, true);
+                break;
             default:
                 // We'll assume the job went well.
                 $this->handleFinishedJob($qe);
@@ -128,14 +134,21 @@ class WorkProcessor
         }
     }
 
-    private function handleFailedJob(QueueEntry $qe, \Throwable $e = null): void
+
+    private function handleFailedJob(QueueEntry $qe, \Throwable $e = null, bool $abort = false): void
     {
         $job = $qe->getJob();
 
-        $reason = ($e)
-            ? get_class($e)
-            : 'JobResult::FAILED';
+        if ($e) {
+            $reason = get_class($e);
+        } elseif ($abort) {
+            $reason = 'JobResult::ABORT';
+        } else {
+            $reason = 'JobResult::FAILED';
+        }
+
         $doRetry =
+            !$abort &&
             ($e === null || $e instanceof \RuntimeException) &&
             $this->options[self::WP_ENABLE_RETRY] &&
             $job->jobCanRetry();

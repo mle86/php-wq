@@ -405,6 +405,17 @@ class WorkProcessorTest extends TestCase
         // We used FAILED, so the job should now be requeued:
         $assert_job_state($wp, 'REQUEUE');
 
+        // return JobResult::ABORT:
+        $marker = false;
+        $wp = $this->testInsertOneSimpleJob(wp(), clone $retryableJob);
+        $wp->processNextJob(
+            self::QUEUE,
+            $make_callback_with_return_value(JobResult::ABORT),
+            WorkServerAdapter::NOBLOCK);
+        $this->assertTrue($marker);
+        // We used ABORT, so the job should now be buried instead of being requeued:
+        $assert_job_state($wp, 'FAILED');
+
         // return something invalid:
         $marker = false;
         $wp = $this->testInsertOneSimpleJob();

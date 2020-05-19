@@ -25,10 +25,12 @@ but will also try to re-queue it if it fails.
 * <code>public function <b>processNextJob</b> ($workQueue, callable $callback, int $timeout = WorkServerAdapter::DEFAULT_TIMEOUT) : void</code>  
     Executes the next job in the Work Queue
     by passing it to the callback function.  
-    If that results in a `\RuntimeException`,
+    If that results in a `\RuntimeException`
+    or the <code>[JobResult]::FAILED</code> return value,
     the method will try to re-queue the job
     and re-throw the exception.  
-    If the execution results in any other `\Throwable`,
+    If the execution results in any other `\Throwable`
+    or the <code>[JobResult]::ABORT</code> return value,
     no re-queueing will be attempted;
     the job will be buried immediately.  
     If the next job in the Work Queue is expired,

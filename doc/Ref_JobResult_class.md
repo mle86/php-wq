@@ -14,7 +14,7 @@ returns one of these constants
 If you don't use the WorkProcessor class,
 you won't need this class either.
 If you do use the WorkProcessor class
-but your job handlers always either succeed or throw some `RuntimeException`,
+but your job handlers always either succeed or throw an exception,
 you won't need this class either –
 it's useful only if you want additional control over the re-try mechanism without throwing exceptions.
 
@@ -32,7 +32,17 @@ it's useful only if you want additional control over the re-try mechanism withou
     it will be re-queued for later re-execution.
     If not, it will be *buried*.  
     (That behavior may be changed through the WorkProcessor's [WP_ENABLE_RETRY][WP_ENABLE_RETRY] and
-    [WP_ENABLE_BURY][WP_ENABLE_BURY] options.)
+    [WP_ENABLE_BURY][WP_ENABLE_BURY] options.)  
+    (The same thing happens if the job handler callback throws some `RuntimeException`.)
+
+* <code>const int <b>ABORT</b></code>  
+    This status indicates that the job has failed
+    and that it should _not_ be re-tried,
+    regardless of its [jobCanRetry()][jobCanRetry] result
+    and the [WP_ENABLE_RETRY][WP_ENABLE_RETRY] setting.
+    The job will immediately be buried/deleted
+    (according to the [WP_ENABLE_BURY][WP_ENABLE_BURY] setting).  
+    (The same thing happens if the job handler callback throws some non-`RuntimeException` exception.)
 
 * <code>const int <b>DEFAULT</b> = SUCCESS</code>  
     If the handler function returns `null` or no value at all,

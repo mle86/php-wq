@@ -16,7 +16,7 @@ namespace mle86\WQ\Job;
  * If you don't use the {@see WorkProcessor} class,
  * you won't need this class either.
  * If you do use the {@see WorkProcessor} class
- * but your job handlers always either succeed or throw some {@see \RuntimeException},
+ * but your job handlers always either succeed or throw some {@see Exception},
  * you won't need this class either –
  * it's useful only if you want additional control over the re-try mechanism without throwing exceptions.
  */
@@ -39,8 +39,23 @@ class JobResult
      *
      * (That behavior may be changed through the {@see WorkProcessor::WP_ENABLE_RETRY} and
      *  {@see WorkProcessor::WP_ENABLE_BURY} options.)
+     *
+     * (The same thing happens if the job handler callback throws some {@see RuntimeException}.)
      */
     public const FAILED = 1;
+
+    /**
+     * This status indicates that the job has failed
+     * and that it should _not_ be re-tried,
+     * regardless of its {@see Job::jobCanRetry()} result
+     * and the {@see WorkProcessor::WP_ENABLE_RETRY} setting.
+     *
+     * The job will immediately be buried/deleted
+     * (according to the {@see WorkProcessor::WP_ENABLE_BURY} setting).
+     *
+     * (The same thing happens if the job handler callback throws some non-{@see RuntimeException Runtime} exception.)
+     */
+    public const ABORT = 2;
 
 
     /**
