@@ -9,6 +9,8 @@ use mle86\WQ\WorkProcessor;
  *
  * - {@see JobResult::SUCCESS}
  * - {@see JobResult::FAILED}
+ * - ({@see JobResult::ABORT})
+ * - ({@see JobResult::EXPIRED})
  *
  * The {@see WorkProcessor} class
  * assumes that the job handler function

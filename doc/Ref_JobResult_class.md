@@ -5,6 +5,11 @@ Source file: [src/WQ/Job/JobResult.php](/src/WQ/Job/JobResult.php)
 
 This class exists only to hold the job callback return status constants.
 
+- `SUCCESS`
+- `FAILED`
+- (`ABORT`)
+- (`EXPIRED`)
+
 The [WorkProcessor] class
 assumes that the job handler function
 returns one of these constants
