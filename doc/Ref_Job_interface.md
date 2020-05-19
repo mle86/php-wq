@@ -33,7 +33,7 @@ if they are part of the Job implementation at all.
 
 <a name="jobRetryDelay"></a>
 * <code>public function <b>jobRetryDelay</b> (): ?int</code>  
-    How many seconds the job should be delayed in the Work Quere before being re-tried.
+    How many seconds the job should be delayed in the Work Queue before being re-tried.
     If `jobCanRetry()` is true,
     this must return a positive integer
     (or zero, if the job should be re-tried as soon as possible).

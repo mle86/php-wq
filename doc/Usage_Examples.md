@@ -167,7 +167,9 @@ if (($queueEntry = $workServerAdapter->getNextQueueEntry("queue-name"))) {
 NB:
 This block does _not_ care about expired jobs
 and will happily try to execute them as well,
-and it does not attempt to re-queue failed jobs.
+it does not attempt to re-queue failed jobs
+making no distinction between RuntimeExceptions and other throwables,
+and it does not care about the callback's [return value][JobResult].
 Including all of those functions in this example
 would pretty much turn it into a verbatim copy
 of the actual `processNextJob()` method.
@@ -177,3 +179,4 @@ of the actual `processNextJob()` method.
 [WorkProcessor]: Ref_WorkProcessor_class.md
 [SignalSafeWorkProcessor]: Ref_SignalSafeWorkProcessor_class.md
 [Job]: Ref_Job_interface.md
+[JobResult]: Ref_JobResult_class.md

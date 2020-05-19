@@ -33,7 +33,7 @@ interface Job extends \Serializable
     public function jobCanRetry(): bool;
 
     /**
-     * How many seconds the job should be delayed in the Work Quere
+     * How many seconds the job should be delayed in the Work Queue
      * before being re-tried.
      * If {@see jobCanRetry()} is true,
      * this must return a positive integer
@@ -50,8 +50,10 @@ interface Job extends \Serializable
 
     /**
      * Return `true` here if the instance should be considered expired.
-     * The `WorkServerAdapter` implementations will still return expired instances,
-     * but the `WorkProcessor` class won't process them –
+     *
+     * The {@see WorkServerAdapter} implementations don't care about this flag
+     * and will still return expired instances
+     * but the {@see WorkProcessor} class won't process them –
      * they will be deleted as soon as they are encountered.
      * Always return `false` here if your job class cannot expire.
      */
