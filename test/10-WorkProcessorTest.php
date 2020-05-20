@@ -544,6 +544,125 @@ class WorkProcessorTest extends TestCase
         $this->assertTrue($executed);
     }
 
+    /**
+     * Make sure the {@see JobContext} callbacks work as expected
+     * and that at most one of them is called per job.
+     *
+     * @depends testJobContext
+     * @depends testExecuteOneSimpleJob
+     * @depends testExecuteFailingJob
+     * @depends testExecuteUnrecoverableJob
+     * @depends testExecuteAbortingJob
+     * @depends testRethrowExceptionSetting
+     */
+    public function testJobContextCallbacks(): void
+    {
+        $wp = wp();
+        $wp->setOption($wp::WP_RETHROW_EXCEPTIONS, false);
+        $ws = $wp->getWorkServerAdapter();
+
+        $executedJob        = null;
+        $executedOnSuccess  = null;
+        $executedOnFailure  = null;
+        $executedOnTempfail = null;
+        $makeJobCallback = function(?int $callbackReturnValue, \Throwable $throwThis = null) use(&$executedJob, &$executedOnSuccess, &$executedOnFailure, &$executedOnTempfail): callable {
+            // When building a new callback, re-set all counters and flags:
+            $executedJob        = false;
+            $executedOnSuccess  = 0;
+            $executedOnFailure  = 0;
+            $executedOnTempfail = 0;
+
+            return function(Job $job, JobContext $context) use($callbackReturnValue, $throwThis, &$executedJob, &$executedOnSuccess, &$executedOnFailure, &$executedOnTempfail): ?int {
+                // This is our job handler.
+                // Set the flag that it actually ran:
+                $executedJob = true;
+
+                // Set up multiple callbacks now.
+                // They don't do much except increment a counter so we know which callbacks ran and which didn't.
+                $context->onSuccess(function(Job $cbJob, JobContext $cbContext) use($job, $context, &$executedOnSuccess): void {
+                    $this->assertSame($job,     $cbJob);
+                    $this->assertSame($context, $cbContext);
+                    $executedOnSuccess++;
+                });
+                $context->onFailure(function(Job $cbJob, JobContext $cbContext) use($job, $context, &$executedOnFailure): void {
+                    $this->assertSame($job,     $cbJob);
+                    $this->assertSame($context, $cbContext);
+                    $executedOnFailure++;
+                });
+                $context->onTemporaryFailure(function(Job $cbJob, JobContext $cbContext) use($job, $context, &$executedOnTempfail): void {
+                    $this->assertSame($job,     $cbJob);
+                    $this->assertSame($context, $cbContext);
+                    $executedOnTempfail++;
+                });
+
+                // Either return one of the JobResult constants now or throw something:
+                if ($throwThis) {
+                    throw $throwThis;
+                }
+
+                return $callbackReturnValue;
+            };
+        };
+
+
+        // Try callbacks with a job that simply works:
+        $ws->storeJob('TQ-661', new SimpleTestJob(661));
+        $wp->processNextJob('TQ-661', $makeJobCallback(JobResult::SUCCESS), $ws::NOBLOCK);
+        $this->assertTrue($executedJob);
+        $this->assertEquals(1, $executedOnSuccess);
+        $this->assertEquals(0, $executedOnFailure + $executedOnTempfail);
+
+        // Try callbacks with a job that fails once, then succeeds:
+        $ws->storeJob('TQ-662', (new ConfigurableTestJob(662))
+            ->withRetryDelay(0)
+            ->withMaxRetries(1)
+        );
+        $wp->processNextJob('TQ-662', $makeJobCallback(JobResult::FAILED), $ws::NOBLOCK);
+        $this->assertTrue($executedJob);
+        $this->assertEquals(1, $executedOnTempfail);
+        $this->assertEquals(0, $executedOnSuccess + $executedOnFailure);
+        $wp->processNextJob('TQ-662', $makeJobCallback(JobResult::SUCCESS), $ws::NOBLOCK);
+        $this->assertTrue($executedJob);
+        $this->assertEquals(1, $executedOnSuccess);
+        $this->assertEquals(0, $executedOnFailure + $executedOnTempfail);
+
+        // Once more, with exceptions:
+        $ws->storeJob('TQ-663', (new ConfigurableTestJob(663))
+            ->withRetryDelay(0)
+            ->withMaxRetries(1)
+        );
+        $wp->processNextJob('TQ-663', $makeJobCallback(null, new \RuntimeException('please retry')), $ws::NOBLOCK);
+        $this->assertTrue($executedJob);
+        $this->assertEquals(1, $executedOnTempfail);
+        $this->assertEquals(0, $executedOnSuccess + $executedOnFailure);
+        $wp->processNextJob('TQ-663', $makeJobCallback(null, new \LogicException('nope')), $ws::NOBLOCK);
+        $this->assertTrue($executedJob);
+        $this->assertEquals(1, $executedOnFailure);
+        $this->assertEquals(0, $executedOnSuccess + $executedOnTempfail);
+
+        // Try callbacks with a job that aborts immediately:
+        $ws->storeJob('TQ-664', new SimpleTestJob(663));
+        $wp->processNextJob('TQ-664', $makeJobCallback(JobResult::ABORT), $ws::NOBLOCK);
+        $this->assertTrue($executedJob);
+        $this->assertEquals(1, $executedOnFailure);
+        $this->assertEquals(0, $executedOnSuccess + $executedOnTempfail);
+
+        // Try callbacks with an expired job:
+        $ws->storeJob('TQ-665', new ConfigurableTestJob(665));
+        ConfigurableTestJob::$expired_marker = 665;
+        $wp->processNextJob('TQ-665', $makeJobCallback(JobResult::SUCCESS), $ws::NOBLOCK);
+        $this->assertFalse($executedJob);
+        $this->assertEquals(0, $executedOnSuccess + $executedOnFailure + $executedOnTempfail);
+        ConfigurableTestJob::$expired_marker = null;
+
+        // Once more, with JobResult::EXPIRED instead:
+        $ws->storeJob('TQ-666', new SimpleTestJob(666));
+        ConfigurableTestJob::$expired_marker = 666;
+        $wp->processNextJob('TQ-666', $makeJobCallback(JobResult::EXPIRED), $ws::NOBLOCK);
+        $this->assertEquals(0, $executedOnSuccess + $executedOnFailure + $executedOnTempfail);
+        ConfigurableTestJob::$expired_marker = null;
+    }
+
 
     private function expectSuccess(LoggingWorkProcessor $wp, int $marker, array &$expect_log): void
     {
