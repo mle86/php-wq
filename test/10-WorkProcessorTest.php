@@ -80,6 +80,9 @@ class WorkProcessorTest extends TestCase
             "Finished job was not removed from the queue!");
     }
 
+    /**
+     * @depends testInsertOneSimpleJob
+     */
     public function testExecuteFailingJob(): void
     {
         $expect_log = [];
@@ -357,8 +360,8 @@ class WorkProcessorTest extends TestCase
     public function testCallbackReturnValue(): void
     {
         $marker = false;
-        $make_callback_with_return_value = function($return_value) use(&$marker): callable {
-            return function(SimpleTestJob $job) use($return_value, &$marker) {
+        $make_callback_with_return_value = static function($return_value) use(&$marker): callable {
+            return static function(SimpleTestJob $job) use($return_value, &$marker) {
                 $marker = true;
                 return $return_value;  // !
             };
