@@ -37,7 +37,9 @@ class JobResult
 
     /**
      * This status indicates that the job has failed.
-     * If the job can be re-tried (according to its {@see Job::jobCanRetry()} result),
+     * If the job can be re-tried
+     * (according to its {@see Job::jobCanRetry()} result
+     *  and the {@see WorkProcessor::WP_ENABLE_RETRY} option),
      * it will be re-queued for later re-execution.
      * If not, it will be *buried*.
      *

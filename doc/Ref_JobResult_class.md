@@ -34,6 +34,8 @@ it's useful only if you want additional control over the re-try mechanism withou
 * <code>const int <b>FAILED</b></code>  
     This status indicates that the job has failed.  
     If the job can be re-tried (according to its [jobCanRetry()][jobCanRetry] result),
+    (according to its [jobCanRetry()][jobCanRetry] result
+     and the [WorkProcessor::WP_ENABLE_BURY][WP_ENABLE_BURY] option),
     it will be re-queued for later re-execution.
     If not, it will be *buried*.  
     (That behavior may be changed through the WorkProcessor's [WP_ENABLE_RETRY][WP_ENABLE_RETRY] and
