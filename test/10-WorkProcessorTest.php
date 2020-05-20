@@ -3,6 +3,7 @@
 namespace mle86\WQ\Tests;
 
 use mle86\WQ\Job\Job;
+use mle86\WQ\Job\JobContext;
 use mle86\WQ\Job\JobResult;
 use mle86\WQ\Testing\SimpleTestJob;
 use mle86\WQ\Tests\Helper\ConfigurableTestJob;
@@ -483,18 +484,47 @@ class WorkProcessorTest extends TestCase
      * All of our job callbacks so far have taken only one argument,
      * but {@see WorkProcessor} actually provides two.
      * This method makes sure the second argument
-     * contains the job's source queue name.
+     * is a correct {@see JobContext} DTO.
      *
      * @depends testRetrieveJobFromMultipleQueues
+     * @depends testCallbackReturnValue
+     */
+    public function testJobContext(): void
+    {
+        $wp = wp();
+        $ws = $wp->getWorkServerAdapter();
+
+        $executed = false;
+        $callback = function(Job $job, $context) use(&$executed, $wp, $ws): void {
+            $executed = true;
+            $this->assertInstanceOf(JobContext::class, $context,
+                "WorkProcessor::processNextJob did not pass a JobContext object as second argument to job callback hnandler!");
+            /** @var JobContext $context */
+            $this->assertSame($job, $context->getJob());
+            $this->assertSame($job, $context->getQueueEntry()->getJob());
+            $this->assertSame($wp,  $context->getWorkProcessor());
+            $this->assertSame($ws,  $context->getWorkServer());
+        };
+
+        $ws->storeJob('TQ-641', new SimpleTestJob(641));
+        $wp->processNextJob('TQ-641', $callback, $ws::NOBLOCK);
+        $this->assertTrue($executed);
+    }
+
+    /**
+     * This method makes sure the {@see JobContext} callback argument
+     * contains the job's source queue name.
+     *
+     * @depends testJobContext
      */
     public function testSourceQueue(): void
     {
         $executed = false;
         $makeCallback = function($expectedQueueName) use(&$executed): callable {
-            return function(Job $job, string $sourceQueue) use($expectedQueueName, &$executed): void {
+            return function(Job $job, JobContext $context) use($expectedQueueName, &$executed): void {
                 $executed = true;
                 $this->assertContains(
-                    $sourceQueue,
+                    $context->getSourceQueue(),
                     (array)$expectedQueueName,
                     "job handler's second argument is not the correct source queue name!");
             };

@@ -41,7 +41,7 @@ but will also try to re-queue it if it fails.
     * `$workQueue`: See <code>[WorkServerAdapter]::getNextJob()</code>.
     * `$callback`: The handler callback to execute each Job.  
       Expected signature:
-      <code>function([Job], string $sourceQueueName): ?int|void</code>.
+      <code>function([Job], [JobContext]): ?int|void</code>.
       See the [JobResult] enum class for possible return values.
     * `$timeout`: See <code>[WorkServerAdapter]::getNextJob()</code>.
 
@@ -143,3 +143,4 @@ In the provided base class, they are empty.
 [WorkServerAdapter]: Ref_WorkServerAdapter_interface.md
 [Job]: Ref_Job_interface.md
 [JobResult]: Ref_JobResult_class.md
+[JobContext]: Ref_JobContext_class.md

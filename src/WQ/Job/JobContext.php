@@ -7,6 +7,10 @@ use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
 
 /**
  * Contains metadata about the job currently being processed.
+ *
+ * Instances of this class are available in job callbacks
+ * run by {@see WorkProcessor::processNextJob()}
+ * (their expected signature is `function(Job, JobContext): ?int|void`).
  */
 final class JobContext
 {

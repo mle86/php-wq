@@ -165,6 +165,7 @@ Class reference:
 * [WorkProcessor] class
     * [SignalSafeWorkProcessor] class
     * [JobResult] enum class
+    * [JobContext] dto class
 * [Exceptions](doc/Ref_Exceptions.md)
 
 
@@ -176,6 +177,7 @@ Class reference:
 [WorkProcessor]: doc/Ref_WorkProcessor_class.md
 [QueueEntry]: doc/Ref_QueueEntry_class.md
 [JobResult]: doc/Ref_JobResult_class.md
+[JobContext]: doc/Ref_JobContext_class.md
 
 [Implementing a Job class]: doc/Implementing_a_Job_class.md
 [Execute or Queue]: doc/Execute_or_Queue.md

@@ -74,7 +74,7 @@ class WorkProcessor
      *
      * @param string|string[] $workQueue See {@see WorkServerAdapter::getNextJob()}.
      * @param callable $callback         The handler callback to execute each Job.
-     *                                   Expected signature: <tt>function(Job, string $sourceQueueName): ?int|void</tt>.
+     *                                   Expected signature: <tt>function(Job, JobContext): ?int|void</tt>.
      *                                   See {@see JobResult} for possible return values.
      * @param int $timeout               See {@see WorkServerAdapter::getNextJob()}.
      * @throws \Throwable  Will re-throw on any Exceptions/Throwables from the <tt>$callback</tt>.
@@ -104,7 +104,7 @@ class WorkProcessor
 
         $ret = null;
         try {
-            $ret = $callback($job, $qe->getWorkQueue());
+            $ret = $callback($job, $jobContext);
         } catch (\Throwable $e) {
             // The job failed.
             $this->handleFailedJob($jobContext, $e);
