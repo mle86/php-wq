@@ -4,6 +4,7 @@ namespace mle86\WQ;
 
 use mle86\WQ\Exception\JobCallbackReturnValueException;
 use mle86\WQ\Job\Job;
+use mle86\WQ\Job\JobContext;
 use mle86\WQ\Job\JobResult;
 use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
@@ -91,9 +92,10 @@ class WorkProcessor
         }
 
         $job = $qe->getJob();
+        $jobContext = new JobContext($qe, $this);
 
         if ($job->jobIsExpired()) {
-            $this->handleExpiredJob($qe);
+            $this->handleExpiredJob($jobContext);
             return;
         }
 
@@ -105,7 +107,7 @@ class WorkProcessor
             $ret = $callback($job, $qe->getWorkQueue());
         } catch (\Throwable $e) {
             // The job failed.
-            $this->handleFailedJob($qe, $e);
+            $this->handleFailedJob($jobContext, $e);
 
             if ($this->options[self::WP_RETHROW_EXCEPTIONS]) {
                 // pass exception to caller
@@ -119,23 +121,23 @@ class WorkProcessor
         switch ($ret ?? JobResult::DEFAULT) {
             case JobResult::SUCCESS:
                 // The job succeeded!
-                $this->handleFinishedJob($qe);
+                $this->handleFinishedJob($jobContext);
                 break;
             case JobResult::FAILED:
                 // The job failed.
-                $this->handleFailedJob($qe);
+                $this->handleFailedJob($jobContext);
                 break;
             case JobResult::ABORT:
                 // The job failed and should not be retried.
-                $this->handleFailedJob($qe, null, true);
+                $this->handleFailedJob($jobContext, null, true);
                 break;
             case JobResult::EXPIRED:
                 // The job handler considers this job expired.
-                $this->handleExpiredJob($qe);
+                $this->handleExpiredJob($jobContext);
                 break;
             default:
                 // We'll assume the job went well.
-                $this->handleFinishedJob($qe);
+                $this->handleFinishedJob($jobContext);
                 throw new JobCallbackReturnValueException('unexpected job handler return value, should be JobResult::... or null or void');
         }
     }
@@ -160,9 +162,10 @@ class WorkProcessor
     }
 
 
-    private function handleFailedJob(QueueEntry $qe, \Throwable $e = null, bool $abort = false): void
+    private function handleFailedJob(JobContext $jobContext, \Throwable $e = null, bool $abort = false): void
     {
-        $job = $qe->getJob();
+        $qe  = $jobContext->getQueueEntry();
+        $job = $jobContext->getJob();
 
         if ($e) {
             $reason = get_class($e);
@@ -194,8 +197,9 @@ class WorkProcessor
         }
     }
 
-    private function handleFinishedJob(QueueEntry $qe): void
+    private function handleFinishedJob(JobContext $jobContext): void
     {
+        $qe = $jobContext->getQueueEntry();
         $this->onSuccessfulJob($qe);
 
         // Make sure the finished job is really gone before returning:
@@ -209,8 +213,9 @@ class WorkProcessor
         }
     }
 
-    private function handleExpiredJob(QueueEntry $qe): void
+    private function handleExpiredJob(JobContext $jobContext): void
     {
+        $qe = $jobContext->getQueueEntry();
         $this->onExpiredJob($qe);
 
         // We'll never execute expired jobs.
