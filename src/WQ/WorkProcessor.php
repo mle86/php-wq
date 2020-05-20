@@ -3,6 +3,7 @@
 namespace mle86\WQ;
 
 use mle86\WQ\Exception\JobCallbackReturnValueException;
+use mle86\WQ\Job\Job;
 use mle86\WQ\Job\JobResult;
 use mle86\WQ\Job\QueueEntry;
 use mle86\WQ\WorkServerAdapter\WorkServerAdapter;
@@ -139,6 +140,25 @@ class WorkProcessor
         }
     }
 
+    /**
+     * If the current job were to fail
+     * (either by throwing some {@see \RuntimeException}
+     *  or by returning {@see JobResult::FAILED}),
+     * would it by re-queued by the WorkProcessor?
+     *
+     * This depends mostly on the {@see Job::jobCanRetry()} flag
+     * but also on the {@see WorkProcessor::WP_ENABLE_RETRY} option.
+     *
+     * @param Job $job
+     * @return bool
+     */
+    public function canRetry(Job $job): bool
+    {
+        return
+            $this->options[self::WP_ENABLE_RETRY] &&
+            $job->jobCanRetry();
+    }
+
 
     private function handleFailedJob(QueueEntry $qe, \Throwable $e = null, bool $abort = false): void
     {
@@ -155,8 +175,7 @@ class WorkProcessor
         $doRetry =
             !$abort &&
             ($e === null || $e instanceof \RuntimeException) &&
-            $this->options[self::WP_ENABLE_RETRY] &&
-            $job->jobCanRetry();
+            $this->canRetry($job);
 
         if ($doRetry) {
             // re-queue:
