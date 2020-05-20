@@ -82,7 +82,35 @@ class WorkProcessorTest extends TestCase
     }
 
     /**
+     * @depends testExecuteOneSimpleJob
+     */
+    public function testRethrowExceptionSetting(): void
+    {
+        $wp = wp();
+        $ws = $wp->getWorkServerAdapter();
+
+        $executed = null;
+        $job = new SimpleTestJob(601);
+        $handler = static function(SimpleTestJob $job) use(&$executed): void {
+            $executed = $job->getMarker();
+            throw new \DomainException("will this get re-thrown?");
+        };
+
+        $executed = null;
+        $wp->setOption($wp::WP_RETHROW_EXCEPTIONS, false);
+        $ws->storeJob('TQ-601', new SimpleTestJob(601));
+        $wp->processNextJob('TQ-601', $handler, $ws::NOBLOCK);
+        $this->assertSame(601, $executed);
+
+        $wp->setOption($wp::WP_RETHROW_EXCEPTIONS, true);
+        $ws->storeJob('TQ-602', new SimpleTestJob(602));
+        $this->expectException(\DomainException::class);
+        $wp->processNextJob('TQ-602', $handler, $ws::NOBLOCK);
+    }
+
+    /**
      * @depends testInsertOneSimpleJob
+     * @depends testRethrowExceptionSetting
      */
     public function testExecuteFailingJob(): void
     {
