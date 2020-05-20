@@ -2,6 +2,7 @@
 
 namespace mle86\WQ\Tests;
 
+use mle86\WQ\Job\Job;
 use mle86\WQ\Job\JobResult;
 use mle86\WQ\Testing\SimpleTestJob;
 use mle86\WQ\Tests\Helper\ConfigurableTestJob;
@@ -449,6 +450,42 @@ class WorkProcessorTest extends TestCase
         // And the job should still have been deleted!
         $assert_job_state($wp, 'SUCCESS');
     }
+
+    /**
+     * All of our job callbacks so far have taken only one argument,
+     * but {@see WorkProcessor} actually provides two.
+     * This method makes sure the second argument
+     * contains the job's source queue name.
+     *
+     * @depends testRetrieveJobFromMultipleQueues
+     */
+    public function testSourceQueue(): void
+    {
+        $executed = false;
+        $makeCallback = function($expectedQueueName) use(&$executed): callable {
+            return function(Job $job, string $sourceQueue) use($expectedQueueName, &$executed): void {
+                $executed = true;
+                $this->assertContains(
+                    $sourceQueue,
+                    (array)$expectedQueueName,
+                    "job handler's second argument is not the correct source queue name!");
+            };
+        };
+
+        $wp = wp();
+        $ws = $wp->getWorkServerAdapter();
+
+        $executed = false;
+        $ws->storeJob('TQ-651', new SimpleTestJob(651));
+        $wp->processNextJob('TQ-651', $makeCallback('TQ-651'), WorkServerAdapter::NOBLOCK);
+        $this->assertTrue($executed);
+
+        $executed = false;
+        $ws->storeJob('TQ-652', new SimpleTestJob(652));
+        $wp->processNextJob(['TQ-9952', 'TQ-652', 'TQ-99952'], $makeCallback('TQ-652'), WorkServerAdapter::NOBLOCK);
+        $this->assertTrue($executed);
+    }
+
 
     private function expectSuccess(LoggingWorkProcessor $wp, int $marker, array &$expect_log): void
     {
