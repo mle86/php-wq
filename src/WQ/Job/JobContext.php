@@ -86,13 +86,15 @@ final class JobContext
      * This happens if {@see WorkProcessor::WP_ENABLE_RETRY} is set,
      * if {@see Job::jobCanRetry()} is true,
      * and if the job handler returned {@see JobResult::FAILED} or threw a {@see \RuntimeException}.
+     * (Any such exception will be passed to the callback
+     *  in its third argument.)
      *
      * (This callback will be run by the {@see WorkProcessor}
      *  after it calls its internal {@see WorkProcessor::onJobRequeue()} hook,
      *  immediately before calling {@see WorkServerAdapter::requeueEntry()}.)
      *
      * @param callable|null $callback Expected signature:
-     *                                function({@see Job}, {@see JobContext}): void.
+     *                                function({@see Job}, {@see JobContext}, ?Throwable): void.
      * @return $this
      */
     public function onTemporaryFailure(?callable $callback): self
@@ -110,13 +112,15 @@ final class JobContext
      *  or if {@see Job::jobCanRetry()} returns false
      * and if the job handler returned {@see JobResult::ABORT}
      *  or threw a non-{@see \RuntimeException Runtime} exception.
+     * (Any such exception will be passed to the callback
+     *  in its third argument.)
      *
      * (This callback will be run by the {@see WorkProcessor}
      *  after it calls its internal {@see WorkProcessor::onFailedJob()} hook,
      *  immediately before calling {@see WorkServerAdapter::buryEntry()}/{@see WorkServerAdapter::deleteEntry() deleteEntry()}.)
      *
      * @param callable|null $callback Expected signature:
-     *                                function({@see Job}, {@see JobContext}): void.
+     *                                function({@see Job}, {@see JobContext}, ?Throwable): void.
      * @return $this
      */
     public function onFailure(?callable $callback): self
@@ -154,11 +158,12 @@ final class JobContext
      * @internal Only {@see WorkProcessor::processNextJob()} should call this!
      * @param Job $currentJob
      * @param JobContext $currentContext
+     * @param \Throwable|null $cause What caused the temporary failure. Will be null if the failure was caused by {@see JobResult::FAILED}/{@see JobResult::ABORT ABORT}.
      */
-    public function handleTemporaryFailure(Job $currentJob, JobContext $currentContext): void
+    public function handleTemporaryFailure(Job $currentJob, JobContext $currentContext, ?\Throwable $cause): void
     {
         if ($this->temporaryFailureCallback) {
-            ($this->temporaryFailureCallback)($currentJob, $currentContext);
+            ($this->temporaryFailureCallback)($currentJob, $currentContext, $cause);
         }
     }
 
@@ -167,11 +172,12 @@ final class JobContext
      * @internal Only {@see WorkProcessor::processNextJob()} should call this!
      * @param Job $currentJob
      * @param JobContext $currentContext
+     * @param \Throwable|null $cause What caused the failure. Will be null if the failure was caused by {@see JobResult::FAILED}/{@see JobResult::ABORT ABORT}.
      */
-    public function handleFailure(Job $currentJob, JobContext $currentContext): void
+    public function handleFailure(Job $currentJob, JobContext $currentContext, ?\Throwable $cause): void
     {
         if ($this->failureCallback) {
-            ($this->failureCallback)($currentJob, $currentContext);
+            ($this->failureCallback)($currentJob, $currentContext, $cause);
         }
     }
 

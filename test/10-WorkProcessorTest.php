@@ -584,14 +584,16 @@ class WorkProcessorTest extends TestCase
                     $this->assertSame($context, $cbContext);
                     $executedOnSuccess++;
                 });
-                $context->onFailure(function(Job $cbJob, JobContext $cbContext) use($job, $context, &$executedOnFailure): void {
+                $context->onFailure(function(Job $cbJob, JobContext $cbContext, ?\Throwable $cause) use($job, $context, $throwThis, &$executedOnFailure): void {
                     $this->assertSame($job,     $cbJob);
                     $this->assertSame($context, $cbContext);
+                    $this->assertSame($throwThis, $cause);
                     $executedOnFailure++;
                 });
-                $context->onTemporaryFailure(function(Job $cbJob, JobContext $cbContext) use($job, $context, &$executedOnTempfail): void {
+                $context->onTemporaryFailure(function(Job $cbJob, JobContext $cbContext, ?\Throwable $cause) use($job, $context, $throwThis, &$executedOnTempfail): void {
                     $this->assertSame($job,     $cbJob);
                     $this->assertSame($context, $cbContext);
+                    $this->assertSame($throwThis, $cause);
                     $executedOnTempfail++;
                 });
 

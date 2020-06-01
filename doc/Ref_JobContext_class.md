@@ -38,8 +38,10 @@ that want to perform cleanup
 only in case of a permanently-failed job (`onFailure`)
 but not on a temporarily-failed job (`onTemporaryFailure`)
 
-All callbacks are expected to have this signature:
-`function(Job, JobContext): void`.
+Expected signature for the onSuccess callbacks:
+`function(Job, JobContext): void`.  
+Expected signature for the onFailure and onTemporaryFailure callbacks:
+`function(Job, JobContext, ?Throwable): void`.
 
 * <code>public function <b>onTemporaryFailure</b>(?callable $callback): void</code>  
     Sets up a callback that will be called once
@@ -47,7 +49,9 @@ All callbacks are expected to have this signature:
     because it failed and should be re-tried.  
     This happens if [WP_ENABLE_RETRY] is set,
     if [jobCanRetry()][jobCanRetry] is true,
-    and if the job handler returned <code>[JobResult]::FAILED</code> or threw a `RuntimeException`.  
+    and if the job handler returned <code>[JobResult]::FAILED</code> or threw a `RuntimeException`.
+    (Any such exception will be passed to the callback
+     in its third argument.)  
     (This callback will be run by the WorkProcessor
      after it calls its internal `onJobRequeue()` hook,
      immediately before calling <code>WorkServerAdapter::requeueEntry()</code>.)
@@ -59,7 +63,9 @@ All callbacks are expected to have this signature:
     This happens if [WP_ENABLE_RETRY] is not set
      or if [jobCanRetry()][jobCanRetry] returns false
     and if the job handler returned <code>[JobResult]::ABORT</code>
-     or threw a non-`RuntimeException` throwable.  
+     or threw a non-`RuntimeException` throwable.
+    (Any such exception will be passed to the callback
+     in its third argument.)  
     (This callback will be run by the WorkProcessor
      after it calls its internal `onFailedJob()` hook,
      immediately before calling <code>WorkServerAdapter::buryEntry()</code>/<code>deleteEntry()</code>.)

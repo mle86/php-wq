@@ -184,17 +184,17 @@ class WorkProcessor
             // re-queue:
             $delay = $job->jobRetryDelay();
             $this->onJobRequeue($qe, $delay, $e);
-            $jobContext->handleTemporaryFailure($job, $jobContext);
+            $jobContext->handleTemporaryFailure($job, $jobContext, $e);
             $this->server->requeueEntry($qe, $delay);
             $this->log(LogLevel::NOTICE, "job failed, re-queued with {$delay}s delay ({$reason})", $qe);
         } elseif ($this->options[self::WP_ENABLE_BURY]) {
             $this->onFailedJob($qe, $e);
-            $jobContext->handleFailure($job, $jobContext);
+            $jobContext->handleFailure($job, $jobContext, $e);
             $this->server->buryEntry($qe);
             $this->log(LogLevel::WARNING, "job failed, buried ({$reason})", $qe);
         } else {
             $this->onFailedJob($qe, $e);
-            $jobContext->handleFailure($job, $jobContext);
+            $jobContext->handleFailure($job, $jobContext, $e);
             $this->server->deleteEntry($qe);
             $this->log(LogLevel::WARNING, "job failed, deleted ({$reason})", $qe);
         }
