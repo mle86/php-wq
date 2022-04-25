@@ -95,7 +95,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         return static::$wsClassName;
     }
 
-    final private function jobQueueData(): array
+    private function jobQueueData(): array
     {
         $queues = [];
         foreach ($this->jobData() as $jd) {
@@ -628,7 +628,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         // Now all queues should be empty:
         $this->assertNull($ws->getNextQueueEntry(['sq6', 'sq4', 'sq1', 'sq0', 'sq5'], $ws::NOBLOCK));
 
-        usleep(1000 * 1000 * 0.3);
+        usleep((int)(1000 * 1000 * 0.3));
         // By now, the two delayed jobs should be available!
         $fnExpectJob(['sq6', 'sq5', 'sq1', 'sq0'], 1);
         $fnExpectJob(['sq5', 'sq6'], 1);
@@ -810,7 +810,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
         $mt        = microtime(true);
         $subsecond = $mt - (int)$mt;
         if ($subsecond > (1 - $requiredRemainingSubsecond)) {
-            usleep(1000 * 1000 * (1.01 - $subsecond));
+            usleep((int)(1000 * 1000 * (1.01 - $subsecond)));
         }
     }
 
