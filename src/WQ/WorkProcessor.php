@@ -14,7 +14,7 @@ use Psr\Log\NullLogger;
 
 /**
  * This class implements a wrapper around
- * {@see WorkServerAdapter::getNextJob()}
+ * {@see WorkServerAdapter::getNextQueueEntry()}
  * called {@see processNextJob()}
  * that does not only execute the next job immediately
  * but will also try to re-queue it if it fails.
@@ -72,11 +72,11 @@ class WorkProcessor
      * If the next job in the Work Queue is expired,
      * it will be silently deleted.
      *
-     * @param string|string[] $workQueue See {@see WorkServerAdapter::getNextJob()}.
+     * @param string|string[] $workQueue See {@see WorkServerAdapter::getNextQueueEntry()}.
      * @param callable $callback         The handler callback to execute each Job.
      *                                   Expected signature: <tt>function(Job, JobContext): ?int|void</tt>.
      *                                   See {@see JobResult} for possible return values.
-     * @param int $timeout               See {@see WorkServerAdapter::getNextJob()}.
+     * @param int $timeout               See {@see WorkServerAdapter::getNextQueueEntry()}.
      * @throws \Throwable  Will re-throw on any Exceptions/Throwables from the <tt>$callback</tt>.
      * @throws JobCallbackReturnValueException  in case of an unexpected callback return value (should be a {@see JobResult} constant or NULL or void).
      */
