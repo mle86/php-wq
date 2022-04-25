@@ -46,7 +46,7 @@ abstract class AbstractWorkServerAdapterTest extends TestCase
     // Helper methods and data providers:  ////////////////////////////////////////
 
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         SimpleTestJob::$log = [];
     }
