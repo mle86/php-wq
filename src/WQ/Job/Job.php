@@ -6,10 +6,6 @@ namespace mle86\WQ\Job;
  * A Job is a representation of some task do to.
  * It can be stored in a Work Queue with {@see WorkServerAdapter::storeJob()}.
  *
- * This interface extends {@see \Serializable},
- * because all Jobs have to be serializable
- * in order to be stored in a Work Queue.
- *
  * For your own Job classes,
  * see the {@see AbstractJob} base class instead;
  * it is easier to work with
@@ -20,7 +16,7 @@ namespace mle86\WQ\Job;
  * or how the responsible method(s) should be named,
  * if they are part of the Job implementation at all.
  */
-interface Job extends \Serializable
+interface Job
 {
 
     /**
@@ -60,5 +56,15 @@ interface Job extends \Serializable
      * (Also see {@see JobResult::EXPIRED} which has the same effect as returning `true` here.)
      */
     public function jobIsExpired(): bool;
+
+    /**
+     * @see https://www.php.net/manual/en/language.oop5.magic.php#object.serialize
+     */
+    public function __serialize(): array;
+
+    /**
+     * @see https://www.php.net/manual/en/language.oop5.magic.php#object.unserialize
+     */
+    public function __unserialize(array $data): void;
 
 }

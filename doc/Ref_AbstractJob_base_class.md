@@ -85,13 +85,13 @@ It fully implements the [`Job`][Job] interface.
 
 * <code>protected <b>$_try_index</b> = 0</code>  
     The current try index.  
-    The default `serialize()` implementation
+    The default `__serialize()` implementation
     will increase this by 1 before serializing it,
     so that the serialization always contains
     the correct next value.  
     *Internal:*
     This should not be accessed directly,
-    except for a custom `serialize()` override.
+    except for a custom `__serialize()` override.
 
 
 [Job]: Ref_Job_interface.md

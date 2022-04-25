@@ -1,20 +1,20 @@
 # `Job` Interface
 
-Declaration: <code>interface mle86\WQ\Job\\<b>Job</b> implements \Serializable</code>  
+Declaration: <code>interface mle86\WQ\Job\\<b>Job</b></code>  
 Source file: [src/WQ/Job/Job.php](/src/WQ/Job/Job.php)
 
 A Job is a representation of some task to do.
 It can be stored in a Work Queue with `WorkServerAdapter::storeJob()`.
 
-This interface extends [`\Serializable`](https://secure.php.net/manual/en/class.serializable.php),
-because all Jobs have to be serializable
+All Jobs have to be serializable
 in order to be stored in a Work Queue.
 
 For your own Job classes,
 see the [`AbstractJob`][AbstractJob] base class instead;
 it is easier to work with
 as it provides default implementations
-for the required methods.
+for the required methods,
+including [`__serialize` and `__unserialize`](https://www.php.net/manual/en/language.oop5.magic.php#object.unserialize).
 
 This interface does not specify how a Job should be executed
 or how the responsible method(s) should be named,
@@ -52,6 +52,10 @@ if they are part of the Job implementation at all.
     they will be deleted as soon as they are encountered.
     Always return `false` here if your job class cannot expire.  
     (Also see <code>[JobResult]::EXPIRED</code> which has the same effect as returning `true` here.)
+
+* <code>public function __serialize (): array</code>,  
+  <code>public function __unserialize (array $data): void</code>  
+    Needed for serializability -- see https://www.php.net/manual/en/language.oop5.magic.php#object.unserialize
 
 
 [AbstractJob]: Ref_AbstractJob_base_class.md

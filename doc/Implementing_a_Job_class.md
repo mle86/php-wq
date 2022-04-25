@@ -44,8 +44,7 @@ And that's it.
 
 The `AbstractJob` class
 already implements
-the `Job` interface
-and the built-in [`Serializable`](http://php.net/manual/en/class.serializable.php) interface.
+the `Job` interface.
 
 
 **See next: [Execute or Queue].**

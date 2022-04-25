@@ -45,11 +45,11 @@ abstract class AbstractJob implements Job
 
     /**
      * @var int  The current try index.
-     *           The default {@see serialize()} implementation
+     *           The default {@see __serialize()} implementation
      *           will increase this by 1 before serializing it,
      *           so that the serialization always contains
      *           the correct next value.
-     * @internal This should not be accessed directly, except for a custom {@see serialize()} override.
+     * @internal This should not be accessed directly, except for a custom {@see __serialize()} override.
      * @see      jobTryIndex()
      */
     protected $_try_index = 0;
@@ -61,14 +61,14 @@ abstract class AbstractJob implements Job
      * Override this method if that's not enough or if you want to do some additional pre-serialize processing,
      * but don't forget to include <tt>{@see $_try_index}+1</tt> in the serialization!
      */
-    public function serialize()
+    public function __serialize(): array
     {
         $raw = [];
         foreach ($this->listProperties() as $propName) {
             $raw[$propName] = $this->{$propName};
         }
         $raw['_try_index'] = $this->_try_index + 1;  // !
-        return serialize($raw);
+        return $raw;
     }
 
     /**
@@ -77,11 +77,10 @@ abstract class AbstractJob implements Job
      * That includes the {@see $_try_index} counter.
      * Private and/or static properties will never be written to.
      *
-     * @param string $serialized
+     * @param array $raw
      */
-    public function unserialize($serialized)
+    public function __unserialize(array $raw): void
     {
-        $raw = unserialize($serialized);
         foreach ($this->listProperties() as $propName) {
             if (array_key_exists($propName, $raw)) {
                 $this->{$propName} = $raw[$propName];
