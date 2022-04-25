@@ -18,3 +18,8 @@
         Thrown by `WorkProcessor::processNextJob`
         if the job callback returns an unexpected value
         (it should be a `JobResult` constant or `null` or void).
+
+* <code>interface [mle86\WQ\Exception\\<b>WQConnectionException</b>](/src/WQ/Exception/WQConnectionException.php) extends WQException</code>  
+    Thrown by `WorkServerAdapter` implementations
+    if there is a connection problem
+    (e.g. lost connection or unable to connect).

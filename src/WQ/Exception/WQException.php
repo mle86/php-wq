@@ -8,6 +8,7 @@ namespace mle86\WQ\Exception;
  * @see UnserializationException
  * @see OptionValueException
  * @see JobCallbackReturnValueException
+ * @see WQConnectionException interface
  */
 interface WQException
 {
