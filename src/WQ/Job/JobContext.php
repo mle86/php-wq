@@ -144,7 +144,7 @@ final class JobContext
      *                                function({@see Job}, {@see JobContext}): void.
      * @return $this
      */
-    public function onSuccess(?callable  $callback): self
+    public function onSuccess(?callable $callback): self
     {
         $this->successCallback = $callback;
         return $this;
