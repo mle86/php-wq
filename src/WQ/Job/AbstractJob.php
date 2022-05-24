@@ -24,7 +24,7 @@ namespace mle86\WQ\Job;
  *   if the expiry condition is reached. You may need to
  *   add a job creation timestamp property for that.
  */
-abstract class AbstractJob implements Job
+abstract class AbstractJob implements Job, \Serializable
 {
 
     /**
@@ -72,6 +72,14 @@ abstract class AbstractJob implements Job
     }
 
     /**
+     * @deprecated This is here to fulfil the older {@see \Serializable} interface.
+     */
+    public function serialize()
+    {
+        return serialize($this->__serialize());
+    }
+
+    /**
      * This default implementation simply writes all serialized values
      * to their corresponding object property.
      * That includes the {@see $_try_index} counter.
@@ -86,6 +94,15 @@ abstract class AbstractJob implements Job
                 $this->{$propName} = $raw[$propName];
             }
         }
+    }
+
+    /**
+     * @deprecated This is here to fulfil the older {@see \Serializable} interface.
+     *             It may still be needed when unserializing jobs that were serialized prior to v0.21.0.
+     */
+    public function unserialize($data): void
+    {
+        $this->__unserialize(unserialize($data, ['allowed_classes' => [Job::class]]));
     }
 
 
